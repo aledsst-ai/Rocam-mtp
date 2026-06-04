@@ -2254,6 +2254,7 @@ let seizuresFilterDays = 7;
 // ==================== GLOBAL OBSERVER E ESTADO ====================
 let revealObserver = null;
 let dataListenerRegistered = false;
+let firebaseInitialSyncCompleted = false;
 let scrollListenerActive = false;
 let streamStatusUpdateScheduled = false;
 
@@ -2361,6 +2362,8 @@ function loadData() {
         }
         console.log('🎨 Chamando renderAll()');
         renderAll();
+        firebaseInitialSyncCompleted = true;
+        console.log('✅ Firebase initial sync completed');
       }, (error) => {
         console.warn('⚠️ Erro ao carregar do Firebase:', error);
         console.log('💾 Usando dados do localStorage');
@@ -2521,8 +2524,12 @@ async function updateAllStreamStatus() {
       }
     }
     
-    // Salvar sempre
-    saveData();
+    // Salvar só depois do primeiro carregamento do Firebase
+    if (!firebaseInitialSyncCompleted && dataListenerRegistered) {
+      console.log('⏭️ Ignorando saveData() até o Firebase carregar a primeira vez');
+    } else {
+      saveData();
+    }
     
     // Re-renderizar apenas se algo mudou
     if (statusChanged) {
