@@ -2088,8 +2088,8 @@
     <ul class="nav-links">
       <li><a href="#home">INÍCIO</a></li>
       <li><a href="#about">SOBRE</a></li>
-      <li><a href="#hierarchy">HIERARQUIA</a></li>
       <li><a href="#live">AO VIVO</a></li>
+      <li><a href="#hierarchy">HIERARQUIA</a></li>
       <li><a href="#gallery">GALERIA</a></li>
       <li><a href="#vehicles">VIATURAS</a></li>
       <li><a href="#seizures">APREENSÕES</a></li>
@@ -3460,13 +3460,7 @@ function renderAdminSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>DESCRIÇÃO</label><textarea id="new-desc" rows="2" placeholder="Descrição..."></textarea></div>
-      <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
-      <div class="form-group"><label>LOCAL</label><input id="new-location" placeholder="Local"></div>
-      <div class="form-group"><label>IMAGEM URL</label><input id="new-simg" placeholder="https://..."></div>
-      <div class="form-group"><label>BO URL</label><input id="new-bo" placeholder="https://..."></div>
-      <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR APREENSÃO</button>
-    </div>
+      <div class="form-group"><label>QRU</label><textarea id="new-desc" rows="2" placeholder="QRU..."></textarea></div>
     <div id="seizures-list"></div>
   `;
   renderSeizuresList();
@@ -3604,7 +3598,7 @@ function renderMembersSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>DESCRIÇÃO</label><textarea id="m-new-desc" rows="2" placeholder="Descrição..."></textarea></div>
+      <div class="form-group"><label>QRU</label><textarea id="m-new-desc" rows="2" placeholder="QRU..."></textarea></div>
       <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="m-new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
       <div class="form-group"><label>LOCAL</label><input id="m-new-location" placeholder="Local"></div>
       <div class="form-group"><label>IMAGEM URL</label><input id="m-new-simg" placeholder="https://..."></div>
@@ -3634,7 +3628,7 @@ function addSeizureMembers() {
   const location = document.getElementById('m-new-location').value.trim();
   const imageUrl = document.getElementById('m-new-simg').value.trim();
   const boImageUrl = document.getElementById('m-new-bo').value.trim();
-  if (!desc) { alert("Informe a descrição"); return; }
+  if (!desc) { alert("Informe o QRU"); return; }
   seizures.push({ id: Date.now().toString(), description: desc, member, location, imageUrl, boImageUrl, date: new Date().toISOString() });
   saveData();
   renderAll();
@@ -3762,7 +3756,7 @@ function addSeizure() {
   const location = document.getElementById('new-location').value.trim();
   const imageUrl = document.getElementById('new-simg').value.trim();
   const boImageUrl = document.getElementById('new-bo').value.trim();
-  if (!desc) { alert("Informe a descrição"); return; }
+  if (!desc) { alert("Informe o QRU"); return; }
   seizures.push({ id: Date.now().toString(), description: desc, member, location, imageUrl, boImageUrl, date: new Date().toISOString() });
   saveData();
   renderAll();
