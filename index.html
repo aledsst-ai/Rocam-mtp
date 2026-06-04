@@ -2336,37 +2336,9 @@ let members = [];
 let vehicles = [];
 let seizures = [];
 let gallery = [];
+let adminPassword = "123";
+let membersPassword = "321";
 let rankOrder = {};
-let currentUser = null;
-let userRole = null;
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    currentUser = user;
-    console.log('✓ Autenticado:', user.email);
-    checkUserRole(user);
-  } else {
-    currentUser = null;
-    userRole = null;
-  }
-});
-
-async function checkUserRole(user) {
-  try {
-    const db = firebase.database();
-    const adminSnapshot = await db.ref(`admins/${user.uid}`).once('value');
-    if (adminSnapshot.exists()) {
-      userRole = 'admin';
-      return;
-    }
-    const memberSnapshot = await db.ref(`members/${user.uid}`).once('value');
-    if (memberSnapshot.exists()) {
-      userRole = 'member';
-    }
-  } catch (error) {
-    console.error('Erro:', error);
-  }
-}
 
 function sanitizeMembersData(data) {
   if (!Array.isArray(data)) return [];
