@@ -106,8 +106,8 @@
 
     .seizures-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
       margin-bottom: 60px;
     }
 
@@ -120,13 +120,13 @@
       overflow: hidden;
       transition: var(--transition);
       cursor: pointer;
-      min-height: 220px;
+      min-height: 280px;
       display: flex;
       align-items: flex-end;
     }
 
     .seizure-card:hover {
-      border-color: #ffffff;
+      border-color: #434343;
       transform: translateY(-2px);
       background: var(--bg-hover);
     }
@@ -151,18 +151,58 @@
     .seizure-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.74) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.48) 25%, rgba(0,0,0,0.68) 55%, rgba(0,0,0,0.82) 85%, rgba(0,0,0,0.92) 100%);
       z-index: 1;
     }
 
     .seizure-card-content {
-      position: relative;
+      position: static;
       z-index: 2;
-      padding: 16px;
+      padding: 10px 12px 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 4px;
       width: 100%;
+      margin-top: 20px;
+    }
+
+    .seizure-card-header {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 22px);
+      display: flex;
+      justify-content: center;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .qru-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-transform: none;
+      letter-spacing: 0;
+      backdrop-filter: blur(6px);
+      line-height: 1.2;
+    }
+    .emoji-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      filter: none;
+      opacity: 0.95;
+    }
+    .seizure-meta span,
+    .seizure-footer span {
+      padding: 3px 8px;
     }
 
     .seizure-desc {
@@ -176,17 +216,39 @@
     .seizure-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.85);
+      gap: 8px;
       margin: 0;
+    }
+    .seizure-meta span,
+    .seizure-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.82rem;
       font-weight: 500;
+      line-height: 1.2;
+    }
+    .seizure-meta .badge,
+    .seizure-footer .badge {
+      padding: 2px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.2;
     }
 
     .seizure-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
       font-size: 12px;
       color: rgba(255,255,255,0.85);
       font-weight: 500;
@@ -223,15 +285,27 @@
     }
 
     .modal {
-      display: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: fixed;
       z-index: 1000;
-      padding-top: 50px;
+      padding: 50px 20px;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.9);
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease 0.15s, visibility 0.35s ease 0.15s;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .modal-content {
@@ -240,6 +314,14 @@
       max-width: 100%;
       max-height: 90vh;
       object-fit: contain;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.35s ease 0.2s, transform 0.35s ease 0.2s;
+    }
+
+    .modal.show .modal-content {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .modal-close {
@@ -328,19 +410,21 @@
       container.innerHTML = sorted.map((seizure, idx) => {
         const imageUrl = seizure.imageUrl ? escapeHtml(seizure.imageUrl) : 'https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem';
         const clickAction = seizure.imageUrl ? `onclick="openModal('${imageUrl}')"` : '';
-        const dateText = `📅 ${new Date(seizure.date).toLocaleDateString('pt-BR')} às ${new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        const dateText = `${new Date(seizure.date).toLocaleDateString('pt-BR')} às ${new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         return `
           <div class="seizure-card" ${clickAction}>
             <div class="seizure-card-background ${seizure.imageUrl ? '' : 'seizure-card-background--empty'}" style="background-image: url('${imageUrl}');"></div>
             <div class="seizure-card-overlay"></div>
             <div class="seizure-card-content">
-              <div class="seizure-desc">${escapeHtml(seizure.description)}</div>
+              <div class="seizure-card-header">
+                <span class="qru-badge">${escapeHtml(seizure.description)}</span>
+              </div>
               <div class="seizure-meta">
-                ${seizure.member ? `<span>👮 ${escapeHtml(seizure.member)}</span>` : ''}
-                ${seizure.location ? `<span>📍 ${escapeHtml(seizure.location)}</span>` : ''}
+                ${seizure.member ? `<span class="badge"><span class="emoji-icon">👤</span>${escapeHtml(seizure.member)}</span>` : ''}
+                ${seizure.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(seizure.location)}</span>` : ''}
               </div>
               <div class="seizure-footer">
-                <span>${dateText}</span>
+                <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
                 ${seizure.boImageUrl ? `<a href="${escapeHtml(seizure.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
               </div>
             </div>
@@ -398,12 +482,19 @@
     }
 
     function openModal(src) {
-      document.getElementById('modal').style.display = 'block';
-      document.getElementById('modal-image').src = src;
+      const modal = document.getElementById('modal');
+      const modalImage = document.getElementById('modal-image');
+      modalImage.style.opacity = '0';
+      modalImage.src = src;
+      modal.classList.add('show');
+      modalImage.onload = () => {
+        modalImage.style.opacity = '1';
+      };
     }
 
     function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+      const modal = document.getElementById('modal');
+      modal.classList.remove('show');
     }
 
     // Fechar modal ao clicar fora da imagem

@@ -76,28 +76,43 @@
 
     /* Modal para imagens */
     .modal {
-      display: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: fixed;
       z-index: 1000;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
+      padding: 50px 20px;
       background-color: rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(8px);
       cursor: pointer;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease 0.15s, visibility 0.35s ease 0.15s;
+    }
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
     .modal-content {
       display: block;
       max-width: 90%;
       max-height: 90%;
       margin: auto;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       border-radius: 8px;
       box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.35s ease 0.2s, transform 0.35s ease 0.2s;
+    }
+    .modal.show .modal-content {
+      opacity: 1;
+      transform: translateY(0);
     }
     .modal-close {
       position: absolute;
@@ -448,50 +463,50 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 18px 20px 20px;
+      padding: 14px 16px 16px;
       border-bottom-left-radius: 22px;
       border-bottom-right-radius: 22px;
       background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(6, 6, 6, 0.5) 35%, rgba(8, 8, 8, 0.92) 100%);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 10px;
     }
     .member-avatar-title {
       width: 100%;
       color: #ffffff;
-      font-size: 1.35rem;
+      font-size: 15px;
       font-weight: 800;
       letter-spacing: 0.02em;
-      text-align: center;
+      text-align: left;
       margin: 0;
       text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
       overflow-wrap: break-word;
     }
     .member-avatar-badges {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: wrap;
-      gap: 8px;
-      width: 100%;
+      gap: 2px;
+      width: auto;
     }
     .member-avatar-stats {
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       flex-wrap: nowrap;
-      gap: 8px;
+      gap: 4px;
       width: auto;
     }
     .member-avatar-stat {
       display: flex;
       flex-direction: row;
       align-items: center;
-      gap: 8px;
+      gap: 3px;
       min-width: auto;
-      padding: 8px 10px;
+      padding: 3px 5px;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
+      border-radius: 10px;
       color: #ffffff;
       font-size: 0.72rem;
       text-transform: uppercase;
@@ -529,24 +544,24 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 2px;
       color: rgba(255, 255, 255, 0.72);
-      font-size: 0.66rem;
+      font-size: 9px;
       line-height: 1.2;
     }
     .member-profile-rank,
     .member-profile-hierarchy {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
-      padding: 3px 7px;
+      padding: 2px 6px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       font-weight: 600;
-      font-size: 0.62rem;
+      font-size: 9px;
       color: rgba(255, 255, 255, 0.85);
       transition: var(--transition);
       cursor: pointer;
@@ -632,7 +647,7 @@
     .member-profile-info.horizontal-info {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
     .info-card {
       flex: 1 1 calc(50% - 8px);
@@ -640,16 +655,16 @@
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 12px;
-      padding: 8px 10px;
+      padding: 4px 6px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
     }
     .info-card-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 4px;
     }
     .twitch-link {
       display: inline-flex;
@@ -729,13 +744,13 @@
     .member-profile-info {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 3px;
     }
     .info-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 6px 8px;
+      padding: 3px 5px;
       background: rgba(255, 255, 255, 0.03);
       border-radius: 6px;
       border: 1px solid transparent;
@@ -1007,7 +1022,7 @@
       gap: 10px;
       justify-content: center;
     }
-    .stat:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .stat:hover { border-color: #434343; transform: translateY(-2px); }
     .stat-value {
       display: inline-block;
       font-size: 1.3rem;
@@ -1030,7 +1045,7 @@
     }
     .stat-live:hover {
       background: linear-gradient(135deg, rgba(119, 44, 232, 0.2), rgba(145, 70, 255, 0.2));
-      border-color: #ffffff;
+      border-color: #434343;
       box-shadow: 0 0 25px rgba(145, 70, 255, 0.4);
     }
     .stat-live::before {
@@ -1090,7 +1105,7 @@
       cursor: pointer;
     }
     .member-card:hover {
-      border-color: #ffffff;
+      border-color: #434343;
       background: var(--bg-hover);
       transform: translateY(-2px);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -1179,6 +1194,12 @@
     }
     .member-name { font-weight: 700; font-size: 0.85rem; line-height: 1.1; }
     .member-police-rank { font-weight: 400; font-size: 0.68rem; color: #cccccc; }
+    .member-registered {
+      font-size: 9px;
+      color: #a2a2a2;
+      line-height: 1.2;
+      margin-top: 2px;
+    }
     .member-status {
       display: inline-flex;
       align-items: center;
@@ -1203,14 +1224,14 @@
       max-width: 110px;
     }
     .member-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-wrap: nowrap; }
-    .member-level { font-size: 0.55rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
-    .member-seizures { font-size: 0.55rem; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
+    .member-level { font-size: 9px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
+    .member-seizures { font-size: 9px; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
     .twitch-badge {
       display: inline-flex;
       align-items: center;
       gap: 3px;
       font-size: 0.5rem;
-      padding: 2px 6px;
+      padding: 0;
       border-radius: 20px;
       text-decoration: none;
       font-weight: 400;
@@ -1244,10 +1265,11 @@
       gap: 8px;
     }
     .live-members-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 480px);
+      justify-content: center;
+      justify-items: center;
+      gap: 16px;
     }
 
     /* Card ao vivo com thumbnail */
@@ -1257,10 +1279,8 @@
       box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
       cursor: pointer;
       position: relative;
-      width: 100%;
-      max-width: 360px;
-      min-width: 260px;
-      height: 200px;
+      width: 480px;
+      height: 275px;
       border-radius: var(--radius);
       overflow: hidden;
       display: flex;
@@ -1278,7 +1298,7 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.6;
+      opacity: 1;
       transition: transform 0.5s ease;
     }
     .live-card-thumbnail:hover .live-card-background {
@@ -1288,7 +1308,7 @@
     .live-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 100%);
       z-index: 1;
     }
 
@@ -1378,13 +1398,14 @@
       background: var(--bg-card);
       display: block;
     }
-    .vehicle-card:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .vehicle-card:hover { border-color: #434343; transform: translateY(-2px); }
     .vehicle-img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      opacity: 1;
       transition: transform 0.5s ease;
       z-index: 1;
     }
@@ -1400,7 +1421,7 @@
     .vehicle-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.55) 100%);
       z-index: 2;
     }
     .vehicle-card-content {
@@ -1430,12 +1451,12 @@
       overflow: hidden;
       transition: var(--transition);
       cursor: pointer;
-      min-height: 220px;
+      min-height: 280px;
       display: flex;
       align-items: flex-end;
     }
     .seizure-card:hover {
-      border-color: #ffffff;
+      border-color: #434343;
       transform: translateY(-2px);
       background: var(--bg-hover);
     }
@@ -1445,6 +1466,7 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      opacity: 1;
       transition: transform 0.5s ease;
     }
     .seizure-card-background--empty {
@@ -1456,17 +1478,63 @@
     .seizure-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.74) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.48) 25%, rgba(0,0,0,0.68) 55%, rgba(0,0,0,0.82) 85%, rgba(0,0,0,0.92) 100%);
       z-index: 1;
     }
+    .seizure-card-header {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 22px);
+      display: flex;
+      justify-content: center;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .qru-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 3px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      text-transform: none;
+      letter-spacing: 0;
+      backdrop-filter: blur(6px);
+      line-height: 1.2;
+    }
+    .emoji-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      filter: none;
+      opacity: 0.95;
+    }
     .seizure-card-content {
-      position: relative;
+      position: static;
       z-index: 2;
-      padding: 16px;
+      padding: 10px 12px 10px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 4px;
       width: 100%;
+      margin-top: 20px;
+    }
+    .seizure-meta span,
+    .seizure-footer span {
+      gap: 4px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.82rem;
+      font-weight: 500;
+      line-height: 1.2;
     }
     .seizure-desc {
       font-weight: 700;
@@ -1478,16 +1546,38 @@
     .seizure-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.85);
+      gap: 8px;
       margin: 0;
+    }
+    .seizure-meta span,
+    .seizure-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 0.82rem;
       font-weight: 500;
+      line-height: 1.2;
+    }
+    .seizure-meta .badge,
+    .seizure-footer .badge {
+      padding: 2px 4px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 999px;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 1.2;
     }
     .seizure-footer {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
       font-size: 12px;
       color: rgba(255,255,255,0.85);
       font-weight: 500;
@@ -1515,13 +1605,14 @@
       background: var(--bg-card);
       display: block;
     }
-    .gallery-card:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .gallery-card:hover { border-color: #434343; transform: translateY(-2px); }
     .gallery-img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      opacity: 1;
       transition: transform 0.5s ease;
       z-index: 1;
     }
@@ -1537,7 +1628,7 @@
     .gallery-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.55) 100%);
       z-index: 2;
     }
     .gallery-card-content {
@@ -1546,6 +1637,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      align-items: flex-start;
       height: 100%;
       padding: 20px;
       gap: 6px;
@@ -1563,6 +1655,21 @@
       font-weight: 500;
       text-align: left;
     }
+    .gallery-date.badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 600;
+      width: auto;
+      max-width: 100%;
+      align-self: flex-start;
+    }
 
     /* Carrossel Refinado */
     .carousel-wrapper {
@@ -1572,7 +1679,7 @@
     
     .simple-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(340px, 1fr));
       gap: 24px;
       margin-top: 20px;
       max-width: 100%;
@@ -1583,8 +1690,8 @@
       justify-content: center;
     }
     
-    @media (max-width: 1400px) { .simple-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
-    @media (max-width: 1200px) { .simple-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+    @media (max-width: 1400px) { .simple-grid { grid-template-columns: repeat(3, minmax(300px, 1fr)); gap: 24px; } }
+    @media (max-width: 1200px) { .simple-grid { grid-template-columns: repeat(2, minmax(320px, 1fr)); gap: 20px; } }
     @media (max-width: 768px) { .simple-grid { grid-template-columns: repeat(1, 1fr); gap: 16px; } }
     
     .carousel-container {
@@ -2007,7 +2114,7 @@
     .reveal {
       opacity: 0;
       transform: translateY(30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s, transform 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
     }
     .reveal.visible {
       opacity: 1;
@@ -2017,7 +2124,7 @@
     .reveal-left {
       opacity: 0;
       transform: translateX(-30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s, transform 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
     }
     .reveal-left.visible {
       opacity: 1;
@@ -2027,7 +2134,7 @@
     .reveal-right {
       opacity: 0;
       transform: translateX(30px);
-      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s, transform 1.4s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
     }
     .reveal-right.visible {
       opacity: 1;
@@ -2056,6 +2163,8 @@
       .nav-brand span { font-size: 20px; }
       ::-webkit-scrollbar { width: 4px; }
       .cards-grid { grid-template-columns: 1fr; }
+      .live-members-grid { grid-template-columns: 1fr; justify-content: center; }
+      .live-card-thumbnail { width: 100%; max-width: 480px; }
     }
     .footer-copyright {
       font-weight: 700;
@@ -2063,7 +2172,7 @@
   </style>
   <script>
     try {
-      if (sessionStorage.getItem('rocamSkipSplash') === 'true') {
+      if (sessionStorage.getItem('rocamSplashShown') === 'true') {
         document.documentElement.classList.add('skip-splash');
       }
     } catch (err) {
@@ -2340,11 +2449,22 @@ let adminPassword = null;
 let membersPassword = null;
 let rankOrder = {};
 
+function normalizeMemberAvatar(member) {
+  if (!member || typeof member !== 'object') return null;
+  if (member.avatarUrl) return member.avatarUrl;
+  if (member.avatar) return member.avatar;
+  if (member.photoUrl) return member.photoUrl;
+  return null;
+}
+
 function sanitizeMembersData(data) {
   if (!Array.isArray(data)) return [];
   return data.map(member => {
     if (member && typeof member === 'object') {
-      const { songUrl, songTitle, ...cleanMember } = member;
+      const { songUrl, songTitle, avatar, photoUrl, ...cleanMember } = member;
+      if (!cleanMember.avatarUrl) {
+        cleanMember.avatarUrl = avatar || photoUrl || null;
+      }
       return cleanMember;
     }
     return member;
@@ -2388,6 +2508,12 @@ function initRevealObserver() {
 }
 
 function observeRevealElements() {
+  const intro = document.getElementById('intro');
+  if (intro && !intro.classList.contains('hidden')) {
+    console.log('👁️ Animações adiadas até o intro ser removido');
+    return;
+  }
+
   if (!revealObserver) initRevealObserver();
   
   // Selecionar TODOS os elementos que precisam animar
@@ -2563,15 +2689,19 @@ function openModal(imageUrl) {
   const modal = document.getElementById('imageModal');
   const modalImg = document.getElementById('modalImage');
   if (imageUrl && imageUrl !== '') {
-    modal.style.display = 'block';
+    modalImg.style.opacity = '0';
     modalImg.src = imageUrl;
+    modal.classList.add('show');
     document.body.style.overflow = 'hidden';
+    modalImg.onload = () => {
+      modalImg.style.opacity = '1';
+    };
   }
 }
 
 function closeModal() {
   const modal = document.getElementById('imageModal');
-  modal.style.display = 'none';
+  modal.classList.remove('show');
   document.body.style.overflow = 'auto';
 }
 
@@ -2718,109 +2848,171 @@ function filterByDays(items, days) {
 }
 
 // ==================== RENDER HIERARQUIA ====================
+function createHierarchyMemberCard(member, index) {
+  const memberName = (member.name || 'Sem nome').trim();
+  const memberRank = (member.policeRank || 'Soldado').trim();
+  const statusClass = member.status === 'ativo' ? 'status-ativo' : 'status-inativo';
+  const statusText = member.status === 'ativo' ? 'Ativo' : 'Inativo';
+  const seizureCount = getMemberSeizureCount(memberName);
+  const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
+  const streamInfo = getStreamBadgeInfo(member);
+  const registeredAt = member.createdAt ? new Date(member.createdAt) : null;
+  const registeredText = registeredAt && !Number.isNaN(registeredAt.getTime())
+    ? `Cadastrado em ${registeredAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+    : '';
+
+  const card = document.createElement('div');
+  card.className = 'member-card reveal';
+  card.style.transitionDelay = `${index * 0.05}s`;
+  card.dataset.memberName = memberName;
+
+  if (streamInfo && streamInfo.isLive) {
+    const liveClass = streamInfo.platform === 'kick' && !member.twitchLive ? 'kick-live-only-card' : 'twitch-live-card';
+    card.classList.add(liveClass);
+  }
+
+  const avatarWrapper = document.createElement('div');
+  if (member.avatarUrl) {
+    const avatar = document.createElement('img');
+    avatar.className = 'member-avatar';
+    avatar.src = member.avatarUrl;
+    avatar.alt = memberName;
+    avatar.onerror = () => {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'member-avatar-placeholder';
+      placeholder.textContent = '👤';
+      avatar.replaceWith(placeholder);
+    };
+    avatarWrapper.appendChild(avatar);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.className = 'member-avatar-placeholder';
+    placeholder.textContent = '👤';
+    avatarWrapper.appendChild(placeholder);
+  }
+
+  const info = document.createElement('div');
+  info.className = 'member-info';
+
+  const nameEl = document.createElement('div');
+  nameEl.className = 'member-name';
+  nameEl.textContent = memberName;
+
+  const rankEl = document.createElement('div');
+  rankEl.className = 'member-police-rank';
+  rankEl.textContent = memberRank;
+
+  if (member.level) {
+    const levelEl = document.createElement('span');
+    levelEl.className = 'member-level';
+    levelEl.textContent = `Nv.${member.level}`;
+    rankEl.appendChild(levelEl);
+  }
+
+  info.append(nameEl, rankEl);
+
+  if (registeredText) {
+    const registeredEl = document.createElement('div');
+    registeredEl.className = 'member-registered';
+    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
+    info.appendChild(registeredEl);
+  }
+
+  const right = document.createElement('div');
+  right.className = 'member-right';
+
+  const footer = document.createElement('div');
+  footer.className = 'member-footer';
+
+  const seizuresEl = document.createElement('span');
+  seizuresEl.className = 'member-seizures';
+  seizuresEl.textContent = `📋 ${seizureCount} ${seizureText}`;
+  footer.appendChild(seizuresEl);
+
+  if (streamInfo) {
+    const streamLink = document.createElement('a');
+    streamLink.href = streamInfo.url;
+    streamLink.target = '_blank';
+    streamLink.rel = 'noopener noreferrer';
+    streamLink.className = `twitch-badge ${streamInfo.platform === 'kick' ? (streamInfo.isLive ? 'kick-online' : 'kick-offline') : (streamInfo.isLive ? 'twitch-online' : 'twitch-offline')}`;
+    streamLink.addEventListener('click', e => e.stopPropagation());
+
+    const iconWrapper = document.createElement('span');
+    iconWrapper.className = 'stream-icon';
+    iconWrapper.innerHTML = streamInfo.svg;
+
+    const label = document.createElement('span');
+    label.textContent = streamInfo.isLive ? 'AO VIVO' : 'OFFLINE';
+
+    streamLink.append(iconWrapper, label);
+    right.appendChild(streamLink);
+  }
+
+  const statusBadge = document.createElement('span');
+  statusBadge.className = `member-status ${statusClass}`;
+  statusBadge.textContent = statusText;
+
+  right.append(footer, statusBadge);
+  card.append(avatarWrapper, info, right);
+
+  card.addEventListener('click', e => {
+    if (e.target.closest('a')) return;
+    openMemberProfile(memberName);
+  });
+
+  return card;
+}
+
 function renderHierarchy() {
   const container = document.getElementById('hierarchy-content');
+  if (!container) return;
+  container.innerHTML = '';
+
   if (!members.length) {
     container.innerHTML = '<div class="empty-card">Nenhum membro cadastrado</div>';
     return;
   }
-  
-  const groups = {};
-  members.forEach(m => {
-    const rank = m.rank || "Membro";
-    if (!groups[rank]) groups[rank] = [];
-    groups[rank].push(m);
-  });
-  
-  const existingRanks = Object.keys(groups);
-  existingRanks.forEach(rank => {
+
+  const groups = members.reduce((acc, member) => {
+    const rank = member.rank || 'Membro';
+    if (!acc[rank]) acc[rank] = [];
+    acc[rank].push(member);
+    return acc;
+  }, {});
+
+  Object.keys(groups).forEach(rank => {
     if (!rankOrder[rank]) {
       rankOrder[rank] = Object.keys(rankOrder).length + 1;
     }
   });
-  
-  let html = '';
-  const sortedRanks = [...existingRanks].sort((a,b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
-  
+
+  const sortedRanks = Object.keys(groups).sort((a, b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
+  const fragment = document.createDocumentFragment();
+
   sortedRanks.forEach(rank => {
-    html += `<div class="rank-group">
-      <div class="rank-group-header"><h3>💀 ${escapeHtml(rank)}</h3></div>
-      <div class="members-grid">`;
-    groups[rank].forEach((m, idx) => {
-      const statusClass = m.status === 'ativo' ? 'status-ativo' : 'status-inativo';
-      const statusText = m.status === 'ativo' ? 'Ativo' : 'Inativo';
-      const seizureCount = getMemberSeizureCount(m.name);
-      const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
-      const avatarHtml = m.avatarUrl 
-        ? `<img class="member-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.parentElement.innerHTML='<div class=\\'member-avatar-placeholder\\'>👤</div>'">`
-        : `<div class="member-avatar-placeholder">👤</div>`;
-      
-      let streamHtml = '';
-      let streamLiveClass = '';
-      const streamInfo = getStreamBadgeInfo(m);
-      if (streamInfo) {
-        const badgeClass = streamInfo.platform === 'kick' ? (streamInfo.isLive ? 'kick-online' : 'kick-offline') : (streamInfo.isLive ? 'twitch-online' : 'twitch-offline');
-        streamHtml = `<a href="${streamInfo.url}" target="_blank" class="twitch-badge ${badgeClass}">
-          ${streamInfo.svg} ${streamInfo.isLive ? 'AO VIVO' : 'OFFLINE'}
-        </a>`;
-        if (streamInfo.isLive) {
-          // Se está online APENAS na KICK (sem Twitch ou Twitch offline), usar cor verde
-          if (streamInfo.platform === 'kick' && (!m.twitchLive)) {
-            streamLiveClass = 'kick-live-only-card';
-          } else {
-            streamLiveClass = 'twitch-live-card';
-          }
-        }
-      }
-      
-      const delay = idx * 0.05;
-      html += `
-        <div class="member-card reveal ${streamLiveClass}" style="transition-delay: ${delay}s" data-member-name="${escapeHtml(m.name)}">
-          ${avatarHtml}
-          <div class="member-info">
-            <div class="member-name">${escapeHtml(m.name)}</div>
-            <div class="member-police-rank">
-              ${escapeHtml(m.policeRank || 'Soldado')}
-              ${m.level ? `<span class="member-level">Nv.${m.level}</span>` : ''}
-            </div>
-          </div>
-          <div class="member-right">
-            <div class="member-footer">
-              <span class="member-seizures">📋 ${seizureCount} ${seizureText}</span>
-            </div>
-            ${streamHtml}
-          </div>
-        </div>
-      `;
+    const groupEl = document.createElement('div');
+    groupEl.className = 'rank-group';
+
+    const headerEl = document.createElement('div');
+    headerEl.className = 'rank-group-header';
+    const titleEl = document.createElement('h3');
+    titleEl.textContent = `💀 ${rank}`;
+    headerEl.appendChild(titleEl);
+
+    const gridEl = document.createElement('div');
+    gridEl.className = 'members-grid';
+
+    groups[rank].forEach((member, idx) => {
+      const card = createHierarchyMemberCard(member, idx);
+      gridEl.appendChild(card);
     });
-    html += `</div></div>`;
+
+    groupEl.append(headerEl, gridEl);
+    fragment.appendChild(groupEl);
   });
-  container.innerHTML = html;
-  
-  // Usar observer global
+
+  container.appendChild(fragment);
   observeRevealElements();
-  
-  // Adicionar event listeners aos cards de membros
-  try {
-    document.querySelectorAll('.member-card[data-member-name]').forEach(card => {
-      card.style.cursor = 'pointer';
-      card.addEventListener('click', function(e) {
-        // Não abrir painel se clicar em links (como stream)
-        if (e.target.closest('a') || e.target.closest('.twitch-badge')) {
-          return;
-        }
-        
-        const memberName = this.getAttribute('data-member-name');
-        if (memberName) {
-          console.log('🖱️ Abrindo perfil:', memberName);
-          openMemberProfile(memberName);
-        }
-      });
-    });
-    console.log('✓ Event listeners adicionados aos cards');
-  } catch (error) {
-    console.error('❌ Erro ao adicionar event listeners:', error);
-  }
 }
 
 // ==================== RENDER MEMBROS AO VIVO ====================
@@ -2936,7 +3128,7 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
           <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
-          <div class="gallery-date">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
+          <div class="gallery-date badge">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
         </div>
       </div>`;
     } else if (carouselType === 'vehicles') {
@@ -2948,16 +3140,17 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
         </div>
       </div>`;
     } else if (carouselType === 'seizures') {
+      const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
       html += `<div class="seizure-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
         ${item.imageUrl ? `<img class="seizure-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.description)}">` : '<div class="seizure-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📷</div>'}
         <div class="seizure-info">
-          <div class="seizure-desc">${escapeHtml(item.description)}</div>
+          <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description)}</span></div>
           <div class="seizure-meta">
-            ${item.member ? `<span>👮 ${escapeHtml(item.member)}</span>` : ''}
-            ${item.location ? `<span>📍 ${escapeHtml(item.location)}</span>` : ''}
+            ${item.member ? `<span class="badge"><span class="emoji-icon">👤</span>${escapeHtml(item.member)}</span>` : ''}
+            ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
           </div>
           <div class="seizure-footer">
-            <span>📅 ${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+            <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
             ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
           </div>
         </div>
@@ -3030,7 +3223,7 @@ function renderGallery() {
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
           <div class="gallery-title">${title}</div>
-          <div class="gallery-date">${dateText}</div>
+          <div class="gallery-date badge">${dateText}</div>
         </div>
       </div>
     `;
@@ -3078,7 +3271,7 @@ function renderSeizures() {
         const backgroundStyle = item.imageUrl && item.imageUrl.trim()
           ? `background-image: url('${escapeHtml(item.imageUrl)}');`
           : '';
-        const dateText = `📅 ${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
         const imgUrl = escapeHtml(item.imageUrl || '');
         
         html += `
@@ -3086,13 +3279,13 @@ function renderSeizures() {
             <div class="seizure-card-background ${item.imageUrl ? '' : 'seizure-card-background--empty'}" style="${backgroundStyle}"></div>
             <div class="seizure-card-overlay"></div>
             <div class="seizure-card-content">
-              <div class="seizure-desc">${escapeHtml(item.description || 'Apreensão')}</div>
+              <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description || 'Apreensão')}</span></div>
               <div class="seizure-meta">
-                ${item.member ? `<span>👮 ${escapeHtml(item.member)}</span>` : ''}
-                ${item.location ? `<span>📍 ${escapeHtml(item.location)}</span>` : ''}
+                ${item.member ? `<span class="badge"><span class="emoji-icon">👤</span>${escapeHtml(item.member)}</span>` : ''}
+                ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
               </div>
               <div class="seizure-footer">
-                <span>${dateText}</span>
+                <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
                 ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
               </div>
             </div>
@@ -3146,11 +3339,24 @@ function updateStats() {
   weekAgo.setDate(weekAgo.getDate() - 7);
   const weekCount = seizures.filter(s => new Date(s.date) >= weekAgo).length;
   
-  animateStatValue('stat-ao-vivo', liveCount);
-  animateStatValue('stat-membros', members.length);
-  animateStatValue('stat-hoje', todayCount);
-  animateStatValue('stat-semana', weekCount);
-  animateStatValue('stat-total', seizures.length);
+  const run = () => {
+    animateStatValue('stat-ao-vivo', liveCount);
+    animateStatValue('stat-membros', members.length);
+    animateStatValue('stat-hoje', todayCount);
+    animateStatValue('stat-semana', weekCount);
+    animateStatValue('stat-total', seizures.length);
+  };
+
+  const intro = document.getElementById('intro');
+  if (intro && !intro.classList.contains('hidden')) {
+    const onTransitionEnd = () => {
+      intro.removeEventListener('transitionend', onTransitionEnd);
+      setTimeout(run, 200);
+    };
+    intro.addEventListener('transitionend', onTransitionEnd);
+  } else {
+    setTimeout(run, 300);
+  }
 }
 
 function animateStatValue(id, value) {
@@ -3162,7 +3368,7 @@ function animateStatValue(id, value) {
     return;
   }
 
-  const duration = 500;
+  const duration = 1300;
   const startTime = performance.now();
 
   function tick(now) {
@@ -3468,7 +3674,13 @@ function renderAdminSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU</label><textarea id="new-desc" rows="2" placeholder="QRU..."></textarea></div>
+      <div class="form-group"><label>QRU</label><select id="new-desc"><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
+      <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
+      <div class="form-group"><label>LOCAL</label><input id="new-location" placeholder="Local"></div>
+      <div class="form-group"><label>IMAGEM URL</label><input id="new-simg" placeholder="https://..."></div>
+      <div class="form-group"><label>BO URL</label><input id="new-bo" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR APREENSÃO</button>
+    </div>
     <div id="seizures-list"></div>
   `;
   renderSeizuresList();
@@ -3606,7 +3818,7 @@ function renderMembersSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU</label><textarea id="m-new-desc" rows="2" placeholder="QRU..."></textarea></div>
+      <div class="form-group"><label>QRU</label><select id="m-new-desc"><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
       <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="m-new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
       <div class="form-group"><label>LOCAL</label><input id="m-new-location" placeholder="Local"></div>
       <div class="form-group"><label>IMAGEM URL</label><input id="m-new-simg" placeholder="https://..."></div>
@@ -3710,6 +3922,7 @@ function addMember() {
     avatarUrl, 
     twitch, 
     kick, 
+    createdAt: new Date().toISOString(),
   };
 
   members.push(newMember);
@@ -3839,7 +4052,17 @@ function saveRankOrderAndRefresh() {
   alert("Ordem da hierarquia salva com sucesso!");
 }
 
-function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, function(m) {
+    if (m === '&') return '&amp;';
+    if (m === '<') return '&lt;';
+    if (m === '>') return '&gt;';
+    if (m === '"') return '&quot;';
+    if (m === "'") return '&#39;';
+    return m;
+  });
+}
 
 // ==================== MEMBER PROFILE PANEL ====================
 let currentMemberProfile = null;
@@ -4159,41 +4382,43 @@ console.log('✓ Firebase inicializado');
 window.addEventListener('DOMContentLoaded', () => {
   // Configurar intro ANTES de carregar dados
   const intro = document.getElementById('intro');
-  const skipSplash = sessionStorage.getItem('rocamSkipSplash') === 'true';
+  const splashShown = sessionStorage.getItem('rocamSplashShown') === 'true';
   
   console.log('🔄 DOMContentLoaded iniciado');
   console.log('intro elemento:', intro ? '✓ encontrado' : '✗ não encontrado');
-  console.log('skipSplash:', skipSplash);
+  console.log('splashShown:', splashShown);
   
   // Função para remover o intro
   const hideIntro = () => {
     if (intro && !intro.classList.contains('hidden')) {
       console.log('🎬 Removendo intro...');
       intro.classList.add('hidden');
-      initRevealOnScroll();
+      const onTransitionEnd = () => {
+        intro.removeEventListener('transitionend', onTransitionEnd);
+        setTimeout(initRevealOnScroll, 300);
+      };
+      intro.addEventListener('transitionend', onTransitionEnd);
+      sessionStorage.setItem('rocamSplashShown', 'true');
     }
   };
   
-  if (!skipSplash && intro) {
-    // Se é primeira vez, espera 4.5s antes de esconder o intro
-    console.log('⏳ Primeira visita - aguardando 4.5s');
-    sessionStorage.setItem('rocamSkipSplash', 'true');
-    setTimeout(hideIntro, 4500);
-    
-    // FALLBACK: Se ainda estiver visível após 8s, força remover
-    setTimeout(() => {
-      if (intro && !intro.classList.contains('hidden')) {
-        console.log('⚠️ FALLBACK: Forçando remoção do intro após 8s');
-        hideIntro();
-      }
-    }, 8000);
-  } else {
-    // Se já visitou antes, esconde intro imediatamente
-    console.log('✓ Visita anterior - removendo intro imediatamente');
-    if (intro) {
+  if (intro) {
+    if (splashShown) {
+      console.log('✓ Visita anterior - pulando splash');
       intro.classList.add('hidden');
+      initRevealOnScroll();
+    } else {
+      console.log('⏳ Primeira visita - exibindo splash por 4.5s');
+      setTimeout(hideIntro, 4500);
+
+      // FALLBACK: Se ainda estiver visível após 8s, força remover
+      setTimeout(() => {
+        if (intro && !intro.classList.contains('hidden')) {
+          console.log('⚠️ FALLBACK: Forçando remoção do intro após 8s');
+          hideIntro();
+        }
+      }, 8000);
     }
-    initRevealOnScroll();
   }
   
   // Carregar dados do Firebase (agora sim, após intro configurado)
