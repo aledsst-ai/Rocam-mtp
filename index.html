@@ -1906,16 +1906,28 @@
     .form-card:hover { border-color: #ffffff; }
 
     .inline-edit {
-      display: inline-flex;
+      display: grid;
+      grid-template-columns: minmax(120px,1.6fr) minmax(120px,1.2fr) minmax(100px,1fr) minmax(100px,1fr) minmax(120px,1.2fr) minmax(90px, auto);
+      gap: 8px;
+      margin-top: 10px;
+      width: 100%;
       align-items: center;
-      gap: 6px;
-      margin-top: 6px;
-      flex-wrap: wrap;
     }
-    .inline-edit select, .inline-edit input {
+    .inline-edit select,
+    .inline-edit input,
+    .inline-edit button {
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      font-size: 0.75rem;
+    }
+    .inline-edit select,
+    .inline-edit input {
+      width: 100%;
+    }
+    .inline-edit button {
       width: auto;
-      padding: 2px 6px;
-      font-size: 0.65rem;
+      white-space: nowrap;
     }
 
     .rank-item {
@@ -3396,12 +3408,14 @@ function renderMembersList() {
         ${m.twitch ? `<br><small>twitch.tv/${m.twitch}</small>` : ''}
         ${m.kick ? `<br><small>kick.com/${m.kick}</small>` : ''}
         <div class="inline-edit">
-          <select id="level-select-${m.id}" class="btn-edit" style="padding:2px 6px;font-size:0.65rem;">
+          <input type="text" id="name-input-${m.id}" value="${escapeHtml(m.name || '')}" placeholder="Nome" class="btn-edit">
+          <input type="text" id="rank-input-${m.id}" value="${escapeHtml(m.policeRank || '')}" placeholder="Patente" class="btn-edit">
+          <select id="level-select-${m.id}" class="btn-edit">
             ${[...Array(41).keys()].map(i => `<option value="${i}" ${m.level == i ? 'selected' : ''}>Nv.${i}</option>`).join('')}
           </select>
-          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch" style="width:80px;" class="btn-edit">
-          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick" style="width:80px;" class="btn-edit">
-          <button class="btn-edit" style="padding:2px 10px;" onclick="updateMemberFields('${m.id}')">SALVAR</button>
+          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch" class="btn-edit">
+          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick" class="btn-edit">
+          <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
         </div>
       </div>
       <div class="item-actions">
@@ -3644,12 +3658,16 @@ function renderMembersMembers() {
 
 // ========== CRUD OPERATIONS ==========
 function updateMemberFields(id) {
+  const newName = document.getElementById(`name-input-${id}`).value.trim();
+  const newPoliceRank = document.getElementById(`rank-input-${id}`).value.trim();
   const newLevel = document.getElementById(`level-select-${id}`).value;
   const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
   const newKickRaw = document.getElementById(`kick-input-${id}`).value.trim();
   const newKick = normalizeKickUsername(newKickRaw);
   const member = members.find(m => m.id === id);
   if (member) {
+    if (newName) member.name = newName;
+    member.policeRank = newPoliceRank || member.policeRank || 'Soldado';
     member.level = newLevel;
     member.twitch = newTwitch || null;
     member.kick = newKick || null;
