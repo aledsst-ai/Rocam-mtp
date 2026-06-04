@@ -1,0 +1,4140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>ROCAM | Dashboard</title>
+  <meta name="description" content="Rondas Ostensivas Comando de Ações Motorizadas"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet"/>
+  <!-- Firebase (versão UMD compatível) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-weight: 400;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333333;
+      border-radius: 10px;
+      transition: background 0.3s ease;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555555;
+    }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: rgba(17, 17, 17, 0.85);
+      --bg-hover: rgba(26, 26, 26, 0.9);
+      --border: rgba(34, 34, 34, 0.8);
+      --border-light: rgba(42, 42, 42, 0.8);
+      --text: #eaeaea;
+      --text-secondary: #888888;
+      --text-muted: #777777;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --twitch: #9146ff;
+      --twitch-dark: #772ce8;
+      --twitch-light: #a970ff;
+      --radius: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      overflow-x: hidden;
+      background: #0a0a0a;
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image: url('https://i.ibb.co/HDhK8RfC/bg-ROC.png');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    /* Modal para imagens */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+    .modal-content {
+      display: block;
+      max-width: 90%;
+      max-height: 90%;
+      margin: auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 1001;
+    }
+    .modal-close:hover {
+      color: #9146ff;
+    }
+
+    #intro {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #0a0a0a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 20px;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    #intro.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .skip-splash #intro { opacity: 0; visibility: hidden; pointer-events: none; transition: none !important; }
+    .skip-splash #intro .bar-fill,
+    .skip-splash #intro img { animation: none !important; }
+    #intro img { width: 182px; height: 182px; object-fit: contain; opacity: 0.8; animation: pulse 2s ease-in-out infinite; }
+    #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-secondary); font-weight: 400; }
+    #intro .bar { width: 140px; height: 1px; background: var(--border); overflow: hidden; }
+    #intro .bar-fill { height: 100%; width: 0%; background: #ffffff; animation: loadBar 2s ease forwards; }
+    @keyframes loadBar { to { width: 100%; } }
+    @keyframes pulse { 0%,100%{ opacity: 0.6; } 50%{ opacity: 1; } }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(10,10,10,0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.24);
+    }
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 72px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 24px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-brand img { width: 36px; height: 36px; border-radius: 6px; object-fit: contain; }
+    .nav-brand span { font-weight: 700; font-size: 1.08rem; letter-spacing: 0.24em; color: var(--text); text-transform: uppercase; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      list-style: none;
+      margin: 0;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      flex-wrap: wrap;
+    }
+    .nav-links li { list-style: none; }
+    .nav-links a {
+      padding: 8px 12px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      transition: var(--transition);
+      display: inline-block;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .nav-links a.active { color: #ffffff; background: rgba(255,255,255,0.1); }
+
+    section { padding: 48px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .section-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+    }
+    .section-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: #ffffff;
+      stroke-width: 1.5;
+      fill: none;
+    }
+    .admin-menu {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .admin-menu-toggle {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+    .admin-menu-toggle:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: #ffffff;
+    }
+    .admin-menu-toggle span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: #9ca3af;
+      border-radius: 999px;
+      margin: 3px 0;
+    }
+    .admin-menu-toggle span:nth-child(1),
+    .admin-menu-toggle span:nth-child(2),
+    .admin-menu-toggle span:nth-child(3) {
+      transform: translateY(0);
+    }
+    .admin-options {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      width: 170px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(10,10,10,0.96);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.35);
+      z-index: 50;
+    }
+    .admin-options.show {
+      display: flex;
+    }
+    .admin-option {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid transparent;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .admin-option:hover {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    /* ========== MEMBER PROFILE PANEL ========== */
+    .member-profile-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .member-profile-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .member-profile-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: min(460px, 95vw);
+      max-width: 460px;
+      max-height: 84vh;
+      transform: translate(-50%, -50%) scale(0.96);
+      background: rgba(12, 12, 12, 0.92);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 201;
+      transition: transform 0.25s ease, opacity 0.25s ease, visibility 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 16px 35px rgba(0, 0, 0, 0.28);
+      opacity: 0;
+      visibility: hidden;
+      overflow-x: hidden;
+    }
+    .member-profile-panel.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+
+    .member-profile-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+    }
+    .member-profile-header h2 {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .member-profile-close {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+    .member-profile-close:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: #ffffff;
+    }
+
+    .member-profile-content {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .member-profile-main-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .member-profile-hero {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 0;
+      background: none;
+      border: none;
+      min-width: 0;
+      width: 100%;
+    }
+    .member-profile-name-rank,
+    .member-profile-meta-row,
+    .member-profile-summary,
+    .seizures-carousel-wrapper {
+      min-width: 0;
+    }
+    .member-profile-avatar-wrapper {
+      position: relative;
+      min-width: 0;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      flex-shrink: 0;
+    }
+    .member-profile-avatar-inner {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      max-height: 260px;
+      min-height: 220px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: #111;
+    }
+    .member-profile-avatar {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .member-avatar-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 18px 20px 20px;
+      border-bottom-left-radius: 22px;
+      border-bottom-right-radius: 22px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(6, 6, 6, 0.5) 35%, rgba(8, 8, 8, 0.92) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .member-avatar-title {
+      width: 100%;
+      color: #ffffff;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin: 0;
+      text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+      overflow-wrap: break-word;
+    }
+    .member-avatar-badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+    .member-avatar-stats {
+      display: flex;
+      justify-content: center;
+      flex-wrap: nowrap;
+      gap: 8px;
+      width: auto;
+    }
+    .member-avatar-stat {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      min-width: auto;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      color: #ffffff;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .member-avatar-stat span {
+      display: inline-block;
+      font-size: 0.68rem;
+      color: rgba(255, 255, 255, 0.72);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .member-avatar-stat strong {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+    .member-profile-name-rank {
+      display: none;
+    }
+    .member-profile-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: none;
+      margin-bottom: 0;
+      line-height: 1.2;
+      min-width: 0;
+      word-break: break-word;
+    }
+    .member-profile-meta-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.66rem;
+      line-height: 1.2;
+    }
+    .member-profile-rank,
+    .member-profile-hierarchy {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 3px 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.85);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .member-profile-rank:hover,
+    .member-profile-hierarchy:hover,
+    .profile-stat:hover {
+      background: var(--bg-hover);
+      border-color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    .member-profile-hierarchy {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .member-profile-summary {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      min-width: 0;
+      width: 110px;
+      z-index: 2;
+    }
+    .compact-card {
+      position: absolute;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: calc(100% - 22px);
+      max-width: 170px;
+      background: rgba(10, 10, 10, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 10px 12px;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.28);
+    }
+    .profile-summary-card {
+      display: grid;
+      gap: 5px;
+    }
+    .profile-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+      color: #ffffff;
+    }
+    .profile-summary-label {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+    }
+    .profile-summary-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .compact-card .profile-stat-value {
+      font-size: 0.95rem;
+    }
+    .compact-card .profile-stat-label {
+      font-size: 0.6rem;
+    }
+    .member-profile-section {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .member-profile-section.minimal-section {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 0 0 0 0;
+      margin-bottom: 0;
+    }
+    .member-profile-info.horizontal-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .info-card {
+      flex: 1 1 calc(50% - 8px);
+      min-width: 110px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .info-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .twitch-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      color: #9146ff;
+      border-radius: 8px;
+      background: rgba(145, 70, 255, 0.08);
+      transition: background 0.2s ease;
+    }
+    .twitch-link:hover {
+      background: rgba(145, 70, 255, 0.16);
+    }
+    .twitch-link svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+    .member-profile-info.horizontal-info .info-label {
+      color: rgba(255, 255, 255, 0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-size: 0.6rem;
+    }
+    .member-profile-info.horizontal-info .info-value {
+      font-size: 0.78rem;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .member-profile-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .profile-stat {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+    }
+    .profile-stat-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    .profile-stat-label {
+      font-size: 0.6rem;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-top: 3px;
+    }
+
+    .member-profile-section {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .member-profile-section-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .member-profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: var(--transition);
+    }
+    .info-row:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .info-label {
+      font-size: 0.62rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 600;
+    }
+    .info-value {
+      font-size: 0.8rem;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .seizures-carousel-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px;
+      min-height: 0;
+    }
+    .seizures-carousel-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .seizures-carousel-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-auto-rows: 130px;
+      gap: 8px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 440px;
+      min-height: 0;
+      padding-right: 4px;
+    }
+    .seizure-item {
+      position: relative;
+      min-height: 120px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      display: block;
+    }
+    .seizure-item:hover {
+      transform: translateY(-2px);
+      border-color: #ffffff;
+      background: var(--bg-hover);
+    }
+    .seizure-item-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: brightness(0.55);
+      transition: transform 0.5s ease;
+    }
+    .seizure-item:hover .seizure-item-bg {
+      transform: scale(1.03);
+    }
+    .seizure-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.75) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px;
+      gap: 4px;
+    }
+    .seizure-item-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      white-space: normal;
+    }
+    .seizure-item-date {
+      font-size: 0.64rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ========== TWITCH LINK ========== */
+    .member-twitch-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(145, 70, 255, 0.15);
+      border: 1.5px solid rgba(145, 70, 255, 0.3);
+      border-radius: 8px;
+      text-decoration: none;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.78rem;
+      transition: all 0.3s ease;
+      margin: 10px 0;
+    }
+    .member-twitch-link:hover {
+      background: rgba(145, 70, 255, 0.25);
+      border-color: rgba(145, 70, 255, 0.5);
+      transform: translateY(-2px);
+    }
+    .member-twitch-link svg {
+      width: 18px;
+      height: 18px;
+      fill: #9146ff;
+    }
+
+    @media (max-width: 768px) {
+      .member-profile-panel {
+        width: 95vw;
+        left: 50%;
+        right: auto;
+        transform: translate(-50%, -50%);
+      }
+      .member-profile-main-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .member-profile-summary {
+        position: static;
+        width: 100%;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        right: auto;
+        bottom: auto;
+      }
+      .seizures-carousel-container {
+        grid-template-columns: 1fr;
+        max-height: 420px;
+      }
+    }
+    .section-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
+    .section-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    
+    /* Filtros de data */
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: rgba(17, 17, 17, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .filter-btn:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+    .filter-btn.active {
+      background: var(--twitch);
+      border-color: var(--twitch-light);
+      color: #ffffff;
+    }
+
+    #home { padding: 120px 32px 40px; }
+    .home-banner {
+      max-width: 1200px;
+      margin: 0 auto 24px;
+    }
+    .home-headline {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      background: rgba(17, 17, 17, 0.78);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.18);
+    }
+    .home-label {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+      font-size: 0.74rem;
+      color: #ffffff;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-family: inherit;
+    }
+    .home-title {
+      font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+      line-height: 1.05;
+      margin-bottom: 12px;
+      max-width: 100%;
+      color: #ffffff;
+      font-weight: 800;
+      font-family: inherit;
+    }
+    #intro .brand {
+      font-family: inherit;
+    }
+    .home-subtitle {
+      max-width: 720px;
+      color: var(--text-secondary);
+      font-size: 0.98rem;
+      line-height: 1.7;
+    }
+    .home-quickstats {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .home-quickstat {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      padding: 10px 16px;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .home-quickstat span {
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .stat {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 24px;
+      min-width: 0;
+      text-align: center;
+      transition: var(--transition);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    .stat:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .stat-value { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+    .stat-label { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    
+    /* Card especial ao vivo com ícone Twitch */
+    .stat-live {
+      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
+      border: 1px solid var(--twitch-light);
+      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+    }
+    .stat-live:hover {
+      background: linear-gradient(135deg, rgba(119, 44, 232, 0.2), rgba(145, 70, 255, 0.2));
+      border-color: #ffffff;
+      box-shadow: 0 0 25px rgba(145, 70, 255, 0.4);
+    }
+    .stat-live::before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23a970ff'%3E%3Cpath d='M11.571 4.714h1.715v5.143h-1.715V4.714zm4.715 0H18v5.143h-1.714V4.714zm0 2.286l1.715 1.715-1.715 1.715V6.999zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z'/%3E%3C/svg%3E") center / contain no-repeat;
+      flex-shrink: 0;
+    }
+    .stat-live .stat-value { color: var(--twitch-light); }
+    .stat-live .stat-label { color: var(--twitch-light); }
+
+    /* Members Grid */
+    .rank-group {
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .rank-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 2;
+    }
+    .rank-group-header h3 { font-size: 0.75rem; font-weight: 700; color: #ffffff; letter-spacing: 0.05em; text-transform: uppercase; }
+    
+    .members-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .member-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      transition: var(--transition);
+      width: auto;
+      max-width: 320px;
+      min-width: 220px;
+      min-height: 72px;
+      flex: 1 1 auto;
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .member-card:hover {
+      border-color: #ffffff;
+      background: var(--bg-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+    
+    .member-card.twitch-live-card {
+      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
+      border: 1px solid #343434;
+      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+      cursor: pointer;
+    }
+    .member-card.twitch-live-card:hover {
+      background: linear-gradient(135deg, rgba(119, 44, 232, 0.14), rgba(145, 70, 255, 0.14));
+      border-color: var(--twitch-light);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 18px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+    .member-card.twitch-live-card .member-name,
+    .member-card.twitch-live-card .member-police-rank,
+    .member-card.twitch-live-card .member-status,
+    .member-card.twitch-live-card .member-level,
+    .member-card.twitch-live-card .member-seizures {
+      color: #ffffff;
+    }
+    .member-card.twitch-live-card .member-avatar {
+      border-color: var(--twitch-light);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+    }
+    
+    /* Card KICK Online (Verde) */
+    .member-card.kick-live-only-card {
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.15), rgba(168, 85, 247, 0.15));
+      border: 1px solid #9146ff;
+      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+      cursor: pointer;
+    }
+    .member-card.kick-live-only-card:hover {
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.25), rgba(168, 85, 247, 0.25));
+      border-color: #343434;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14), 0 0 20px rgba(145, 70, 255, 0.2);
+      transform: translateY(-2px);
+    }
+    .member-card.kick-live-only-card .member-name,
+    .member-card.kick-live-only-card .member-police-rank,
+    .member-card.kick-live-only-card .member-status,
+    .member-card.kick-live-only-card .member-level,
+    .member-card.kick-live-only-card .member-seizures {
+      color: #ffffff;
+    }
+    .member-card.kick-live-only-card .member-avatar {
+      border-color: #9146ff;
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+    }
+    
+    .member-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    .member-card:hover .member-avatar { transform: scale(1.02); }
+    .member-avatar-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    .member-card:hover .member-avatar-placeholder { transform: scale(1.02); }
+    
+    .member-info {
+      flex: 1;
+      display: grid;
+      gap: 3px;
+      min-width: 0;
+    }
+    .member-name { font-weight: 700; font-size: 0.85rem; line-height: 1.1; }
+    .member-police-rank { font-weight: 400; font-size: 0.68rem; color: #cccccc; }
+    .member-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.5rem;
+      padding: 2px 6px;
+      border-radius: 20px;
+      font-weight: 400;
+      width: fit-content;
+    }
+    .status-ativo { background: rgba(16,185,129,0.15); color: var(--success); }
+    .status-inativo { background: rgba(136,136,136,0.15); color: var(--text-muted); }
+    
+    .member-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      flex-shrink: 0;
+      min-width: 90px;
+      max-width: 110px;
+    }
+    .member-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-wrap: nowrap; }
+    .member-level { font-size: 0.55rem; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
+    .member-seizures { font-size: 0.55rem; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
+    .twitch-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.5rem;
+      padding: 2px 6px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 400;
+    }
+    .twitch-badge:hover { transform: scale(1.02); }
+    .twitch-badge svg {
+      width: 8px;
+      height: 8px;
+      fill: currentColor;
+    }
+    .twitch-online { background: rgba(145,70,255,0.25); color: #ffffff; }
+    .twitch-offline { background: rgba(136,136,136,0.15); color: var(--text-muted); }
+    .kick-online { background: rgba(76,175,80,0.25); color: #ffffff; }
+    .kick-offline { background: rgba(136,136,136,0.15); color: var(--text-muted); }
+
+    /* Seção Membros Ao Vivo */
+    .live-members-section {
+      background: rgba(17, 17, 17, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .live-members-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--twitch-light);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .live-members-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
+    /* Card ao vivo com thumbnail */
+    .live-card-thumbnail {
+      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
+      border: 1px solid var(--twitch-light);
+      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+      cursor: pointer;
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      min-width: 260px;
+      height: 200px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      transition: var(--transition);
+    }
+    .live-card-thumbnail:hover {
+      border-color: #343434;
+      box-shadow: 0 0 25px rgba(145, 70, 255, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .live-card-background {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.6;
+      transition: transform 0.5s ease;
+    }
+    .live-card-thumbnail:hover .live-card-background {
+      transform: scale(1.05);
+    }
+
+    .live-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+      z-index: 1;
+    }
+
+    .live-card-content {
+      position: relative;
+      z-index: 2;
+      padding: 12px;
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .live-card-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .live-card-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .live-card-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #ffffff;
+    }
+
+    .live-card-rank {
+      font-size: 0.6rem;
+      color: #aaaaaa;
+      font-weight: 500;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .live-card-level {
+      color: #cccccc;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .live-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.5rem;
+      padding: 2px 6px;
+      border-radius: 20px;
+      background: rgba(145,70,255,0.25);
+      color: #ffffff;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .live-card-badge svg {
+      width: 8px;
+      height: 8px;
+      fill: currentColor;
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    /* Vehicles Card */
+    .vehicle-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .vehicle-card:hover { border-color: #ffffff; transform: translateY(-2px); background: var(--bg-hover); }
+    .vehicle-img { width: 100%; height: 280px; object-fit: cover; background: rgba(0,0,0,0.3); transition: transform 0.5s ease; }
+    .vehicle-card:hover .vehicle-img { transform: scale(1.02); }
+    .vehicle-info { padding: 20px; }
+    .vehicle-name { font-weight: 700; font-size: 1.1rem; text-align: center; }
+
+    /* Seizures Card */
+    .seizure-card {
+      position: relative;
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      min-height: 220px;
+      display: flex;
+      align-items: flex-end;
+    }
+    .seizure-card:hover {
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      background: var(--bg-hover);
+    }
+    .seizure-card-background {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: transform 0.5s ease;
+    }
+    .seizure-card-background--empty {
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.08), rgba(0,0,0,0.35));
+    }
+    .seizure-card:hover .seizure-card-background {
+      transform: scale(1.03);
+    }
+    .seizure-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.74) 100%);
+      z-index: 1;
+    }
+    .seizure-card-content {
+      position: relative;
+      z-index: 2;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .seizure-desc {
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.3;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .seizure-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      margin: 0;
+      font-weight: 500;
+    }
+    .seizure-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+    .seizure-footer a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .seizure-footer a:hover {
+      text-decoration: underline;
+    }
+    .seizure-footer a { color: #ffffff; text-decoration: none; font-weight: 600; }
+    .seizure-footer a:hover { text-decoration: underline; }
+
+    /* Gallery Card */
+    .gallery-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .gallery-card:hover { border-color: #ffffff; transform: translateY(-2px); background: var(--bg-hover); }
+    .gallery-img { width: 100%; height: 480px; object-fit: cover; background: rgba(0,0,0,0.3); transition: transform 0.5s ease; }
+    .gallery-card:hover .gallery-img { transform: scale(1.02); }
+    .gallery-info { padding: 16px; }
+    .gallery-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; text-align: center; }
+    .gallery-date { font-size: 0.75rem; color: var(--text-muted); text-align: center; font-weight: 500; }
+
+    /* Carrossel Refinado */
+    .carousel-wrapper {
+      position: relative;
+      margin-top: 20px;
+    }
+    
+    .simple-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 20px;
+      max-width: 100%;
+    }
+    
+    @media (max-width: 1400px) { .simple-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+    @media (max-width: 1200px) { .simple-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+    @media (max-width: 768px) { .simple-grid { grid-template-columns: repeat(1, 1fr); gap: 16px; } }
+    
+    .carousel-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 0;
+    }
+    
+    .carousel-content {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      flex: 1;
+      min-width: 0;
+      animation: fadeInSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @media (max-width: 1400px) { .carousel-content { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 1200px) { .carousel-content { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
+    @media (max-width: 768px) { 
+      .carousel-content { grid-template-columns: repeat(1, 1fr); }
+      .carousel-container { gap: 12px; }
+    }
+    
+    .carousel-btn {
+      background: rgba(156, 163, 175, 0.15);
+      border: 1.5px solid rgba(156, 163, 175, 0.4);
+      color: #ffffff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .carousel-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(156, 163, 175, 0.1);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .carousel-btn:hover {
+      background: rgba(156, 163, 175, 0.3);
+      border-color: rgba(156, 163, 175, 0.7);
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(156, 163, 175, 0.3);
+    }
+    
+    .carousel-btn:hover::before {
+      transform: scale(1);
+    }
+    
+    .carousel-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+      background: rgba(136, 136, 136, 0.1);
+      border-color: rgba(136, 136, 136, 0.2);
+    }
+    
+    .carousel-btn:disabled:hover {
+      transform: scale(1);
+      box-shadow: none;
+    }
+    
+    /* Indicadores de paginação */
+    .carousel-indicators {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    
+    .carousel-dot:hover {
+      background: rgba(156, 163, 175, 0.5);
+      border-color: rgba(156, 163, 175, 0.6);
+      transform: scale(1.2);
+    }
+    
+    .carousel-dot.active {
+      background: #9ca3af;
+      border-color: #d1d5db;
+      box-shadow: 0 0 12px rgba(156, 163, 175, 0.5);
+      transform: scale(1.3);
+      width: 10px;
+      height: 10px;
+    }
+    
+    /* Info de paginação */
+    .carousel-info {
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* About - LOGO À ESQUERDA */
+    #about { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .about-grid { display: grid; grid-template-columns: 160px 1fr; gap: 35px; align-items: center; }
+    @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; text-align: center; } }
+    .about-title { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; line-height: 1.1; font-family: inherit; }
+    .about-text { color: var(--text-secondary); font-size: 0.98rem; line-height: 1.7; margin-top: 0; font-weight: 400; font-family: inherit; max-width: 720px; }
+    .logo-img { width: 182px; height: 182px; object-fit: contain; opacity: 0.8; transition: transform 0.3s ease; }
+    .logo-img:hover { transform: scale(1.02); }
+
+    .empty-card {
+      text-align: center; padding: 35px;
+      color: var(--text-muted); font-size: 0.7rem;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      font-weight: 500;
+      width: 100%;
+    }
+
+    /* Admin Panel */
+    /* Password Dialog Modal */
+    .password-dialog {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+      z-index: 300; backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .password-dialog.show { display: flex; }
+    .password-dialog-box {
+      background: #111111;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .password-dialog-box h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+    .password-dialog-box p {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .password-dialog-box input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .password-dialog-box input:focus {
+      outline: none;
+      border-color: #ffffff;
+      background: rgba(26,26,26,0.8);
+    }
+    .password-dialog-buttons {
+      display: flex;
+      gap: 12px;
+    }
+    .password-dialog-buttons button {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .pwd-btn-confirm {
+      background: #ffffff;
+      color: #0a0a0a;
+    }
+    .pwd-btn-confirm:hover {
+      background: #eaeaea;
+      transform: translateY(-1px);
+    }
+    .pwd-btn-cancel {
+      background: #1a1a1a;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .pwd-btn-cancel:hover {
+      background: #2a2a2a;
+      border-color: #ffffff;
+      color: #ffffff;
+    }
+
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      z-index: 200; backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .admin-panel {
+      background: #111111;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 90%; max-width: 1000px; max-height: 85vh;
+      display: flex; flex-direction: column; overflow: hidden;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    .admin-panel * {
+      font-family: inherit;
+    }
+    .admin-header {
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .admin-header h2 { font-size: 0.9rem; font-weight: 700; }
+    .admin-tabs {
+      display: flex; gap: 2px; padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-tab {
+      padding: 8px 16px; cursor: pointer;
+      color: var(--text-secondary); font-size: 0.7rem;
+      font-weight: 700; border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .admin-tab.active { color: #ffffff; border-bottom-color: #ffffff; }
+    .admin-body { flex: 1; overflow-y: auto; padding: 18px; background: #0a0a0a; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label {
+      display: block; font-size: 0.6rem;
+      font-weight: 700; color: var(--text-muted);
+      margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 7px 10px;
+      background: #1a1a1a; border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text);
+      font-size: 0.7rem; transition: var(--transition);
+      font-weight: 400;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none; border-color: #ffffff;
+    }
+    .btn {
+      padding: 5px 16px; border-radius: 6px;
+      border: none; cursor: pointer; font-weight: 700;
+      font-size: 0.65rem; transition: var(--transition);
+    }
+    .btn-primary { background: #ffffff; color: #0a0a0a; }
+    .btn-primary:hover { background: #eaeaea; transform: translateY(-1px); }
+    .btn-danger { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); border-color: var(--danger); transform: translateY(-1px); }
+    .btn-secondary { background: #1a1a1a; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #2a2a2a; border-color: #ffffff; color: #ffffff; transform: translateY(-1px); }
+    .btn-edit { background: rgba(59,130,246,0.15); color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); font-weight: 600; }
+    .btn-edit:hover { background: rgba(59,130,246,0.25); border-color: #3b82f6; transform: translateY(-1px); }
+
+    .admin-list-item {
+      display: flex; justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #111111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+      transition: var(--transition);
+    }
+    .admin-list-item:hover { border-color: #ffffff; }
+    .admin-list-item .item-info { flex: 1; }
+    .admin-list-item .item-actions { display: flex; gap: 6px; }
+    .form-card {
+      background: #111111; padding: 14px;
+      border-radius: 10px; margin-bottom: 18px;
+      border: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .form-card:hover { border-color: #ffffff; }
+
+    .inline-edit {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .inline-edit select, .inline-edit input {
+      width: auto;
+      padding: 2px 6px;
+      font-size: 0.65rem;
+    }
+
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: #111111;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+    .rank-item:hover { border-color: #ffffff; }
+    .rank-actions { display: flex; gap: 8px; }
+    .rank-actions button {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 12px;
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .rank-actions button:hover:not(:disabled) {
+      background: rgba(255,255,255,0.15);
+      border-color: #ffffff;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+    .rank-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* FOOTER COM BOTÕES */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      background: rgba(10,10,10,0.8);
+    }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    .footer-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .footer-btn {
+      padding: 8px 24px;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .footer-btn:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+    .footer-copyright {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    @media (max-width: 768px) {
+      .rank-group::before { display: none; }
+      .rank-group-header { justify-content: flex-start; }
+      .member-card { flex-wrap: wrap; }
+      .member-right { align-items: flex-start; margin-top: 6px; width: 100%; }
+      .member-footer { justify-content: flex-start; }
+      .footer-buttons { flex-direction: column; align-items: center; }
+      .section-header { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 20px; }
+      nav { padding: 0 16px; }
+      .stat { padding: 6px 14px; min-width: 85px; }
+      .stat-value { font-size: 1.1rem; }
+      .section-title { font-size: 0.85rem; }
+      .members-grid { gap: 10px; }
+      .admin-list-item { flex-direction: column; align-items: stretch; }
+      .admin-list-item .item-actions { justify-content: flex-end; }
+      .gallery-img { height: 220px; }
+      .nav-brand span { font-size: 20px; }
+      ::-webkit-scrollbar { width: 4px; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script>
+    try {
+      if (sessionStorage.getItem('rocamSkipSplash') === 'true') {
+        document.documentElement.classList.add('skip-splash');
+      }
+    } catch (err) {
+      console.warn('Could not access sessionStorage for splash skip:', err);
+    }
+  </script>
+</head>
+<body>
+
+<div id="intro">
+  <img src="https://i.ibb.co/ccGQWn19/Logo-ROCAM500x500.png" alt="Logo ROCAM">
+  <div class="brand">LOADING...</div>
+  <div class="bar"><div class="bar-fill"></div></div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#home">
+      <img src="https://i.ibb.co/ccGQWn19/Logo-ROCAM500x500.png" alt="Logo ROCAM">
+      <span>ROCAM</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#home">INÍCIO</a></li>
+      <li><a href="#about">SOBRE</a></li>
+      <li><a href="#hierarchy">HIERARQUIA</a></li>
+      <li><a href="#live">AO VIVO</a></li>
+      <li><a href="#gallery">GALERIA</a></li>
+      <li><a href="#vehicles">VIATURAS</a></li>
+      <li><a href="#seizures">APREENSÕES</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="admin-menu">
+        <button id="adminMenuToggle" class="admin-menu-toggle" onclick="toggleAdminMenu()" aria-expanded="false" aria-label="Abrir opções administrativas">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div id="admin-options" class="admin-options" role="menu" aria-hidden="true">
+          <button class="admin-option" type="button" onclick="openMembersPanel(); closeAdminMenu()">MEMBROS</button>
+          <button class="admin-option" type="button" onclick="openAdminPanel(); closeAdminMenu()">GESTÃO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section id="home">
+  <div class="home-banner">
+    <div class="home-headline">
+      <div>
+        <div class="home-label">DASHBOARD</div>
+        <h1 class="home-title">ROCAM — Painel de Operações</h1>
+        <p class="home-subtitle">Acompanhe os membros, as apreensões e o status da operação em tempo real, com visão clara e foco nas informações mais importantes.</p>
+      </div>
+      <div class="home-quickstats">
+        <div class="home-quickstat">Última atualização: <span>Agora</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat stat-live" onclick="document.getElementById('live').scrollIntoView({ behavior: 'smooth' })">
+      <div>
+        <div class="stat-value" id="stat-ao-vivo">0</div>
+        <div class="stat-label">AO VIVO</div>
+      </div>
+    </div>
+    <div class="stat" onclick="document.getElementById('hierarchy').scrollIntoView({ behavior: 'smooth' })">
+      <div>
+        <div class="stat-value" id="stat-membros">0</div>
+        <div class="stat-label">MEMBROS</div>
+      </div>
+    </div>
+    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+      <div>
+        <div class="stat-value" id="stat-hoje">0</div>
+        <div class="stat-label">APREENSÕES HOJE</div>
+      </div>
+    </div>
+    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+      <div>
+        <div class="stat-value" id="stat-semana">0</div>
+        <div class="stat-label">APREENSÕES NA SEMANA</div>
+      </div>
+    </div>
+    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+      <div>
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">TOTAL</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal-left"><img class="logo-img" src="https://i.ibb.co/ccGQWn19/Logo-ROCAM500x500.png" alt="Logo ROCAM"></div>
+      <div class="reveal-right">
+        <h2 class="about-title">ROCAM - Ronda Ostensiva com Apoio de Motocicletas</h2>
+        <p class="about-text">Tem como principal objetivo prestar apoio tático e operacional em acompanhamentos veiculares durante ocorrências em toda região Sul, atuando de forma estratégica principalmente em situações que envolvam veículos de duas rodas ou de pequeno porte. A nossa função se destaca pela alta mobilidade e rapidez de resposta, características essenciais para o deslocamento em áreas de difícil acesso, vias estreitas, becos e regiões onde uma viatura convencional de quatro rodas da PMC pode enfrentar maiores limitações de entrada, manobra ou progressão com segurança.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO MEMBROS AO VIVO -->
+<section id="live">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="10 8 16 12 10 16 10 8" />
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">MEMBROS AO VIVO</div>
+            <div class="section-sub">Membros que estão transmitindo ao vivo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="live-members-content"></div>
+  </div>
+</section>
+
+<section id="hierarchy">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3" />
+              <path d="M12 8v4" />
+              <path d="M12 16h.01" />
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">HIERARQUIA</div>
+            <div class="section-sub">Membros da unidade</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="hierarchy-content"></div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">GALERIA</div>
+            <div class="section-sub">Registros fotográficos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gallery-content"></div>
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="gallery.html" class="btn btn-secondary" style="display: inline-block; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; background: rgba(156, 163, 175, 0.25); color: #d1d5db; border: 1.5px solid rgba(156, 163, 175, 0.5);">VER GALERIA COMPLETA →</a>
+    </div>
+  </div>
+</section>
+
+<section id="vehicles">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+              <path d="M15 17a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" />
+              <path d="M5 17h-2v-6l2 -5h9l4 5h1a2 2 0 0 1 2 2v4h-2m-4 0h-6m-6 -6h15m-6 0v-5" />
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">VIATURAS</div>
+            <div class="section-sub">Frota operacional</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="vehicles-content"></div>
+  </div>
+</section>
+
+<section id="seizures">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-header">
+        <div class="section-title-wrapper">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12" />
+              <path d="M16 3v4" />
+              <path d="M8 3v4" />
+              <path d="M4 11h16" />
+              <path d="M11 15h1" />
+              <path d="M12 15v3" />
+            </svg>
+          </div>
+          <div>
+            <div class="section-title">APREENSÕES</div>
+            <div class="section-sub">Registros recentes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="seizures-content"></div>
+    <div style="text-align: center; margin-top: 30px;">
+      <a href="apreensoes.html" class="btn btn-secondary" style="display: inline-block; padding: 12px 30px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; background: rgba(156, 163, 175, 0.25); color: #d1d5db; border: 1.5px solid rgba(156, 163, 175, 0.5);">VER TODAS AS APREENSÕES →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-copyright">© Unidade ROCAM - Metrópole 2026</div>
+  </div>
+</footer>
+
+<!-- Modal para imagens -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="modal-close">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+
+<!-- Modal para Senha ADMIN -->
+<div id="adminPasswordDialog" class="password-dialog">
+  <div class="password-dialog-box">
+    <h2>PAINEL ADMIN</h2>
+    <p>Digite a senha de administrador:</p>
+    <input type="password" id="adminPasswordInput" placeholder="Senha" onkeypress="if(event.key==='Enter') submitAdminPassword()">
+    <div class="password-dialog-buttons">
+      <button class="pwd-btn-confirm" onclick="submitAdminPassword()">ENTRAR</button>
+      <button class="pwd-btn-cancel" onclick="closePasswordDialog('admin')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Senha MEMBROS -->
+<div id="membersPasswordDialog" class="password-dialog">
+  <div class="password-dialog-box">
+    <h2>PAINEL MEMBROS</h2>
+    <p>Digite a senha do painel de membros:</p>
+    <input type="password" id="membersPasswordInput" placeholder="Senha" onkeypress="if(event.key==='Enter') submitMembersPassword()">
+    <div class="password-dialog-buttons">
+      <button class="pwd-btn-confirm" onclick="submitMembersPassword()">ENTRAR</button>
+      <button class="pwd-btn-cancel" onclick="closePasswordDialog('members')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA ====================
+let members = [];
+let vehicles = [];
+let seizures = [];
+let gallery = [];
+let adminPassword = "123";
+let membersPassword = "321";
+let rankOrder = {};
+
+function sanitizeMembersData(data) {
+  if (!Array.isArray(data)) return [];
+  return data.map(member => {
+    if (member && typeof member === 'object') {
+      const { songUrl, songTitle, ...cleanMember } = member;
+      return cleanMember;
+    }
+    return member;
+  });
+}
+
+// Carrossel: índices de paginação
+let galleryPage = 0;
+let vehiclesPage = 0;
+let seizuresPage = 0;
+const ITEMS_PER_PAGE = 4;
+const GALLERY_ITEMS_PER_PAGE = 4;
+const SEIZURES_ITEMS_PER_PAGE = 4;
+
+// Estados dos filtros
+let galleryFilterDays = 7;
+let seizuresFilterDays = 7;
+
+// ==================== GLOBAL OBSERVER E ESTADO ====================
+let revealObserver = null;
+let dataListenerRegistered = false;
+let scrollListenerActive = false;
+let streamStatusUpdateScheduled = false;
+
+function initRevealObserver() {
+  // Limpar observer anterior se existir
+  if (revealObserver) {
+    revealObserver.disconnect();
+  }
+  
+  revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+}
+
+function observeRevealElements() {
+  if (!revealObserver) initRevealObserver();
+  
+  // Selecionar TODOS os elementos que precisam animar
+  const elements = document.querySelectorAll(
+    '.member-card.reveal, .vehicle-card, .seizure-card, .gallery-card, .live-card-thumbnail, .reveal, .reveal-left, .reveal-right, .about-title, .section-title, .section-title-wrapper'
+  );
+  
+  elements.forEach(el => {
+    revealObserver.observe(el);
+    
+    // Verificar se o elemento já está visível e adicionar classe imediatamente
+    const rect = el.getBoundingClientRect();
+    const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+    if (isVisible) {
+      el.classList.add('visible');
+    }
+  });
+}
+
+function loadData() {
+  try {
+    console.log('🔄 loadData() iniciado');
+    
+    // Se já registramos o listener, não registra novamente
+    if (dataListenerRegistered) {
+      console.log('⏭️ Listener já registrado, ignorando...');
+      return;
+    }
+    
+    // Primeiro, tentar carregar do localStorage (fallback)
+    try {
+      const localMembers = localStorage.getItem('rocam_members');
+      if (localMembers) {
+        members = sanitizeMembersData(JSON.parse(localMembers));
+        vehicles = JSON.parse(localStorage.getItem('rocam_vehicles') || '[]');
+        seizures = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
+        gallery = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+        const savedRankOrder = localStorage.getItem('rocam_rankOrder');
+        rankOrder = savedRankOrder ? JSON.parse(savedRankOrder) : {};
+        adminPassword = localStorage.getItem('rocam_admin_password') || 'admin';
+        membersPassword = localStorage.getItem('rocam_members_password') || '1234';
+        localStorage.setItem('rocam_members', JSON.stringify(members));
+        console.log('💾 Dados carregados de localStorage e normalizados');
+      }
+    } catch(e) {
+      console.warn('⚠️ Erro ao carregar de localStorage:', e);
+    }
+    
+    // Depois, tentar carregar do Firebase
+    try {
+      // Carregar dados compartilhados do Firebase (sem usuário específico)
+      const db = firebase.database();
+      const dataRef = db.ref('rocam-data');
+      
+      console.log('📥 Registrando listener do Firebase para rocam-data (primeira vez)');
+      dataListenerRegistered = true;
+      
+      dataRef.on('value', (snapshot) => {
+        console.log('✅ Firebase retornou:', {
+          exists: snapshot.exists(),
+          numChildren: snapshot.numChildren(),
+          valor: snapshot.val()
+        });
+        
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log('📦 Dados do Firebase:', {
+            members: data.members ? data.members.length : 0,
+            vehicles: data.vehicles ? data.vehicles.length : 0,
+            seizures: data.seizures ? data.seizures.length : 0,
+            gallery: data.gallery ? data.gallery.length : 0
+          });
+          
+          console.log('📦 Atualizando variáveis globais com dados do Firebase');
+          members = sanitizeMembersData(data.members || []);
+          vehicles = data.vehicles || [];
+          seizures = data.seizures || [];
+          gallery = data.gallery || [];
+          rankOrder = data.rankOrder || {};
+          adminPassword = data.adminPassword || 'admin';
+          membersPassword = data.membersPassword || '1234';
+          console.log('✓ Dados carregados com sucesso do Firebase', { 
+            members: members.length,
+            vehicles: vehicles.length,
+            seizures: seizures.length,
+            gallery: gallery.length
+          });
+        } else {
+          console.log('ℹ️ Firebase vazio, usando dados do localStorage');
+        }
+        console.log('🎨 Chamando renderAll()');
+        renderAll();
+      }, (error) => {
+        console.warn('⚠️ Erro ao carregar do Firebase:', error);
+        console.log('💾 Usando dados do localStorage');
+        console.log('🎨 Chamando renderAll()');
+        renderAll();
+      });
+    } catch(e) { 
+      console.warn('⚠️ Firebase indisponível:', e);
+      console.log('💾 Usando dados do localStorage');
+      renderAll();
+    }
+  } catch(e) { 
+    console.error('❌ Erro crítico em loadData:', e);
+    renderAll();
+  }
+}
+
+function saveData() {
+  try {
+    console.log('💾 Tentando salvar dados:', {
+      members: members.length,
+      vehicles: vehicles.length,
+      seizures: seizures.length,
+      gallery: gallery.length
+    });
+    
+    const sanitizedMembers = sanitizeMembersData(members);
+    members = sanitizedMembers;
+    const dataToSave = {
+      members: sanitizedMembers,
+      vehicles: vehicles,
+      seizures: seizures,
+      gallery: gallery,
+      rankOrder: rankOrder,
+      adminPassword: adminPassword,
+      membersPassword: membersPassword,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    // Sempre salvar em localStorage (fallback, funciona offline)
+    try {
+      localStorage.setItem('rocam_members', JSON.stringify(members));
+      localStorage.setItem('rocam_vehicles', JSON.stringify(vehicles));
+      localStorage.setItem('rocam_seizures', JSON.stringify(seizures));
+      localStorage.setItem('rocam_gallery', JSON.stringify(gallery));
+      localStorage.setItem('rocam_rankOrder', JSON.stringify(rankOrder));
+      localStorage.setItem('rocam_admin_password', adminPassword);
+      localStorage.setItem('rocam_members_password', membersPassword);
+      console.log('✓ Dados salvos em localStorage');
+    } catch(e) {
+      console.warn('⚠️ Erro ao salvar em localStorage:', e);
+    }
+    
+    // Tentar salvar em Firebase
+    try {
+      const db = firebase.database();
+      const dataRef = db.ref('rocam-data');
+      
+      console.log('📡 Enviando dados para Firebase em rocam-data');
+      dataRef.set(dataToSave, (error) => {
+        if (error) {
+          console.error('❌ Erro ao salvar no Firebase:', error);
+          console.log('⚠️ Dados salvos apenas em localStorage');
+        } else {
+          console.log('✅ Dados salvos NO FIREBASE com sucesso!');
+        }
+      });
+    } catch(e) {
+      console.error('❌ Firebase indisponível:', e);
+      console.log('⚠️ Dados salvos apenas em localStorage');
+    }
+  } catch(e) {
+    console.error('❌ Erro em saveData:', e);
+  }
+}
+
+// ==================== MODAL ====================
+function openModal(imageUrl) {
+  const modal = document.getElementById('imageModal');
+  const modalImg = document.getElementById('modalImage');
+  if (imageUrl && imageUrl !== '') {
+    modal.style.display = 'block';
+    modalImg.src = imageUrl;
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('imageModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+// ==================== TWITCH STATUS ====================
+function normalizeKickUsername(value) {
+  if (!value) return '';
+  let sanitized = value.trim().toLowerCase();
+  sanitized = sanitized.replace(/^https?:\/\//, '');
+  sanitized = sanitized.replace(/^www\./, '');
+  sanitized = sanitized.replace(/^kick\.com\//, '');
+  sanitized = sanitized.replace(/^kick\.com$/, '');
+  sanitized = sanitized.replace(/^\/+/, '');
+  return sanitized;
+}
+
+async function checkTwitchStatus(username) {
+  if (!username) return false;
+  try {
+    const response = await fetch(`https://decapi.me/twitch/uptime/${username}`);
+    const text = await response.text();
+    return !text.includes("offline") && !text.includes("error");
+  } catch(e) { return false; }
+}
+
+async function checkKickStatus(username) {
+  const normalized = normalizeKickUsername(username);
+  if (!normalized) return false;
+  try {
+    const response = await fetch(`https://decapi.me/kick/uptime/${normalized}`);
+    const text = await response.text();
+    return !text.includes("offline") && !text.includes("error");
+  } catch(e) { return false; }
+}
+
+async function updateAllStreamStatus() {
+  // Evitar múltiplas atualizações simultâneas
+  if (streamStatusUpdateScheduled) return;
+  streamStatusUpdateScheduled = true;
+  
+  try {
+    let statusChanged = false;
+    
+    for (const member of members) {
+      let oldTwitchLive = member.twitchLive;
+      let oldKickLive = member.kickLive;
+      
+      if (member.twitch) {
+        member.twitchLive = await checkTwitchStatus(member.twitch);
+      } else {
+        member.twitchLive = false;
+      }
+      
+      if (member.kick) {
+        member.kick = normalizeKickUsername(member.kick);
+        member.kickLive = await checkKickStatus(member.kick);
+      } else {
+        member.kickLive = false;
+      }
+      
+      if (oldTwitchLive !== member.twitchLive || oldKickLive !== member.kickLive) {
+        statusChanged = true;
+      }
+    }
+    
+    // Salvar sempre
+    saveData();
+    
+    // Re-renderizar apenas se algo mudou
+    if (statusChanged) {
+      renderLiveMembers();
+      renderHierarchy();
+    }
+  } finally {
+    streamStatusUpdateScheduled = false;
+  }
+}
+
+// ==================== HELPER ====================
+function getMemberSeizureCount(memberName) {
+  if (!memberName) return 0;
+  return seizures.filter(s => s.member === memberName || s.memberName === memberName).length;
+}
+
+function getTwitchSVG() {
+  return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M11.571 4.714h1.715v5.143h-1.715V4.714zm4.715 0H18v5.143h-1.714V4.714zm0 2.286l1.715 1.715-1.715 1.715V6.999zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z"/></svg>`;
+}
+
+function getKickSVG() {
+  return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h6v-8h2v8h4v-9h1l2 1v8h4V7c0-2.2-1.8-4-4-4h-3V1h-2v2H7c-2.2 0-4 1.8-4 4zm8 4h4c1.1 0 2 .9 2 2s-.9 2-2 2h-4V7z"/></svg>`;
+}
+
+function getStreamBadgeInfo(member) {
+  // Se tem KICK, usa KICK. Se tem Twitch, usa Twitch.
+  if (member.kick) {
+    const kickName = normalizeKickUsername(member.kick);
+    return {
+      url: `https://kick.com/${kickName}`,
+      svg: getKickSVG(),
+      platform: 'kick',
+      isLive: member.kickLive
+    };
+  } else if (member.twitch) {
+    return {
+      url: `https://twitch.tv/${member.twitch}`,
+      svg: getTwitchSVG(),
+      platform: 'twitch',
+      isLive: member.twitchLive
+    };
+  }
+  return null;
+}
+
+function getStreamThumbnailUrl(member, width = 640, height = 360) {
+  const streamInfo = getStreamBadgeInfo(member);
+  if (!streamInfo) {
+    return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Offline`;
+  }
+  if (streamInfo.platform === 'twitch') {
+    const user = member.twitch || '';
+    return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${encodeURIComponent(user)}-${width}x${height}.jpg`;
+  }
+  // Para Kick, usar avatar se disponível, senão placeholder
+  if (streamInfo.platform === 'kick') {
+    return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Kick+Live`;
+  }
+  return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Live`;
+}
+
+function filterByDays(items, days) {
+  if (days === 'all') return items;
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+  return items.filter(item => new Date(item.date) >= cutoffDate);
+}
+
+// ==================== RENDER HIERARQUIA ====================
+function renderHierarchy() {
+  const container = document.getElementById('hierarchy-content');
+  if (!members.length) {
+    container.innerHTML = '<div class="empty-card">Nenhum membro cadastrado</div>';
+    return;
+  }
+  
+  const groups = {};
+  members.forEach(m => {
+    const rank = m.rank || "Membro";
+    if (!groups[rank]) groups[rank] = [];
+    groups[rank].push(m);
+  });
+  
+  const existingRanks = Object.keys(groups);
+  existingRanks.forEach(rank => {
+    if (!rankOrder[rank]) {
+      rankOrder[rank] = Object.keys(rankOrder).length + 1;
+    }
+  });
+  
+  let html = '';
+  const sortedRanks = [...existingRanks].sort((a,b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
+  
+  sortedRanks.forEach(rank => {
+    html += `<div class="rank-group">
+      <div class="rank-group-header"><h3>💀 ${escapeHtml(rank)}</h3></div>
+      <div class="members-grid">`;
+    groups[rank].forEach((m, idx) => {
+      const statusClass = m.status === 'ativo' ? 'status-ativo' : 'status-inativo';
+      const statusText = m.status === 'ativo' ? 'Ativo' : 'Inativo';
+      const seizureCount = getMemberSeizureCount(m.name);
+      const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
+      const avatarHtml = m.avatarUrl 
+        ? `<img class="member-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.parentElement.innerHTML='<div class=\\'member-avatar-placeholder\\'>👤</div>'">`
+        : `<div class="member-avatar-placeholder">👤</div>`;
+      
+      let streamHtml = '';
+      let streamLiveClass = '';
+      const streamInfo = getStreamBadgeInfo(m);
+      if (streamInfo) {
+        const badgeClass = streamInfo.platform === 'kick' ? (streamInfo.isLive ? 'kick-online' : 'kick-offline') : (streamInfo.isLive ? 'twitch-online' : 'twitch-offline');
+        streamHtml = `<a href="${streamInfo.url}" target="_blank" class="twitch-badge ${badgeClass}">
+          ${streamInfo.svg} ${streamInfo.isLive ? 'AO VIVO' : 'OFFLINE'}
+        </a>`;
+        if (streamInfo.isLive) {
+          // Se está online APENAS na KICK (sem Twitch ou Twitch offline), usar cor verde
+          if (streamInfo.platform === 'kick' && (!m.twitchLive)) {
+            streamLiveClass = 'kick-live-only-card';
+          } else {
+            streamLiveClass = 'twitch-live-card';
+          }
+        }
+      }
+      
+      const delay = idx * 0.05;
+      html += `
+        <div class="member-card reveal ${streamLiveClass}" style="transition-delay: ${delay}s" data-member-name="${escapeHtml(m.name)}">
+          ${avatarHtml}
+          <div class="member-info">
+            <div class="member-name">${escapeHtml(m.name)}</div>
+            <div class="member-police-rank">
+              ${escapeHtml(m.policeRank || 'Soldado')}
+              ${m.level ? `<span class="member-level">Nv.${m.level}</span>` : ''}
+            </div>
+          </div>
+          <div class="member-right">
+            <div class="member-footer">
+              <span class="member-seizures">📋 ${seizureCount} ${seizureText}</span>
+            </div>
+            ${streamHtml}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+  
+  // Usar observer global
+  observeRevealElements();
+  
+  // Adicionar event listeners aos cards de membros
+  try {
+    document.querySelectorAll('.member-card[data-member-name]').forEach(card => {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function(e) {
+        // Não abrir painel se clicar em links (como stream)
+        if (e.target.closest('a') || e.target.closest('.twitch-badge')) {
+          return;
+        }
+        
+        const memberName = this.getAttribute('data-member-name');
+        if (memberName) {
+          console.log('🖱️ Abrindo perfil:', memberName);
+          openMemberProfile(memberName);
+        }
+      });
+    });
+    console.log('✓ Event listeners adicionados aos cards');
+  } catch (error) {
+    console.error('❌ Erro ao adicionar event listeners:', error);
+  }
+}
+
+// ==================== RENDER MEMBROS AO VIVO ====================
+function renderLiveMembers() {
+  const container = document.getElementById('live-members-content');
+  const liveMembers = members.filter(m => (m.twitchLive === true || m.kickLive === true));
+
+  if (!liveMembers.length) {
+    container.innerHTML = '<div class="empty-card">Nenhum membro está ao vivo no momento</div>';
+    return;
+  }
+
+  let html = '<div class="members-grid">';
+  liveMembers.forEach((m, idx) => {
+    const statusClass = m.status === 'ativo' ? 'status-ativo' : 'status-inativo';
+    const statusText = m.status === 'ativo' ? 'Ativo' : 'Inativo';
+    const seizureCount = getMemberSeizureCount(m.name);
+    const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
+    const avatarHtml = m.avatarUrl
+      ? `<img class="live-card-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.src='https://placehold.co/48x48/1a1a1a/555?text=%F0%9F%91%A4'">`
+      : `<div class="member-avatar-placeholder">👤</div>`;
+
+    const streamInfo = getStreamBadgeInfo(m) || {};
+    const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
+
+    html += `
+      <div class="live-card-thumbnail reveal" style="transition-delay: ${idx * 0.05}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
+        <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
+        <div class="live-card-overlay"></div>
+        <div class="live-card-content">
+          ${avatarHtml}
+          <div class="live-card-info">
+            <div class="live-card-name">${escapeHtml(m.name)}</div>
+            <div class="live-card-rank">
+              ${escapeHtml(m.policeRank || 'Soldado')}
+              ${m.rank ? `· ${escapeHtml(m.rank)}` : ''}
+              ${m.level ? `<span class="live-card-level">Nv.${m.level}</span>` : ''}
+            </div>
+            <div class="live-card-badge">${streamInfo.svg || ''} AO VIVO</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ==================== CARROSSEL ====================
+function carouselPrevNext(type, direction) {
+  if (type === 'gallery') {
+    galleryPage = direction === 'prev' ? Math.max(0, galleryPage - 1) : galleryPage + 1;
+    renderGallery();
+  } else if (type === 'vehicles') {
+    vehiclesPage = direction === 'prev' ? Math.max(0, vehiclesPage - 1) : vehiclesPage + 1;
+    renderVehicles();
+  } else if (type === 'seizures') {
+    seizuresPage = direction === 'prev' ? Math.max(0, seizuresPage - 1) : seizuresPage + 1;
+    renderSeizures();
+  }
+}
+
+function goToCarouselPage(type, page) {
+  if (type === 'gallery') {
+    galleryPage = page;
+    renderGallery();
+  } else if (type === 'vehicles') {
+    vehiclesPage = page;
+    renderVehicles();
+  } else if (type === 'seizures') {
+    seizuresPage = page;
+    renderSeizures();
+  }
+}
+
+function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPerPage = ITEMS_PER_PAGE) {
+  const container = document.getElementById(containerId);
+  if (!items.length) {
+    container.innerHTML = `<div class="empty-card">${emptyMessage}</div>`;
+    return;
+  }
+  
+  let page = 0;
+  if (carouselType === 'gallery') page = galleryPage;
+  else if (carouselType === 'vehicles') page = vehiclesPage;
+  else if (carouselType === 'seizures') page = seizuresPage;
+  
+  // Garantir que a página está dentro dos limites
+  const maxPage = Math.ceil(items.length / itemsPerPage) - 1;
+  if (page > maxPage) {
+    page = maxPage;
+    if (carouselType === 'gallery') galleryPage = page;
+    else if (carouselType === 'vehicles') vehiclesPage = page;
+    else if (carouselType === 'seizures') seizuresPage = page;
+  }
+  
+  const start = page * itemsPerPage;
+  const end = Math.min(start + itemsPerPage, items.length);
+  const currentItems = items.slice(start, end);
+  const hasNext = end < items.length;
+  const hasPrev = page > 0;
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+  
+  let html = '<div class="carousel-wrapper">';
+  html += '<div class="carousel-container">';
+  html += `<button class="carousel-btn" data-carousel-type="${carouselType}" data-carousel-direction="prev" ${!hasPrev ? 'disabled' : ''} title="Página anterior" aria-label="Anterior">❮</button>`;
+  html += '<div class="carousel-content">';
+  
+  currentItems.forEach((item, idx) => {
+    if (carouselType === 'gallery') {
+      html += `<div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+        <img class="gallery-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro+ao+carregar'" alt="${escapeHtml(item.title || 'Foto da galeria')}">
+        <div class="gallery-info">
+          <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
+          <div class="gallery-date">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
+        </div>
+      </div>`;
+    } else if (carouselType === 'vehicles') {
+      html += `<div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+        ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.name)}">` : '<div class="vehicle-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">🚗</div>'}
+        <div class="vehicle-info">
+          <div class="vehicle-name">${escapeHtml(item.name)}</div>
+        </div>
+      </div>`;
+    } else if (carouselType === 'seizures') {
+      html += `<div class="seizure-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+        ${item.imageUrl ? `<img class="seizure-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.description)}">` : '<div class="seizure-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📷</div>'}
+        <div class="seizure-info">
+          <div class="seizure-desc">${escapeHtml(item.description)}</div>
+          <div class="seizure-meta">
+            ${item.member ? `<span>👮 ${escapeHtml(item.member)}</span>` : ''}
+            ${item.location ? `<span>📍 ${escapeHtml(item.location)}</span>` : ''}
+          </div>
+          <div class="seizure-footer">
+            <span>📅 ${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+            ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }
+  });
+  
+  html += '</div>';
+  html += `<button class="carousel-btn" data-carousel-type="${carouselType}" data-carousel-direction="next" ${!hasNext ? 'disabled' : ''} title="Próxima página" aria-label="Próximo">❯</button>`;
+  html += '</div>';
+  
+  // Adicionar indicadores de paginação
+  if (totalPages > 1) {
+    html += '<div class="carousel-indicators">';
+    for (let i = 0; i < totalPages; i++) {
+      const isActive = i === page ? 'active' : '';
+      html += `<button class="carousel-dot ${isActive}" data-carousel-type="${carouselType}" data-carousel-page="${i}" title="Página ${i + 1}" onclick="goToCarouselPage('${carouselType}', ${i})" aria-label="Ir para página ${i + 1}"></button>`;
+    }
+    html += '</div>';
+    
+    // Informação de paginação
+    html += `<div class="carousel-info">PÁGINA ${page + 1} DE ${totalPages}</div>`;
+  }
+  
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ==================== RENDER COM CARROSSEL ====================
+function renderVehicles() {
+  const sorted = [...vehicles].sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
+  const container = document.getElementById('vehicles-content');
+  if (!sorted.length) {
+    container.innerHTML = '<div class="empty-card">Nenhuma viatura cadastrada</div>';
+    return;
+  }
+  
+  container.innerHTML = '<div class="simple-grid">' + sorted.map((item, idx) => `
+    <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
+      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">🚗</div>'}
+      <div class="vehicle-info">
+        <div class="vehicle-name">${escapeHtml(item.name)}</div>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function renderGallery() {
+  const filtered = [...gallery].sort((a,b) => new Date(b.date) - new Date(a.date));
+  const container = document.getElementById('gallery-content');
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>';
+    return;
+  }
+  
+  const limited = filtered.slice(0, 3); // Mostrar apenas 3
+  container.innerHTML = '<div class="simple-grid">' + limited.map((item, idx) => `
+    <div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
+      <img class="gallery-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">
+      <div class="gallery-info">
+        <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
+        <div class="gallery-date">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function renderSeizures() {
+  try {
+    console.log('🎨 renderSeizures() chamada');
+    const container = document.getElementById('seizures-content');
+    if (!container) {
+      console.warn('⚠️ Elemento seizures-content não encontrado');
+      return;
+    }
+    
+    console.log('✅ Container encontrado:', {
+      id: container.id,
+      classe: container.className,
+      display: window.getComputedStyle(container).display,
+      visibility: window.getComputedStyle(container).visibility,
+      opacity: window.getComputedStyle(container).opacity
+    });
+    
+    console.log(`📊 Verificando seizures: total = ${seizures.length}`);
+    console.log('📋 Seizures:', seizures);
+    
+    const sorted = [...seizures].sort((a,b) => new Date(b.date) - new Date(a.date));
+    console.log(`📊 Seizures após sort: ${sorted.length}`);
+    
+    if (!sorted.length) {
+      console.log('⚠️ Nenhuma apreensão encontrada');
+      container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
+      console.log('✅ Container atualizado com mensagem vazia');
+      console.log('Container innerHTML:', container.innerHTML);
+      return;
+    }
+    
+    const limited = sorted.slice(0, 3); // Mostrar apenas 3
+    console.log(`📊 Mostrando ${limited.length} de ${sorted.length} apreensões`);
+    let html = '<div class="simple-grid">';
+    
+    limited.forEach((item, idx) => {
+      try {
+        const backgroundStyle = item.imageUrl && item.imageUrl.trim()
+          ? `background-image: url('${escapeHtml(item.imageUrl)}');`
+          : '';
+        const dateText = `📅 ${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        const imgUrl = escapeHtml(item.imageUrl || '');
+        
+        html += `
+          <div class="seizure-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${imgUrl}')">
+            <div class="seizure-card-background ${item.imageUrl ? '' : 'seizure-card-background--empty'}" style="${backgroundStyle}"></div>
+            <div class="seizure-card-overlay"></div>
+            <div class="seizure-card-content">
+              <div class="seizure-desc">${escapeHtml(item.description || 'Apreensão')}</div>
+              <div class="seizure-meta">
+                ${item.member ? `<span>👮 ${escapeHtml(item.member)}</span>` : ''}
+                ${item.location ? `<span>📍 ${escapeHtml(item.location)}</span>` : ''}
+              </div>
+              <div class="seizure-footer">
+                <span>${dateText}</span>
+                ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (itemError) {
+        console.error('❌ Erro ao renderizar item de apreensão:', itemError, item);
+      }
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+    console.log(`✅ ${limited.length} apreensões renderizadas com sucesso`);
+    console.log('📍 Container innerHTML atualizado');
+    console.log('Container HTML length:', container.innerHTML.length);
+    console.log('Container classes:', container.className);
+    
+    // IMPORTANTE: Observar elementos após renderizar
+    observeRevealElements();
+    console.log('👁️ observeRevealElements() chamada para animar cards');
+    
+    // Verificar visibilidade APÓS renderizar
+    setTimeout(() => {
+      console.log('🔍 Verificação PÓS-RENDERIZAÇÃO:');
+      console.log('Container display:', window.getComputedStyle(container).display);
+      console.log('Container visibility:', window.getComputedStyle(container).visibility);
+      console.log('Container opacity:', window.getComputedStyle(container).opacity);
+      console.log('Container HTML atualmente:', container.innerHTML.substring(0, 100) + '...');
+      
+      // Verificar se cards têm classe 'visible'
+      const cards = container.querySelectorAll('.seizure-card');
+      console.log(`📊 Total de cards: ${cards.length}`);
+      cards.forEach((card, idx) => {
+        console.log(`Card ${idx}: classes=${card.className}, opacity=${window.getComputedStyle(card).opacity}`);
+      });
+    }, 100);
+  } catch (error) {
+    console.error('❌ Erro ao renderizar apreensões:', error);
+  }
+}
+
+function updateStats() {
+  const today = new Date().toDateString();
+  const liveCount = members.filter(m => m.twitchLive === true || m.kickLive === true).length;
+  
+  // Apreensões de hoje
+  const todayCount = seizures.filter(s => new Date(s.date).toDateString() === today).length;
+  
+  // Apreensões da última semana (últimos 7 dias)
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const weekCount = seizures.filter(s => new Date(s.date) >= weekAgo).length;
+  
+  document.getElementById('stat-ao-vivo').textContent = liveCount;
+  document.getElementById('stat-membros').textContent = members.length;
+  document.getElementById('stat-hoje').textContent = todayCount;
+  document.getElementById('stat-semana').textContent = weekCount;
+  document.getElementById('stat-total').textContent = seizures.length;
+}
+
+// Carrossel: mostrar 4 itens por página com navegação
+
+function renderAll() {
+  renderHierarchy();
+  renderLiveMembers();
+  renderVehicles();
+  renderSeizures();
+  renderGallery();
+  updateStats();
+}
+
+// ==================== ADMIN PANELS ====================
+let currentAdminTab = 'members';
+let currentMembersTab = 'seizures';
+
+function openAdminPanel() {
+  const adminPasswordDialog = document.getElementById('adminPasswordDialog');
+  if (!adminPasswordDialog) {
+    console.error('ERROR: adminPasswordDialog element not found in DOM');
+    alert('Erro: Diálogo de senha não foi inicializado. Por favor, recarregue a página.');
+    return;
+  }
+  adminPasswordDialog.classList.add('show');
+  document.getElementById('adminPasswordInput').focus();
+}
+
+function submitAdminPassword() {
+  const pwd = document.getElementById('adminPasswordInput').value;
+  if (pwd === adminPassword) {
+    const adminOverlay = document.getElementById('admin-overlay');
+    if (!adminOverlay) {
+      console.error('ERROR: admin-overlay element not found in DOM');
+      alert('Erro: Painel não foi inicializado. Por favor, recarregue a página.');
+      return;
+    }
+    adminOverlay.classList.add('open');
+    switchAdminTab('members');
+    closePasswordDialog('admin');
+  } else if (pwd) {
+    alert("Senha incorreta!");
+    document.getElementById('adminPasswordInput').value = '';
+    document.getElementById('adminPasswordInput').focus();
+  }
+}
+
+function openMembersPanel() {
+  const membersPasswordDialog = document.getElementById('membersPasswordDialog');
+  if (!membersPasswordDialog) {
+    console.error('ERROR: membersPasswordDialog element not found in DOM');
+    alert('Erro: Diálogo de senha não foi inicializado. Por favor, recarregue a página.');
+    return;
+  }
+  closeAdminMenu();
+  membersPasswordDialog.classList.add('show');
+  document.getElementById('membersPasswordInput').focus();
+}
+
+function toggleAdminMenu() {
+  const menu = document.getElementById('admin-options');
+  const toggle = document.getElementById('adminMenuToggle');
+  if (!menu || !toggle) return;
+  const show = !menu.classList.contains('show');
+  menu.classList.toggle('show', show);
+  toggle.setAttribute('aria-expanded', String(show));
+  menu.setAttribute('aria-hidden', String(!show));
+}
+
+function closeAdminMenu() {
+  const menu = document.getElementById('admin-options');
+  const toggle = document.getElementById('adminMenuToggle');
+  if (!menu || !toggle) return;
+  menu.classList.remove('show');
+  toggle.setAttribute('aria-expanded', 'false');
+  menu.setAttribute('aria-hidden', 'true');
+}
+
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('admin-options');
+  const toggle = document.getElementById('adminMenuToggle');
+  if (!menu || !toggle) return;
+  if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+    closeAdminMenu();
+  }
+});
+
+function submitMembersPassword() {
+  const pwd = document.getElementById('membersPasswordInput').value;
+  if (pwd === membersPassword) {
+    const membersOverlay = document.getElementById('members-overlay');
+    if (!membersOverlay) {
+      console.error('ERROR: members-overlay element not found in DOM');
+      alert('Erro: Painel não foi inicializado. Por favor, recarregue a página.');
+      return;
+    }
+    membersOverlay.classList.add('open');
+    switchMembersTab('seizures');
+    closePasswordDialog('members');
+  } else if (pwd) {
+    alert("Senha incorreta!");
+    document.getElementById('membersPasswordInput').value = '';
+    document.getElementById('membersPasswordInput').focus();
+  }
+}
+
+function closePasswordDialog(type) {
+  if (type === 'admin') {
+    const adminPasswordDialog = document.getElementById('adminPasswordDialog');
+    if (adminPasswordDialog) {
+      adminPasswordDialog.classList.remove('show');
+      document.getElementById('adminPasswordInput').value = '';
+    }
+  } else if (type === 'members') {
+    const membersPasswordDialog = document.getElementById('membersPasswordDialog');
+    if (membersPasswordDialog) {
+      membersPasswordDialog.classList.remove('show');
+      document.getElementById('membersPasswordInput').value = '';
+    }
+  }
+}
+
+function closeAdminPanel() {
+  const adminOverlay = document.getElementById('admin-overlay');
+  if (adminOverlay) {
+    adminOverlay.classList.remove('open');
+  }
+}
+
+function closeMembersPanel() {
+  const membersOverlay = document.getElementById('members-overlay');
+  if (membersOverlay) {
+    membersOverlay.classList.remove('open');
+  }
+}
+
+function switchAdminTab(tab) {
+  currentAdminTab = tab;
+  const tabs = document.querySelectorAll('#admin-overlay .admin-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  if (tab === 'members') {
+    tabs[0].classList.add('active');
+    renderAdminMembers();
+  } else if (tab === 'vehicles') {
+    tabs[1].classList.add('active');
+    renderAdminVehicles();
+  } else if (tab === 'seizures') {
+    tabs[2].classList.add('active');
+    renderAdminSeizures();
+  } else if (tab === 'gallery') {
+    tabs[3].classList.add('active');
+    renderAdminGallery();
+  } else if (tab === 'rankOrder') {
+    tabs[4].classList.add('active');
+    renderAdminRankOrder();
+  } else if (tab === 'settings') {
+    tabs[5].classList.add('active');
+    renderAdminSettings();
+  }
+}
+
+function switchMembersTab(tab) {
+  currentMembersTab = tab;
+  const tabs = document.querySelectorAll('#members-overlay .admin-tab');
+  tabs.forEach(t => t.classList.remove('active'));
+  if (tab === 'seizures') {
+    tabs[0].classList.add('active');
+    renderMembersSeizures();
+  } else if (tab === 'gallery') {
+    tabs[1].classList.add('active');
+    renderMembersGallery();
+  } else if (tab === 'vehicles') {
+    tabs[2].classList.add('active');
+    renderMembersVehicles();
+  } else if (tab === 'members') {
+    tabs[3].classList.add('active');
+    renderMembersMembers();
+  }
+}
+
+// ========== ADMIN FULL PANEL ==========
+function renderAdminMembers() {
+  const body = document.getElementById('admin-body');
+  // Buscar hierarquias únicas existentes
+  const existingRanks = [...new Set(members.map(m => m.rank || "Membro"))];
+  const rankOptions = existingRanks.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR MEMBRO</h3>
+      <div class="form-group"><label>NOME</label><input id="new-name" placeholder="Nome"></div>
+      <div class="form-group"><label>PATENTE POLICIAL</label><input id="new-police-rank" placeholder="Ex: 3º Sargento, Cabo, Soldado..."></div>
+      <div class="form-group"><label>HIERARQUIA</label><select id="new-rank"><option value="">-- Selecione ou crie nova --</option>${rankOptions}<option value="__new__">+ CRIAR NOVA</option></select><input id="new-rank-custom" placeholder="Nome da hierarquia" style="display:none; margin-top: 4px;"></div>
+      <div class="form-group"><label>NÍVEL</label><input id="new-level" type="number" value="1"></div>
+      <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+      <div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="new-avatar" placeholder="https://..."></div>
+      <div class="form-group"><label>TWITCH</label><input id="new-twitch" placeholder="username (opcional)"></div>
+      <div class="form-group"><label>KICK</label><input id="new-kick" placeholder="username (opcional)"></div>
+      <button class="btn btn-primary" onclick="addMember()">ADICIONAR MEMBRO</button>
+    </div>
+    <div id="members-list"></div>
+  `;
+  
+  // Listener para mostrar/ocultar input de nova hierarquia
+  document.getElementById('new-rank').addEventListener('change', function() {
+    const customInput = document.getElementById('new-rank-custom');
+    if (this.value === '__new__') {
+      customInput.style.display = 'block';
+      customInput.focus();
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
+  
+  renderMembersList();
+}
+
+function renderMembersList() {
+  const container = document.getElementById('members-list');
+  if (!members.length) { container.innerHTML = '<div class="empty-card">Nenhum membro</div>'; return; }
+  let html = '';
+  members.forEach(m => {
+    html += `<div class="admin-list-item">
+      <div class="item-info">
+        <strong>${escapeHtml(m.name)}</strong><br>
+        <small style="color:var(--text-muted)">Patente: ${escapeHtml(m.policeRank || 'Soldado')} | Nv.${m.level} | ${m.status}</small>
+        ${m.twitch ? `<br><small>twitch.tv/${m.twitch}</small>` : ''}
+        ${m.kick ? `<br><small>kick.com/${m.kick}</small>` : ''}
+        <div class="inline-edit">
+          <select id="level-select-${m.id}" class="btn-edit" style="padding:2px 6px;font-size:0.65rem;">
+            ${[...Array(41).keys()].map(i => `<option value="${i}" ${m.level == i ? 'selected' : ''}>Nv.${i}</option>`).join('')}
+          </select>
+          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch" style="width:80px;" class="btn-edit">
+          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick" style="width:80px;" class="btn-edit">
+          <button class="btn-edit" style="padding:2px 10px;" onclick="updateMemberFields('${m.id}')">SALVAR</button>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-danger" style="padding: 4px 12px;" onclick="deleteMember('${m.id}')">REMOVER</button>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminVehicles() {
+  const body = document.getElementById('admin-body');
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR VIATURA</h3>
+      <div class="form-group"><label>MODELO</label><input id="new-vname" placeholder="Ex: BMW M5"></div>
+      <div class="form-group"><label>STATUS</label><select id="new-vstatus"><option value="disponivel">Disponível</option><option value="emuso">Em Uso</option><option value="manutencao">Manutenção</option></select></div>
+      <div class="form-group"><label>IMAGEM URL</label><input id="new-vimg" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="addVehicle()">ADICIONAR VIATURA</button>
+    </div>
+    <div id="vehicles-list"></div>
+  `;
+  renderVehiclesList();
+}
+
+function renderVehiclesList() {
+  const container = document.getElementById('vehicles-list');
+  if (!vehicles.length) { container.innerHTML = '<div class="empty-card">Nenhuma viatura</div>'; return; }
+  let html = '';
+  vehicles.forEach(v => {
+    html += `<div class="admin-list-item">
+      <div><strong>${escapeHtml(v.name)}</strong><br><small style="color:var(--text-muted)">${v.status}</small></div>
+      <button class="btn btn-danger" style="padding: 4px 12px;" onclick="deleteVehicle('${v.id}')">REMOVER</button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminSeizures() {
+  const body = document.getElementById('admin-body');
+  const memberOptions = members.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
+      <div class="form-group"><label>DESCRIÇÃO</label><textarea id="new-desc" rows="2" placeholder="Descrição..."></textarea></div>
+      <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
+      <div class="form-group"><label>LOCAL</label><input id="new-location" placeholder="Local"></div>
+      <div class="form-group"><label>IMAGEM URL</label><input id="new-simg" placeholder="https://..."></div>
+      <div class="form-group"><label>BO URL</label><input id="new-bo" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR APREENSÃO</button>
+    </div>
+    <div id="seizures-list"></div>
+  `;
+  renderSeizuresList();
+}
+
+function renderSeizuresList() {
+  const container = document.getElementById('seizures-list');
+  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma apreensão</div>'; return; }
+  let html = '';
+  [...seizures].reverse().forEach(s => {
+    html += `<div class="admin-list-item">
+      <div><strong>${escapeHtml(s.description.substring(0, 40))}</strong><br><small style="color:var(--text-muted)">${s.member || ''} | ${new Date(s.date).toLocaleDateString('pt-BR')}</small></div>
+      <button class="btn btn-danger" style="padding: 4px 12px;" onclick="deleteSeizure('${s.id}')">REMOVER</button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminGallery() {
+  const body = document.getElementById('admin-body');
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR FOTO À GALERIA</h3>
+      <div class="form-group"><label>TÍTULO</label><input id="new-gallery-title" placeholder="Título da foto"></div>
+      <div class="form-group"><label>URL DA IMAGEM</label><input id="new-gallery-img" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="addGalleryImage()">ADICIONAR À GALERIA</button>
+    </div>
+    <div id="gallery-list"></div>
+  `;
+  renderGalleryList();
+}
+
+function renderGalleryList() {
+  const container = document.getElementById('gallery-list');
+  if (!gallery.length) { container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>'; return; }
+  let html = '';
+  [...gallery].reverse().forEach(g => {
+    html += `<div class="admin-list-item">
+      <div><strong>${escapeHtml(g.title || 'Sem título')}</strong><br><small style="color:var(--text-muted)">${new Date(g.date).toLocaleDateString('pt-BR')}</small></div>
+      <button class="btn btn-danger" style="padding: 4px 12px;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminRankOrder() {
+  const body = document.getElementById('admin-body');
+  const ranks = [...new Set(members.map(m => m.rank || "Membro"))];
+  
+  ranks.forEach(rank => {
+    if (!rankOrder[rank]) {
+      rankOrder[rank] = Object.keys(rankOrder).length + 1;
+    }
+  });
+  
+  const sortedRanks = [...ranks].sort((a,b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
+  
+  let html = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REORGANIZAR HIERARQUIA</h3>
+      <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 16px;">Clique nos botões para mover as hierarquias de ordem</p>
+      <div id="rank-list">
+  `;
+  
+  sortedRanks.forEach((rank, index) => {
+    html += `
+      <div class="rank-item" data-rank="${escapeHtml(rank)}">
+        <div><strong>${escapeHtml(rank)}</strong><br><small style="color:var(--text-muted)">${members.filter(m => m.rank === rank).length} membro(s)</small></div>
+        <div class="rank-actions">
+          <button onclick="moveRankUp('${escapeHtml(rank)}')" ${index === 0 ? 'disabled style="opacity:0.5;"' : ''}>↑ SUBIR</button>
+          <button onclick="moveRankDown('${escapeHtml(rank)}')" ${index === sortedRanks.length - 1 ? 'disabled style="opacity:0.5;"' : ''}>↓ DESCER</button>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `
+      </div>
+      <button class="btn btn-primary" style="margin-top: 16px;" onclick="saveRankOrderAndRefresh()">SALVAR E ATUALIZAR</button>
+    </div>
+  `;
+  body.innerHTML = html;
+}
+
+function renderAdminSettings() {
+  const body = document.getElementById('admin-body');
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DO ADMIN</h3>
+      <div class="form-group"><label>SENHA ATUAL</label><input type="password" id="admin-old-pwd" placeholder="Senha atual"></div>
+      <div class="form-group"><label>NOVA SENHA</label><input type="password" id="admin-new-pwd" placeholder="Nova senha"></div>
+      <div class="form-group"><label>CONFIRMAR NOVA SENHA</label><input type="password" id="admin-conf-pwd" placeholder="Confirmar"></div>
+      <button class="btn btn-primary" onclick="changeAdminPassword()">ALTERAR SENHA ADMIN</button>
+    </div>
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DOS MEMBROS</h3>
+      <div class="form-group"><label>SENHA ATUAL DO ADMIN</label><input type="password" id="members-old-pwd" placeholder="Senha atual do admin"></div>
+      <div class="form-group"><label>NOVA SENHA MEMBROS</label><input type="password" id="members-new-pwd" placeholder="Nova senha para membros"></div>
+      <div class="form-group"><label>CONFIRMAR NOVA SENHA</label><input type="password" id="members-conf-pwd" placeholder="Confirmar"></div>
+      <button class="btn btn-primary" onclick="changeMembersPassword()">ALTERAR SENHA MEMBROS</button>
+    </div>
+  `;
+}
+
+function changeAdminPassword() {
+  const oldPwd = document.getElementById('admin-old-pwd').value;
+  const newPwd = document.getElementById('admin-new-pwd').value;
+  const confPwd = document.getElementById('admin-conf-pwd').value;
+  if (oldPwd !== adminPassword) { alert("Senha atual incorreta!"); return; }
+  if (!newPwd) { alert("Nova senha não pode ser vazia!"); return; }
+  if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
+  adminPassword = newPwd;
+  saveData();
+  alert("Senha do ADMIN alterada com sucesso!");
+  renderAdminSettings();
+}
+
+function changeMembersPassword() {
+  const adminOldPwd = document.getElementById('members-old-pwd').value;
+  const newPwd = document.getElementById('members-new-pwd').value;
+  const confPwd = document.getElementById('members-conf-pwd').value;
+  if (adminOldPwd !== adminPassword) { alert("Senha do ADMIN incorreta!"); return; }
+  if (!newPwd) { alert("Nova senha não pode ser vazia!"); return; }
+  if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
+  membersPassword = newPwd;
+  saveData();
+  alert("Senha do painel MEMBROS alterada com sucesso!");
+  renderAdminSettings();
+}
+
+// ========== MEMBERS LIMITED PANEL ==========
+function renderMembersSeizures() {
+  const body = document.getElementById('members-body');
+  const memberOptions = members.map(m => `<option value="${escapeHtml(m.name)}">${escapeHtml(m.name)}</option>`).join('');
+  body.innerHTML = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
+      <div class="form-group"><label>DESCRIÇÃO</label><textarea id="m-new-desc" rows="2" placeholder="Descrição..."></textarea></div>
+      <div class="form-group"><label>MEMBRO RESPONSÁVEL</label><select id="m-new-member"><option value="">-- Selecione --</option>${memberOptions}</select></div>
+      <div class="form-group"><label>LOCAL</label><input id="m-new-location" placeholder="Local"></div>
+      <div class="form-group"><label>IMAGEM URL</label><input id="m-new-simg" placeholder="https://..."></div>
+      <div class="form-group"><label>BO URL</label><input id="m-new-bo" placeholder="https://..."></div>
+      <button class="btn btn-primary" onclick="addSeizureMembers()">REGISTRAR APREENSÃO</button>
+    </div>
+    <div id="seizures-list-members"></div>
+  `;
+  renderSeizuresListMembers();
+}
+
+function renderSeizuresListMembers() {
+  const container = document.getElementById('seizures-list-members');
+  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma apreensão</div>'; return; }
+  let html = '';
+  [...seizures].reverse().forEach(s => {
+    html += `<div class="admin-list-item">
+      <div><strong>${escapeHtml(s.description.substring(0, 40))}</strong><br><small style="color:var(--text-muted)">${s.member || ''} | ${new Date(s.date).toLocaleDateString('pt-BR')}</small></div>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+function addSeizureMembers() {
+  const desc = document.getElementById('m-new-desc').value.trim();
+  const member = document.getElementById('m-new-member').value;
+  const location = document.getElementById('m-new-location').value.trim();
+  const imageUrl = document.getElementById('m-new-simg').value.trim();
+  const boImageUrl = document.getElementById('m-new-bo').value.trim();
+  if (!desc) { alert("Informe a descrição"); return; }
+  seizures.push({ id: Date.now().toString(), description: desc, member, location, imageUrl, boImageUrl, date: new Date().toISOString() });
+  saveData();
+  renderAll();
+  renderMembersSeizures();
+}
+
+function renderMembersVehicles() {
+  const body = document.getElementById('members-body');
+  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar viaturas.</div>`;
+}
+
+function renderMembersGallery() {
+  const body = document.getElementById('members-body');
+  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar a galeria.</div>`;
+}
+
+function renderMembersMembers() {
+  const body = document.getElementById('members-body');
+  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar membros.</div>`;
+}
+
+// ========== CRUD OPERATIONS ==========
+function updateMemberFields(id) {
+  const newLevel = document.getElementById(`level-select-${id}`).value;
+  const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
+  const newKickRaw = document.getElementById(`kick-input-${id}`).value.trim();
+  const newKick = normalizeKickUsername(newKickRaw);
+  const member = members.find(m => m.id === id);
+  if (member) {
+    member.level = newLevel;
+    member.twitch = newTwitch || null;
+    member.kick = newKick || null;
+    saveData();
+    renderAll();
+    renderAdminMembers();
+    updateAllStreamStatus();
+  }
+}
+
+function addMember() {
+  const name = document.getElementById('new-name').value.trim();
+  const policeRank = document.getElementById('new-police-rank').value.trim();
+  let rank = document.getElementById('new-rank').value.trim();
+  
+  // Se selecionou "criar nova", pegar o valor do input customizado
+  if (rank === '__new__') {
+    rank = document.getElementById('new-rank-custom').value.trim();
+  }
+  
+  const level = document.getElementById('new-level').value;
+  const status = document.getElementById('new-status').value;
+  const avatarUrl = document.getElementById('new-avatar').value.trim();
+  const twitch = document.getElementById('new-twitch').value.trim().toLowerCase();
+  const kickRaw = document.getElementById('new-kick').value.trim();
+  const kick = normalizeKickUsername(kickRaw);
+  
+  if (!name || !policeRank) { alert("Preencha nome e patente policial"); return; }
+  if (!rank) { alert("Selecione ou crie uma hierarquia"); return; }
+  
+  const newMember = { 
+    id: Date.now().toString(), 
+    name, 
+    policeRank: policeRank || 'Soldado', 
+    rank,  // NOVO: campo de hierarquia
+    level, 
+    status, 
+    avatarUrl, 
+    twitch, 
+    kick, 
+  };
+
+  members.push(newMember);
+  saveData();
+  renderAll();
+  renderAdminMembers();
+  resetAddMemberForm();
+}
+
+function resetAddMemberForm() {
+  document.getElementById('new-name').value = '';
+  document.getElementById('new-police-rank').value = '';
+  document.getElementById('new-rank').value = '';
+  document.getElementById('new-rank-custom').value = '';
+  document.getElementById('new-level').value = '';
+  document.getElementById('new-status').value = 'ativo';
+  document.getElementById('new-avatar').value = '';
+  document.getElementById('new-twitch').value = '';
+  document.getElementById('new-kick').value = '';
+}
+
+function deleteMember(id) {
+  if (!confirm("Remover este membro permanentemente?")) return;
+  members = members.filter(m => m.id !== id);
+  saveData();
+  renderAll();
+  renderAdminMembers();
+}
+
+function addVehicle() {
+  const name = document.getElementById('new-vname').value.trim();
+  const status = document.getElementById('new-vstatus').value;
+  const imageUrl = document.getElementById('new-vimg').value.trim();
+  if (!name) { alert("Informe o modelo"); return; }
+  vehicles.push({ id: Date.now().toString(), name, status, imageUrl });
+  saveData();
+  renderAll();
+  renderAdminVehicles();
+}
+
+function deleteVehicle(id) {
+  if (!confirm("Remover esta viatura?")) return;
+  vehicles = vehicles.filter(v => v.id !== id);
+  saveData();
+  renderAll();
+  renderAdminVehicles();
+}
+
+function addSeizure() {
+  const desc = document.getElementById('new-desc').value.trim();
+  const member = document.getElementById('new-member').value;
+  const location = document.getElementById('new-location').value.trim();
+  const imageUrl = document.getElementById('new-simg').value.trim();
+  const boImageUrl = document.getElementById('new-bo').value.trim();
+  if (!desc) { alert("Informe a descrição"); return; }
+  seizures.push({ id: Date.now().toString(), description: desc, member, location, imageUrl, boImageUrl, date: new Date().toISOString() });
+  saveData();
+  renderAll();
+  renderAdminSeizures();
+}
+
+function deleteSeizure(id) {
+  if (!confirm("Remover esta apreensão?")) return;
+  seizures = seizures.filter(s => s.id !== id);
+  saveData();
+  renderAll();
+  renderAdminSeizures();
+}
+
+function addGalleryImage() {
+  const title = document.getElementById('new-gallery-title').value.trim();
+  const imageUrl = document.getElementById('new-gallery-img').value.trim();
+  if (!imageUrl) { alert("Informe a URL da imagem"); return; }
+  gallery.push({ id: Date.now().toString(), title: title || 'Sem título', imageUrl, date: new Date().toISOString() });
+  saveData();
+  renderAll();
+  renderAdminGallery();
+}
+
+function deleteGalleryImage(id) {
+  if (!confirm("Remover esta foto da galeria?")) return;
+  gallery = gallery.filter(g => g.id !== id);
+  saveData();
+  renderAll();
+  renderAdminGallery();
+}
+
+function moveRankUp(rank) {
+  const currentPos = rankOrder[rank];
+  if (!currentPos) return;
+  let rankAbove = null;
+  let highestPosBelowCurrent = 0;
+  for (const [r, pos] of Object.entries(rankOrder)) {
+    if (pos < currentPos && pos > highestPosBelowCurrent) {
+      highestPosBelowCurrent = pos;
+      rankAbove = r;
+    }
+  }
+  if (rankAbove) {
+    rankOrder[rank] = highestPosBelowCurrent;
+    rankOrder[rankAbove] = currentPos;
+    renderAdminRankOrder();
+  }
+}
+
+function moveRankDown(rank) {
+  const currentPos = rankOrder[rank];
+  if (!currentPos) return;
+  let rankBelow = null;
+  let lowestPosAboveCurrent = 999;
+  for (const [r, pos] of Object.entries(rankOrder)) {
+    if (pos > currentPos && pos < lowestPosAboveCurrent) {
+      lowestPosAboveCurrent = pos;
+      rankBelow = r;
+    }
+  }
+  if (rankBelow) {
+    rankOrder[rank] = lowestPosAboveCurrent;
+    rankOrder[rankBelow] = currentPos;
+    renderAdminRankOrder();
+  }
+}
+
+function saveRankOrderAndRefresh() {
+  saveData();
+  renderAll();
+  alert("Ordem da hierarquia salva com sucesso!");
+}
+
+function escapeHtml(str) { if (!str) return ''; return String(str).replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+
+// ==================== MEMBER PROFILE PANEL ====================
+let currentMemberProfile = null;
+
+function openMemberProfile(memberName) {
+  try {
+    console.log('🔍 Abrindo perfil do membro:', memberName);
+    const member = members.find(m => m.name === memberName);
+    
+    if (!member) {
+      console.error('❌ Membro não encontrado:', memberName);
+      alert('Erro: Membro não encontrado');
+      return;
+    }
+    
+    currentMemberProfile = member;
+    renderMemberProfile(member);
+    
+    const panel = document.getElementById('member-profile-panel');
+    const backdrop = document.getElementById('member-profile-backdrop');
+    
+    if (panel) {
+      panel.classList.add('active');
+      console.log('✓ Painel ativado');
+    }
+    if (backdrop) {
+      backdrop.classList.add('active');
+      backdrop.onclick = closeMemberProfile;
+    }
+    
+    document.addEventListener('keydown', handleProfileEscape);
+  } catch (error) {
+    console.error('❌ Erro ao abrir perfil:', error);
+    alert('Erro ao abrir perfil do membro. Verifique o console.');
+  }
+}
+
+function closeMemberProfile() {
+  try {
+    console.log('🔴 Fechando painel do membro...');
+    const panel = document.getElementById('member-profile-panel');
+    const backdrop = document.getElementById('member-profile-backdrop');
+    
+    if (panel) {
+      panel.classList.remove('active');
+      console.log('✓ Classe active removida do painel');
+    }
+    if (backdrop) {
+      backdrop.classList.remove('active');
+      console.log('✓ Classe active removida do backdrop');
+    }
+    
+    currentMemberProfile = null;
+    document.removeEventListener('keydown', handleProfileEscape);
+    
+    // Re-renderizar apreensões com garantias múltiplas
+    console.log(`📊 Seizures array tem ${seizures.length} itens`);
+    console.log('📍 Tentando renderizar apreensões após fechar painel...');
+    
+    // Primeira tentativa - imediata
+    renderSeizures();
+    console.log('✓ renderSeizures() chamada (imediata)');
+    
+    // Segunda tentativa - após 100ms
+    setTimeout(() => {
+      renderSeizures();
+      console.log('✓ renderSeizures() chamada (100ms)');
+    }, 100);
+    
+    // Terceira tentativa - após 300ms
+    setTimeout(() => {
+      renderSeizures();
+      console.log('✓ renderSeizures() chamada (300ms)');
+    }, 300);
+    
+    // Quarta tentativa - após 500ms
+    setTimeout(() => {
+      const container = document.getElementById('seizures-content');
+      if (container && container.innerHTML.trim() === '') {
+        console.warn('⚠️ Container vazio! Renderizando novamente...');
+        renderSeizures();
+        console.log('✓ renderSeizures() chamada (500ms - fallback)');
+      }
+    }, 500);
+    
+    console.log('✓ Painel fechado');
+  } catch (error) {
+    console.error('❌ Erro ao fechar perfil:', error);
+    // Forçar renderização mesmo em caso de erro
+    setTimeout(() => {
+      renderSeizures();
+      console.log('✓ renderSeizures() chamada (fallback de erro)');
+    }, 300);
+  }
+}
+
+function handleProfileEscape(e) {
+  if (e.key === 'Escape') {
+    closeMemberProfile();
+  }
+}
+
+function renderMemberProfile(member) {
+  try {
+    console.log('🎨 Renderizando perfil de:', member.name);
+    const content = document.getElementById('member-profile-content');
+    if (!content) {
+      console.error('❌ Elemento member-profile-content não encontrado');
+      return;
+    }
+    
+    const seizureCount = getMemberSeizureCount(member.name);
+    const memberSeizures = seizures.filter(s => s.member === member.name || s.memberName === member.name);
+    const avatarUrl = member.avatarUrl || 'https://placehold.co/80x80/1a1a1a/9146ff?text=👤';
+    
+    console.log(`📊 ${member.name} tem ${seizureCount} apreensões`);
+    
+    let seizuresHtml = '';
+    if (memberSeizures.length === 0) {
+      seizuresHtml = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.85rem;">Nenhuma apreensão cadastrada</div>';
+    } else {
+      const sortedMemberSeizures = [...memberSeizures]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10);
+      seizuresHtml = sortedMemberSeizures.map((seizure, idx) => {
+        try {
+          const seizureDate = new Date(seizure.date);
+          const dateStr = seizureDate.toLocaleDateString('pt-BR');
+          const description = seizure.description || seizure.title || 'Apreensão sem descrição';
+          const imageUrl = seizure.imageUrl || seizure.boImageUrl || '';
+          const thumbnail = imageUrl || 'https://placehold.co/120x120/1a1a1a/ffffff?text=%3F';
+          return `
+            <div class="seizure-item" onclick="openImageModal('${escapeHtml(imageUrl)}')">
+              <div class="seizure-item-bg" style="background-image:url('${escapeHtml(thumbnail)}')"></div>
+              <div class="seizure-item-overlay">
+                <div class="seizure-item-title">${escapeHtml(description)}</div>
+                <div class="seizure-item-date">${dateStr}</div>
+              </div>
+            </div>
+          `;
+        } catch (e) {
+          console.error('Erro ao renderizar apreensão:', e, seizure);
+          return '';
+        }
+      }).join('');
+    }
+    
+    const status = member.status === 'ativo' ? '🟢 Ativo' : '🔴 Inativo';
+    const statusColor = member.status === 'ativo' ? 'var(--success)' : 'var(--danger)';
+    
+    content.innerHTML = `
+      <div class="member-profile-main-row">
+        <div class="member-profile-hero">
+          <div class="member-profile-avatar-wrapper">
+            <div class="member-profile-avatar-inner">
+              <img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(member.name)}" class="member-profile-avatar" onerror="this.src='https://placehold.co/140x140/1a1a1a/9146ff?text=👤'">
+              <div class="member-avatar-overlay">
+                <div class="member-avatar-title">${escapeHtml(member.name)}</div>
+                <div class="member-avatar-badges">
+                  <span class="member-profile-rank">${escapeHtml(member.policeRank || 'Soldado')}</span>
+                  <span class="member-profile-hierarchy">${escapeHtml(member.rank || 'Membro')}</span>
+                  ${member.twitch ? `
+                  <a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="twitch-link" aria-label="Abrir canal Twitch">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2.149 0l-1.612 4.119v16.836h5.731v3.045h3.224l3.045-3.045h4.657l6.767-6.767V0H2.149zm15.966 13.23l-3.737 3.737H9.851L7.347 19.28v-2.313H4.028V1.577h14.087v11.653z" fill="currentColor"/>
+                      <rect x="11.636" y="4.769" width="1.577" height="5.731" fill="currentColor"/>
+                      <rect x="15.825" y="4.769" width="1.577" height="5.731" fill="currentColor"/>
+                    </svg>
+                  </a>
+                  ` : ''}
+                </div>
+                <div class="member-avatar-stats">
+                  <div class="member-avatar-stat">
+                    <span>Nível</span>
+                    <strong>${member.level || '-'}</strong>
+                  </div>
+                  <div class="member-avatar-stat">
+                    <span>Apreensões</span>
+                    <strong>${seizureCount}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="seizures-carousel-wrapper">
+        <div class="seizures-carousel-title">📸 Últimas 10 apreensões</div>
+        <div class="seizures-carousel-container">
+          ${seizuresHtml}
+        </div>
+      </div>
+    `;
+
+    console.log('✓ Perfil renderizado com sucesso');
+  } catch (error) {
+    console.error('❌ Erro ao renderizar perfil:', error);
+    const content = document.getElementById('member-profile-content');
+    if (content) {
+      content.innerHTML = `<div style="padding: 20px; color: var(--danger);">Erro ao carregar perfil. Verifique o console.</div>`;
+    }
+  }
+}
+
+function navigationMemberProfile(direction) {
+  try {
+    if (!currentMemberProfile) return;
+    
+    const currentIndex = members.findIndex(m => m.name === currentMemberProfile.name);
+    let newIndex = currentIndex;
+    
+    if (direction === 'prev' && currentIndex > 0) {
+      newIndex = currentIndex - 1;
+    } else if (direction === 'next' && currentIndex < members.length - 1) {
+      newIndex = currentIndex + 1;
+    }
+    
+    if (newIndex !== currentIndex) {
+      const newMember = members[newIndex];
+      console.log('➡️ Navegando para:', newMember.name);
+      openMemberProfile(newMember.name);
+    }
+  } catch (error) {
+    console.error('❌ Erro ao navegar:', error);
+  }
+}
+
+function openImageModal(imageUrl) {
+  try {
+    if (!imageUrl) {
+      console.warn('⚠️ URL de imagem vazia');
+      return;
+    }
+    const modal = document.getElementById('imgModal');
+    const modalImg = document.getElementById('img01');
+    
+    if (modal && modalImg) {
+      modal.style.display = 'block';
+      modalImg.src = imageUrl;
+      console.log('📸 Abrindo imagem');
+    } else {
+      console.error('❌ Elementos do modal não encontrados');
+    }
+  } catch (error) {
+    console.error('❌ Erro ao abrir imagem:', error);
+  }
+}
+
+// ==================== REVEAL ON SCROLL ====================
+function initRevealOnScroll() {
+  // Função substituída por initRevealObserver() e observeRevealElements()
+  // que reutilizam o observer global
+  observeRevealElements();
+}
+
+// ==================== INICIALIZAÇÃO DE EVENT LISTENERS ====================
+function initEventListeners() {
+  // Listener de click para carrossel
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.carousel-btn[data-carousel-type][data-carousel-direction]');
+    if (btn && !btn.disabled) {
+      const type = btn.dataset.carouselType;
+      const direction = btn.dataset.carouselDirection;
+      carouselPrevNext(type, direction);
+    }
+  });
+
+  // Navegação por teclado no carrossel
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      // Verificar se estamos dentro de um input
+      if (e.target.tagName === 'INPUT') return;
+      
+      const carousels = document.querySelectorAll('[id$="-content"]');
+      let currentCarousel = null;
+      
+      // Encontrar qual carrossel está mais próximo do foco
+      for (const carousel of carousels) {
+        if (carousel.querySelector('.carousel-btn')) {
+          currentCarousel = carousel;
+          break;
+        }
+      }
+      
+      if (currentCarousel) {
+        const buttons = currentCarousel.querySelectorAll('.carousel-btn[data-carousel-type]');
+        if (buttons.length > 0) {
+          const type = buttons[0].dataset.carouselType;
+          const direction = e.key === 'ArrowLeft' ? 'prev' : 'next';
+          const btn = currentCarousel.querySelector(`[data-carousel-direction="${direction}"]`);
+          if (btn && !btn.disabled) {
+            carouselPrevNext(type, direction);
+          }
+        }
+      }
+    }
+  });
+}
+
+// ==================== INIT ====================
+// ==================== FIREBASE INITIALIZATION ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyCozdD373hfDCauvNX0rkMJzSgLzB-rySw",
+  authDomain: "rocam-mtp.firebaseapp.com",
+  databaseURL: "https://rocam-mtp-default-rtdb.firebaseio.com",
+  projectId: "rocam-mtp",
+  storageBucket: "rocam-mtp.firebasestorage.app",
+  messagingSenderId: "737641702548",
+  appId: "1:737641702548:web:013c2ca52cfffabcb8c081",
+  measurementId: "G-1JTJ77R5N1"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+console.log('✓ Firebase inicializado');
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Configurar intro ANTES de carregar dados
+  const intro = document.getElementById('intro');
+  const skipSplash = sessionStorage.getItem('rocamSkipSplash') === 'true';
+  
+  console.log('🔄 DOMContentLoaded iniciado');
+  console.log('intro elemento:', intro ? '✓ encontrado' : '✗ não encontrado');
+  console.log('skipSplash:', skipSplash);
+  
+  // Função para remover o intro
+  const hideIntro = () => {
+    if (intro && !intro.classList.contains('hidden')) {
+      console.log('🎬 Removendo intro...');
+      intro.classList.add('hidden');
+      initRevealOnScroll();
+    }
+  };
+  
+  if (!skipSplash && intro) {
+    // Se é primeira vez, espera 4.5s antes de esconder o intro
+    console.log('⏳ Primeira visita - aguardando 4.5s');
+    sessionStorage.setItem('rocamSkipSplash', 'true');
+    setTimeout(hideIntro, 4500);
+    
+    // FALLBACK: Se ainda estiver visível após 8s, força remover
+    setTimeout(() => {
+      if (intro && !intro.classList.contains('hidden')) {
+        console.log('⚠️ FALLBACK: Forçando remoção do intro após 8s');
+        hideIntro();
+      }
+    }, 8000);
+  } else {
+    // Se já visitou antes, esconde intro imediatamente
+    console.log('✓ Visita anterior - removendo intro imediatamente');
+    if (intro) {
+      intro.classList.add('hidden');
+    }
+    initRevealOnScroll();
+  }
+  
+  // Carregar dados do Firebase (agora sim, após intro configurado)
+  console.log('📡 Iniciando carregamento do Firebase...');
+  loadData();
+  initRevealObserver();
+  initEventListeners();
+  
+  // Atualizar status dos streams em background
+  updateAllStreamStatus().catch(err => console.error('Erro ao atualizar status dos streams:', err));
+  const streamStatusInterval = setInterval(() => {
+    updateAllStreamStatus().catch(err => console.error('Erro ao atualizar status dos streams:', err));
+  }, 60000);
+  
+  // Criar overlays com tratamento de erros
+  try {
+    const adminOverlay = document.createElement('div');
+    adminOverlay.className = 'overlay';
+    adminOverlay.id = 'admin-overlay';
+    adminOverlay.innerHTML = `
+      <div class="admin-panel">
+        <div class="admin-header"><h2>PAINEL ADMIN</h2><button class="btn btn-secondary" onclick="closeAdminPanel()">FECHAR</button></div>
+        <div class="admin-tabs">
+          <div class="admin-tab active">MEMBROS</div>
+          <div class="admin-tab">VIATURAS</div>
+          <div class="admin-tab">APREENSÕES</div>
+          <div class="admin-tab">GALERIA</div>
+          <div class="admin-tab">ORDEM</div>
+          <div class="admin-tab">CONFIG</div>
+        </div>
+        <div class="admin-body" id="admin-body"></div>
+      </div>
+    `;
+    document.body.appendChild(adminOverlay);
+    console.log('✓ Admin overlay created successfully');
+    
+    const membersOverlay = document.createElement('div');
+    membersOverlay.className = 'overlay';
+    membersOverlay.id = 'members-overlay';
+    membersOverlay.innerHTML = `
+      <div class="admin-panel">
+        <div class="admin-header"><h2>PAINEL MEMBROS</h2><button class="btn btn-secondary" onclick="closeMembersPanel()">FECHAR</button></div>
+        <div class="admin-tabs">
+          <div class="admin-tab active">APREENSÕES</div>
+          <div class="admin-tab">GALERIA</div>
+          <div class="admin-tab">VIATURAS</div>
+          <div class="admin-tab">MEMBROS</div>
+        </div>
+        <div class="admin-body" id="members-body"></div>
+      </div>
+    `;
+    document.body.appendChild(membersOverlay);
+    console.log('✓ Members overlay created successfully');
+    
+    // Re-attach event listeners
+    const adminTabs = document.querySelectorAll('#admin-overlay .admin-tab');
+    if (adminTabs.length >= 6) {
+      adminTabs[0].onclick = () => switchAdminTab('members');
+      adminTabs[1].onclick = () => switchAdminTab('vehicles');
+      adminTabs[2].onclick = () => switchAdminTab('seizures');
+      adminTabs[3].onclick = () => switchAdminTab('gallery');
+      adminTabs[4].onclick = () => switchAdminTab('rankOrder');
+      adminTabs[5].onclick = () => switchAdminTab('settings');
+      console.log('✓ Admin tabs event listeners attached');
+    }
+    
+    const membersTabs = document.querySelectorAll('#members-overlay .admin-tab');
+    if (membersTabs.length >= 4) {
+      membersTabs[0].onclick = () => switchMembersTab('seizures');
+      membersTabs[1].onclick = () => switchMembersTab('gallery');
+      membersTabs[2].onclick = () => switchMembersTab('vehicles');
+      membersTabs[3].onclick = () => switchMembersTab('members');
+      console.log('✓ Members tabs event listeners attached');
+    }
+  } catch (error) {
+    console.error('ERROR creating admin/members overlays:', error);
+    alert('Erro ao inicializar painéis administrativos. Verifique o console para mais detalhes.');
+  }
+  
+  // Adicionar listener de scroll com proteção
+  if (!scrollListenerActive) {
+    scrollListenerActive = true;
+    const scrollHandler = () => {
+      const sections = document.querySelectorAll('section');
+      const navLinks = document.querySelectorAll('.nav-links a');
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    };
+    window.addEventListener('scroll', scrollHandler);
+  }
+});
+</script>
+
+<!-- MEMBER PROFILE PANEL -->
+<div class="member-profile-backdrop" id="member-profile-backdrop"></div>
+<div class="member-profile-panel" id="member-profile-panel">
+    <div class="member-profile-header">
+    <h2 style="font-size: 0.9rem; font-weight: 700;">PERFIL DO MEMBRO</h2>
+    <button class="member-profile-close" onclick="closeMemberProfile()">✕</button>
+  </div>
+  <div class="member-profile-content" id="member-profile-content">
+    <!-- Conteúdo será renderizado via JavaScript -->
+  </div>
+</div>
+
+</body>
+</html>
