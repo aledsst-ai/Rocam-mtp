@@ -8,13 +8,23 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg: #0a0a0a;
-      --bg-card: rgba(255, 255, 255, 0.06);
-      --bg-hover: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #f8fafc;
-      --text-muted: #cbd5e1;
+      --bg-card: rgba(17, 17, 17, 0.85);
+      --bg-hover: rgba(26, 26, 26, 0.9);
+      --border: rgba(34, 34, 34, 0.8);
+      --border-light: rgba(42, 42, 42, 0.8);
+      --text: #eaeaea;
+      --text-secondary: #888888;
+      --text-muted: #777777;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --twitch: #9146ff;
+      --twitch-dark: #772ce8;
+      --twitch-light: #a970ff;
       --radius: 8px;
-      --transition: all 0.3s ease;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
@@ -62,63 +72,76 @@
     }
 
     .gallery-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      position: relative;
+      min-height: 520px;
       overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       transition: var(--transition);
       cursor: pointer;
+      background: var(--bg-card);
+      display: block;
     }
 
     .gallery-card:hover {
       border-color: #ffffff;
-      transform: translateY(-4px);
-      background: var(--bg-hover);
+      transform: translateY(-2px);
     }
 
     .gallery-img {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: 480px;
+      height: 100%;
       object-fit: cover;
-      background: rgba(0,0,0,0.3);
       transition: transform 0.5s ease;
+      z-index: 1;
+    }
+
+    .gallery-img.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.18);
+      color: var(--text-muted);
+      font-size: 2rem;
     }
 
     .gallery-card:hover .gallery-img {
-      transform: scale(1.02);
+      transform: scale(1.05);
     }
 
-    .gallery-info {
-      padding: 16px;
+    .gallery-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      z-index: 2;
+    }
+
+    .gallery-card-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      padding: 20px;
+      gap: 6px;
     }
 
     .gallery-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      text-align: center;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #ffffff;
+      line-height: 1.2;
+      text-align: left;
     }
 
     .gallery-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.78);
       font-weight: 500;
-    }
-
-    .gallery-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .gallery-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-weight: 500;
+      text-align: left;
     }
 
     .back-button {
@@ -230,9 +253,10 @@
 
       const sorted = [...galleryData].sort((a, b) => new Date(b.date) - new Date(a.date));
       container.innerHTML = sorted.map((photo) => `
-        <div class="gallery-card" onclick="openModal('${escapeHtml(photo.imageUrl)}')">
-          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📸</div>'}
-          <div class="gallery-info">
+        <div class="gallery-card" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
+          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img placeholder">📸</div>'}
+          <div class="gallery-card-overlay"></div>
+          <div class="gallery-card-content">
             <div class="gallery-title">${escapeHtml(photo.title || 'Sem título')}</div>
             <div class="gallery-date">${photo.date ? new Date(photo.date).toLocaleDateString('pt-BR') : ''}</div>
           </div>
