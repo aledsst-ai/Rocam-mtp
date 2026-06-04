@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROCAM - Apreensões Completas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: rgba(255, 255, 255, 0.06);
+      --bg-hover: rgba(255, 255, 255, 0.12);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --text-muted: #cbd5e1;
+      --radius: 8px;
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image: url('https://i.ibb.co/HDhK8RfC/bg-ROC.png');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    .header {
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .filter-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .filter-row label {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-row select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 40px 12px 14px;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      min-width: 260px;
+      position: relative;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='rgba(255,255,255,0.8)' d='M1.5 1.5l4.5 4.5 4.5-4.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px 8px;
+    }
+
+    .filter-row select:hover,
+    .filter-row select:focus {
+      border-color: rgba(255, 255, 255, 0.32);
+      outline: none;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .filter-row select option {
+      background: #0a0a0a;
+      color: #ffffff;
+    }
+
+    .seizures-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .seizure-card {
+      position: relative;
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      min-height: 220px;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .seizure-card:hover {
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      background: var(--bg-hover);
+    }
+
+    .seizure-card-background {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: transform 0.5s ease;
+    }
+
+    .seizure-card-background--empty {
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.08), rgba(0,0,0,0.35));
+    }
+
+    .seizure-card:hover .seizure-card-background {
+      transform: scale(1.03);
+    }
+
+    .seizure-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.74) 100%);
+      z-index: 1;
+    }
+
+    .seizure-card-content {
+      position: relative;
+      z-index: 2;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .seizure-desc {
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.3;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+
+    .seizure-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .seizure-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+    }
+
+    .seizure-footer a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .seizure-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 12px 30px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 40px;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.32);
+      transform: translateY(-2px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      padding-top: 50px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+
+    .modal-close:hover {
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .seizures-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+      <a href="index.html" class="back-button">← VOLTAR</a>
+    <p>Todos os registros de apreensões da ROCAM</p>
+  </div>
+
+  <div class="container">
+    <div class="filter-row">
+      <label for="member-filter">Filtrar por membro:
+        <select id="member-filter">
+          <option value="">Todos os membros</option>
+        </select>
+      </label>
+    </div>
+    <div class="seizures-grid" id="seizures-complete"></div>
+  </div>
+
+  <div id="modal" class="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modal-image">
+  </div>
+
+  <script>
+    // Carregar dados do localStorage
+    function loadSeizuresData() {
+      const seizuresData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
+      const container = document.getElementById('seizures-complete');
+      const filterSelect = document.getElementById('member-filter');
+      const selectedMember = filterSelect?.value || '';
+      
+      populateMemberFilter(seizuresData);
+      const filteredSeizures = selectedMember
+        ? seizuresData.filter(s => String(s.member || '').trim() === selectedMember)
+        : seizuresData;
+      
+      if (!filteredSeizures.length) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhuma apreensão registrada</p>';
+        return;
+      }
+
+      // Ordenar por data decrescente
+      const sorted = [...filteredSeizures].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      container.innerHTML = sorted.map((seizure, idx) => {
+        const imageUrl = seizure.imageUrl ? escapeHtml(seizure.imageUrl) : 'https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem';
+        const clickAction = seizure.imageUrl ? `onclick="openModal('${imageUrl}')"` : '';
+        const dateText = `📅 ${new Date(seizure.date).toLocaleDateString('pt-BR')} às ${new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        return `
+          <div class="seizure-card" ${clickAction}>
+            <div class="seizure-card-background ${seizure.imageUrl ? '' : 'seizure-card-background--empty'}" style="background-image: url('${imageUrl}');"></div>
+            <div class="seizure-card-overlay"></div>
+            <div class="seizure-card-content">
+              <div class="seizure-desc">${escapeHtml(seizure.description)}</div>
+              <div class="seizure-meta">
+                ${seizure.member ? `<span>👮 ${escapeHtml(seizure.member)}</span>` : ''}
+                ${seizure.location ? `<span>📍 ${escapeHtml(seizure.location)}</span>` : ''}
+              </div>
+              <div class="seizure-footer">
+                <span>${dateText}</span>
+                ${seizure.boImageUrl ? `<a href="${escapeHtml(seizure.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function populateMemberFilter(seizuresData) {
+      const filterSelect = document.getElementById('member-filter');
+      if (!filterSelect) return;
+      const currentValue = filterSelect.value;
+      const members = [...new Set(seizuresData.map(s => String(s.member || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      filterSelect.innerHTML = '<option value="">Todos os membros</option>' + members.map(member => `\n          <option value="${escapeHtml(member)}"${member === currentValue ? ' selected' : ''}>${escapeHtml(member)}</option>`).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function openModal(src) {
+      document.getElementById('modal').style.display = 'block';
+      document.getElementById('modal-image').src = src;
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    // Fechar modal ao clicar fora da imagem
+    document.getElementById('modal').addEventListener('click', function(event) {
+      if (event.target === this) {
+        closeModal();
+      }
+    });
+
+    // Carregar dados ao iniciar
+    window.addEventListener('load', function() {
+      loadSeizuresData();
+      const filterSelect = document.getElementById('member-filter');
+      if (filterSelect) {
+        filterSelect.addEventListener('change', loadSeizuresData);
+      }
+    });
+
+    // Tecla ESC para fechar modal
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROCAM - Galeria Completa</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: rgba(255, 255, 255, 0.06);
+      --bg-hover: rgba(255, 255, 255, 0.12);
+      --border: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --text-muted: #cbd5e1;
+      --radius: 8px;
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      background-image: url('https://i.ibb.co/HDhK8RfC/bg-ROC.png');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    .header {
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .gallery-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .gallery-card:hover {
+      border-color: #ffffff;
+      transform: translateY(-4px);
+      background: var(--bg-hover);
+    }
+
+    .gallery-img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      background: rgba(0,0,0,0.3);
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-card:hover .gallery-img {
+      transform: scale(1.02);
+    }
+
+    .gallery-info {
+      padding: 16px;
+    }
+
+    .gallery-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .gallery-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .gallery-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .gallery-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 12px 30px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1.5px solid rgba(255, 255, 255, 0.18);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 40px;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.32);
+      transform: translateY(-2px);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      padding-top: 50px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      color: #ffffff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+
+    .modal-close:hover {
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      .header h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+      <a href="index.html" class="back-button">← VOLTAR</a>
+    <p>Todos os registros fotográficos da ROCAM</p>
+  </div>
+
+  <div class="container">
+    <div class="gallery-grid" id="gallery-complete"></div>
+  </div>
+
+  <div id="modal" class="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modal-image">
+  </div>
+
+  <script>
+    function loadGalleryData() {
+      const galleryData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      const container = document.getElementById('gallery-complete');
+
+      if (!galleryData.length) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhuma foto registrada na galeria</p>';
+        return;
+      }
+
+      const sorted = [...galleryData].sort((a, b) => new Date(b.date) - new Date(a.date));
+      container.innerHTML = sorted.map((photo) => `
+        <div class="gallery-card" onclick="openModal('${escapeHtml(photo.imageUrl)}')">
+          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📸</div>'}
+          <div class="gallery-info">
+            <div class="gallery-title">${escapeHtml(photo.title || 'Sem título')}</div>
+            <div class="gallery-date">${photo.date ? new Date(photo.date).toLocaleDateString('pt-BR') : ''}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function openModal(src) {
+      const modal = document.getElementById('modal');
+      const modalImage = document.getElementById('modal-image');
+      modalImage.src = src;
+      modal.style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    document.getElementById('modal').addEventListener('click', function(event) {
+      if (event.target === this) closeModal();
+    });
+
+    window.addEventListener('load', loadGalleryData);
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') closeModal();
+    });
+  </script>
+</body>
+</html>
