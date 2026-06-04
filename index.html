@@ -2239,6 +2239,12 @@ function sanitizeMembersData(data) {
   });
 }
 
+function normalizeArrayData(value) {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === 'object') return Object.values(value);
+  return [];
+}
+
 // Carrossel: índices de paginação
 let galleryPage = 0;
 let vehiclesPage = 0;
@@ -2345,9 +2351,9 @@ function loadData() {
           
           console.log('📦 Atualizando variáveis globais com dados do Firebase');
           members = sanitizeMembersData(data.members || []);
-          vehicles = data.vehicles || [];
-          seizures = data.seizures || [];
-          gallery = data.gallery || [];
+          vehicles = normalizeArrayData(data.vehicles);
+          seizures = normalizeArrayData(data.seizures);
+          gallery = normalizeArrayData(data.gallery);
           rankOrder = data.rankOrder || {};
           adminPassword = data.adminPassword || 'admin';
           membersPassword = data.membersPassword || '1234';
@@ -2886,7 +2892,7 @@ function renderVehicles() {
 }
 
 function renderGallery() {
-  const filtered = [...gallery].sort((a,b) => new Date(b.date) - new Date(a.date));
+  const filtered = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date));
   const container = document.getElementById('gallery-content');
   if (!filtered.length) {
     container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>';
@@ -2894,15 +2900,25 @@ function renderGallery() {
   }
   
   const limited = filtered.slice(0, 3); // Mostrar apenas 3
-  container.innerHTML = '<div class="simple-grid">' + limited.map((item, idx) => `
-    <div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
-      <img class="gallery-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">
-      <div class="gallery-info">
-        <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
-        <div class="gallery-date">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
+  container.innerHTML = '<div class="simple-grid">' + limited.map((item, idx) => {
+    const imageUrl = item.imageUrl ? String(item.imageUrl).trim() : '';
+    const safeImageUrl = escapeHtml(imageUrl);
+    const title = escapeHtml(item.title || 'Sem título');
+    const dateText = item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '';
+    const imgHtml = imageUrl
+      ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
+      : '<div class="gallery-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📸</div>';
+
+    return `
+      <div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
+        ${imgHtml}
+        <div class="gallery-info">
+          <div class="gallery-title">${title}</div>
+          <div class="gallery-date">${dateText}</div>
+        </div>
       </div>
-    </div>
-  `).join('') + '</div>';
+    `;
+  }).join('') + '</div>';
 }
 
 function renderSeizures() {

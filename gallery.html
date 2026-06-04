@@ -243,15 +243,19 @@
     function loadGalleryData() {
       const localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
       const db = firebase.database();
-      db.ref('rocam-data/gallery').once('value')
+      db.ref('rocam-data').once('value')
         .then(snapshot => {
-          const firebaseData = snapshot.val();
+          const firebaseRoot = snapshot.val();
           let galleryData = [];
-          if (Array.isArray(firebaseData)) {
-            galleryData = firebaseData;
-          } else if (firebaseData && typeof firebaseData === 'object') {
-            galleryData = Object.values(firebaseData);
-          } else {
+          if (firebaseRoot && firebaseRoot.gallery) {
+            const firebaseData = firebaseRoot.gallery;
+            if (Array.isArray(firebaseData)) {
+              galleryData = firebaseData;
+            } else if (firebaseData && typeof firebaseData === 'object') {
+              galleryData = Object.values(firebaseData);
+            }
+          }
+          if (!galleryData.length) {
             galleryData = localData;
           }
           localStorage.setItem('rocam_gallery', JSON.stringify(galleryData));

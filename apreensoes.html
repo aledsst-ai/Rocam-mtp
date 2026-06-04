@@ -360,15 +360,19 @@
       };
 
       const db = firebase.database();
-      db.ref('rocam-data/seizures').once('value')
+      db.ref('rocam-data').once('value')
         .then(snapshot => {
-          const firebaseData = snapshot.val();
+          const firebaseRoot = snapshot.val();
           let seizuresData = [];
-          if (Array.isArray(firebaseData)) {
-            seizuresData = firebaseData;
-          } else if (firebaseData && typeof firebaseData === 'object') {
-            seizuresData = Object.values(firebaseData);
-          } else {
+          if (firebaseRoot && firebaseRoot.seizures) {
+            const firebaseData = firebaseRoot.seizures;
+            if (Array.isArray(firebaseData)) {
+              seizuresData = firebaseData;
+            } else if (firebaseData && typeof firebaseData === 'object') {
+              seizuresData = Object.values(firebaseData);
+            }
+          }
+          if (!seizuresData.length) {
             seizuresData = localData;
           }
           renderData(seizuresData);
