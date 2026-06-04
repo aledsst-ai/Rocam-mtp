@@ -269,6 +269,22 @@
       }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCozdD373hfDCauvNX0rkMJzSgLzB-rySw",
+      authDomain: "rocam-mtp.firebaseapp.com",
+      databaseURL: "https://rocam-mtp-default-rtdb.firebaseio.com",
+      projectId: "rocam-mtp",
+      storageBucket: "rocam-mtp.firebasestorage.app",
+      messagingSenderId: "737641702548",
+      appId: "1:737641702548:web:013c2ca52cfffabcb8c081",
+      measurementId: "G-1JTJ77R5N1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    console.log('✓ Firebase inicializado (apreensoes.html)');
+  </script>
 </head>
 <body>
   <div class="header">
@@ -293,24 +309,20 @@
   </div>
 
   <script>
-    // Carregar dados do localStorage
-    function loadSeizuresData() {
-      const seizuresData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
+    function renderSeizuresGrid(seizuresData, selectedMember) {
       const container = document.getElementById('seizures-complete');
       const filterSelect = document.getElementById('member-filter');
-      const selectedMember = filterSelect?.value || '';
-      
-      populateMemberFilter(seizuresData);
       const filteredSeizures = selectedMember
         ? seizuresData.filter(s => String(s.member || '').trim() === selectedMember)
         : seizuresData;
-      
+
+      populateMemberFilter(seizuresData, selectedMember);
+
       if (!filteredSeizures.length) {
         container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhuma apreensão registrada</p>';
         return;
       }
 
-      // Ordenar por data decrescente
       const sorted = [...filteredSeizures].sort((a, b) => new Date(b.date) - new Date(a.date));
 
       container.innerHTML = sorted.map((seizure, idx) => {
@@ -337,7 +349,37 @@
       }).join('');
     }
 
-    function populateMemberFilter(seizuresData) {
+    function loadSeizuresData() {
+      const localData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
+      const filterSelect = document.getElementById('member-filter');
+      const selectedMember = filterSelect?.value || '';
+
+      const renderData = (seizuresData) => {
+        localStorage.setItem('rocam_seizures', JSON.stringify(seizuresData));
+        renderSeizuresGrid(seizuresData, selectedMember);
+      };
+
+      const db = firebase.database();
+      db.ref('rocam-data/seizures').once('value')
+        .then(snapshot => {
+          const firebaseData = snapshot.val();
+          let seizuresData = [];
+          if (Array.isArray(firebaseData)) {
+            seizuresData = firebaseData;
+          } else if (firebaseData && typeof firebaseData === 'object') {
+            seizuresData = Object.values(firebaseData);
+          } else {
+            seizuresData = localData;
+          }
+          renderData(seizuresData);
+        })
+        .catch(error => {
+          console.warn('⚠️ Erro ao carregar seizures do Firebase:', error);
+          renderData(localData);
+        });
+    }
+
+    function populateMemberFilter(seizuresData, selectedMember) {
       const filterSelect = document.getElementById('member-filter');
       if (!filterSelect) return;
       const currentValue = filterSelect.value;

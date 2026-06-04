@@ -187,6 +187,22 @@
       }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCozdD373hfDCauvNX0rkMJzSgLzB-rySw",
+      authDomain: "rocam-mtp.firebaseapp.com",
+      databaseURL: "https://rocam-mtp-default-rtdb.firebaseio.com",
+      projectId: "rocam-mtp",
+      storageBucket: "rocam-mtp.firebasestorage.app",
+      messagingSenderId: "737641702548",
+      appId: "1:737641702548:web:013c2ca52cfffabcb8c081",
+      measurementId: "G-1JTJ77R5N1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    console.log('✓ Firebase inicializado (gallery.html)');
+  </script>
 </head>
 <body>
   <div class="header">
@@ -204,8 +220,7 @@
   </div>
 
   <script>
-    function loadGalleryData() {
-      const galleryData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+    function renderGalleryGrid(galleryData) {
       const container = document.getElementById('gallery-complete');
 
       if (!galleryData.length) {
@@ -223,6 +238,29 @@
           </div>
         </div>
       `).join('');
+    }
+
+    function loadGalleryData() {
+      const localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      const db = firebase.database();
+      db.ref('rocam-data/gallery').once('value')
+        .then(snapshot => {
+          const firebaseData = snapshot.val();
+          let galleryData = [];
+          if (Array.isArray(firebaseData)) {
+            galleryData = firebaseData;
+          } else if (firebaseData && typeof firebaseData === 'object') {
+            galleryData = Object.values(firebaseData);
+          } else {
+            galleryData = localData;
+          }
+          localStorage.setItem('rocam_gallery', JSON.stringify(galleryData));
+          renderGalleryGrid(galleryData);
+        })
+        .catch(error => {
+          console.warn('⚠️ Erro ao carregar galeria do Firebase:', error);
+          renderGalleryGrid(localData);
+        });
     }
 
     function escapeHtml(text) {
