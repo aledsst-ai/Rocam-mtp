@@ -158,7 +158,7 @@
       white-space: nowrap;
     }
     .nav-brand img { width: 36px; height: 36px; border-radius: 6px; object-fit: contain; }
-    .nav-brand span { font-weight: 700; font-size: 1.08rem; letter-spacing: 0.24em; color: var(--text); text-transform: uppercase; }
+    .nav-brand span { font-weight: 700; font-size: 1.24rem; letter-spacing: 0; color: var(--text); text-transform: uppercase; }
     .nav-links {
       display: flex;
       align-items: center;
@@ -948,7 +948,7 @@
       font-family: inherit;
     }
     .home-title {
-      font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+      font-size: clamp(3rem, 5vw, 5rem);
       line-height: 1.05;
       margin-bottom: 12px;
       max-width: 100%;
@@ -1008,7 +1008,18 @@
       justify-content: center;
     }
     .stat:hover { border-color: #ffffff; transform: translateY(-2px); }
-    .stat-value { font-size: 1.3rem; font-weight: 700; color: var(--text); }
+    .stat-value {
+      display: inline-block;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: transform 0.2s ease, color 0.2s ease, text-shadow 0.2s ease;
+    }
+    .stat-value.update-active {
+      transform: scale(1.16);
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.45);
+    }
     .stat-label { font-size: 0.6rem; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
     
     /* Card especial ao vivo com ícone Twitch */
@@ -1357,19 +1368,57 @@
     
     /* Vehicles Card */
     .vehicle-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      position: relative;
+      min-height: 280px;
       overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       transition: var(--transition);
       cursor: pointer;
+      background: var(--bg-card);
+      display: block;
     }
-    .vehicle-card:hover { border-color: #ffffff; transform: translateY(-2px); background: var(--bg-hover); }
-    .vehicle-img { width: 100%; height: 280px; object-fit: cover; background: rgba(0,0,0,0.3); transition: transform 0.5s ease; }
-    .vehicle-card:hover .vehicle-img { transform: scale(1.02); }
-    .vehicle-info { padding: 20px; }
-    .vehicle-name { font-weight: 700; font-size: 1.1rem; text-align: center; }
+    .vehicle-card:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .vehicle-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      z-index: 1;
+    }
+    .vehicle-img.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.18);
+      color: var(--text-muted);
+      font-size: 2rem;
+    }
+    .vehicle-card:hover .vehicle-img { transform: scale(1.05); }
+    .vehicle-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      z-index: 2;
+    }
+    .vehicle-card-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      padding: 20px;
+      gap: 6px;
+    }
+    .vehicle-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #ffffff;
+      line-height: 1.2;
+    }
 
     /* Seizures Card */
     .seizure-card {
@@ -1456,20 +1505,64 @@
 
     /* Gallery Card */
     .gallery-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      position: relative;
+      min-height: 280px;
       overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       transition: var(--transition);
       cursor: pointer;
+      background: var(--bg-card);
+      display: block;
     }
-    .gallery-card:hover { border-color: #ffffff; transform: translateY(-2px); background: var(--bg-hover); }
-    .gallery-img { width: 100%; height: 480px; object-fit: cover; background: rgba(0,0,0,0.3); transition: transform 0.5s ease; }
-    .gallery-card:hover .gallery-img { transform: scale(1.02); }
-    .gallery-info { padding: 16px; }
-    .gallery-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; text-align: center; }
-    .gallery-date { font-size: 0.75rem; color: var(--text-muted); text-align: center; font-weight: 500; }
+    .gallery-card:hover { border-color: #ffffff; transform: translateY(-2px); }
+    .gallery-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      z-index: 1;
+    }
+    .gallery-img.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.18);
+      color: var(--text-muted);
+      font-size: 2rem;
+    }
+    .gallery-card:hover .gallery-img { transform: scale(1.05); }
+    .gallery-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      z-index: 2;
+    }
+    .gallery-card-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 100%;
+      padding: 20px;
+      gap: 6px;
+    }
+    .gallery-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #ffffff;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .gallery-date {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.78);
+      font-weight: 500;
+      text-align: left;
+    }
 
     /* Carrossel Refinado */
     .carousel-wrapper {
@@ -1952,6 +2045,9 @@
       ::-webkit-scrollbar { width: 4px; }
       .cards-grid { grid-template-columns: 1fr; }
     }
+    .footer-copyright {
+      font-weight: 700;
+    }
   </style>
   <script>
     try {
@@ -2054,7 +2150,6 @@
     <div class="about-grid">
       <div class="reveal-left"><img class="logo-img" src="https://i.ibb.co/ccGQWn19/Logo-ROCAM500x500.png" alt="Logo ROCAM"></div>
       <div class="reveal-right">
-        <h2 class="about-title">ROCAM - Ronda Ostensiva com Apoio de Motocicletas</h2>
         <p class="about-text">Tem como principal objetivo prestar apoio tático e operacional em acompanhamentos veiculares durante ocorrências em toda região Sul, atuando de forma estratégica principalmente em situações que envolvam veículos de duas rodas ou de pequeno porte. A nossa função se destaca pela alta mobilidade e rapidez de resposta, características essenciais para o deslocamento em áreas de difícil acesso, vias estreitas, becos e regiões onde uma viatura convencional de quatro rodas da PMC pode enfrentar maiores limitações de entrada, manobra ou progressão com segurança.</p>
       </div>
     </div>
@@ -2825,16 +2920,18 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
   currentItems.forEach((item, idx) => {
     if (carouselType === 'gallery') {
       html += `<div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
-        <img class="gallery-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro+ao+carregar'" alt="${escapeHtml(item.title || 'Foto da galeria')}">
-        <div class="gallery-info">
+        ${item.imageUrl ? `<img class="gallery-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro+ao+carregar'" alt="${escapeHtml(item.title || 'Foto da galeria')}">` : '<div class="gallery-img placeholder">📸</div>'}
+        <div class="gallery-card-overlay"></div>
+        <div class="gallery-card-content">
           <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
           <div class="gallery-date">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
         </div>
       </div>`;
     } else if (carouselType === 'vehicles') {
       html += `<div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
-        ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.name)}">` : '<div class="vehicle-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">🚗</div>'}
-        <div class="vehicle-info">
+        ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.name)}">` : '<div class="vehicle-img placeholder">🚗</div>'}
+        <div class="vehicle-card-overlay"></div>
+        <div class="vehicle-card-content">
           <div class="vehicle-name">${escapeHtml(item.name)}</div>
         </div>
       </div>`;
@@ -2888,8 +2985,9 @@ function renderVehicles() {
   
   container.innerHTML = '<div class="simple-grid">' + sorted.map((item, idx) => `
     <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
-      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">🚗</div>'}
-      <div class="vehicle-info">
+      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img placeholder">🚗</div>'}
+      <div class="vehicle-card-overlay"></div>
+      <div class="vehicle-card-content">
         <div class="vehicle-name">${escapeHtml(item.name)}</div>
       </div>
     </div>
@@ -2912,12 +3010,13 @@ function renderGallery() {
     const dateText = item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '';
     const imgHtml = imageUrl
       ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
-      : '<div class="gallery-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📸</div>';
+      : '<div class="gallery-img placeholder">📸</div>';
 
     return `
       <div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
         ${imgHtml}
-        <div class="gallery-info">
+        <div class="gallery-card-overlay"></div>
+        <div class="gallery-card-content">
           <div class="gallery-title">${title}</div>
           <div class="gallery-date">${dateText}</div>
         </div>
@@ -3035,11 +3134,39 @@ function updateStats() {
   weekAgo.setDate(weekAgo.getDate() - 7);
   const weekCount = seizures.filter(s => new Date(s.date) >= weekAgo).length;
   
-  document.getElementById('stat-ao-vivo').textContent = liveCount;
-  document.getElementById('stat-membros').textContent = members.length;
-  document.getElementById('stat-hoje').textContent = todayCount;
-  document.getElementById('stat-semana').textContent = weekCount;
-  document.getElementById('stat-total').textContent = seizures.length;
+  animateStatValue('stat-ao-vivo', liveCount);
+  animateStatValue('stat-membros', members.length);
+  animateStatValue('stat-hoje', todayCount);
+  animateStatValue('stat-semana', weekCount);
+  animateStatValue('stat-total', seizures.length);
+}
+
+function animateStatValue(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = Number(el.textContent) || 0;
+  if (start === value) {
+    el.textContent = value;
+    return;
+  }
+
+  const duration = 500;
+  const startTime = performance.now();
+
+  function tick(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const current = Math.floor(start + (value - start) * progress);
+    el.textContent = current;
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    } else {
+      el.textContent = value;
+      el.classList.add('update-active');
+      setTimeout(() => el.classList.remove('update-active'), 260);
+    }
+  }
+
+  requestAnimationFrame(tick);
 }
 
 // Carrossel: mostrar 4 itens por página com navegação
