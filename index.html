@@ -1165,7 +1165,7 @@
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
+      border: 2px solid #434343;
       object-fit: cover;
       transition: transform 0.3s ease;
       flex-shrink: 0;
@@ -1175,7 +1175,7 @@
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
+      border: 2px solid #434343;
       background: rgba(255,255,255,0.05);
       display: flex;
       align-items: center;
@@ -2804,6 +2804,37 @@ function getKickSVG() {
   return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h6v-8h2v8h4v-9h1l2 1v8h4V7c0-2.2-1.8-4-4-4h-3V1h-2v2H7c-2.2 0-4 1.8-4 4zm8 4h4c1.1 0 2 .9 2 2s-.9 2-2 2h-4V7z"/></svg>`;
 }
 
+function parseStoredDate(value) {
+  if (!value) return null;
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? null : value;
+  }
+  if (typeof value === 'number') {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  if (typeof value === 'string') {
+    const dateOnlyMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (dateOnlyMatch) {
+      const [, year, month, day] = dateOnlyMatch;
+      const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    }
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return null;
+}
+
+function formatDateForInput(value) {
+  const date = parseStoredDate(value);
+  if (!date) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function getStreamBadgeInfo(member) {
   // Se tem KICK, usa KICK. Se tem Twitch, usa Twitch.
   if (member.kick) {
@@ -2857,8 +2888,8 @@ function createHierarchyMemberCard(member, index) {
   const seizureCount = getMemberSeizureCount(memberName);
   const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
   const streamInfo = getStreamBadgeInfo(member);
-  const registeredAt = member.createdAt ? new Date(member.createdAt) : null;
-  const registeredText = registeredAt && !Number.isNaN(registeredAt.getTime())
+  const registeredAt = parseStoredDate(member.createdAt);
+  const registeredText = registeredAt
     ? `Cadastrado em ${registeredAt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
     : '';
 
@@ -3589,6 +3620,7 @@ function renderAdminMembers() {
       <div class="form-group"><label>HIERARQUIA</label><select id="new-rank"><option value="">-- Selecione ou crie nova --</option>${rankOptions}<option value="__new__">+ CRIAR NOVA</option></select><input id="new-rank-custom" placeholder="Nome da hierarquia" style="display:none; margin-top: 4px;"></div>
       <div class="form-group"><label>NÍVEL</label><input id="new-level" type="number" value="1"></div>
       <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+      <div class="form-group"><label>DATA DE CADASTRO</label><input id="new-created-at" type="date"></div>
       <div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="new-avatar" placeholder="https://..."></div>
       <div class="form-group"><label>TWITCH</label><input id="new-twitch" placeholder="username (opcional)"></div>
       <div class="form-group"><label>KICK</label><input id="new-kick" placeholder="username (opcional)"></div>
@@ -3620,6 +3652,7 @@ function renderMembersList() {
       <div class="item-info">
         <strong>${escapeHtml(m.name)}</strong><br>
         <small style="color:var(--text-muted)">Patente: ${escapeHtml(m.policeRank || 'Soldado')} | Nv.${m.level} | ${m.status}</small>
+        <br><small style="color:var(--text-muted)">Cadastrado: ${parseStoredDate(m.createdAt) ? parseStoredDate(m.createdAt).toLocaleDateString('pt-BR') : '---'}</small>
         ${m.twitch ? `<br><small>twitch.tv/${m.twitch}</small>` : ''}
         ${m.kick ? `<br><small>kick.com/${m.kick}</small>` : ''}
         <div class="inline-edit">
@@ -3628,6 +3661,8 @@ function renderMembersList() {
           <select id="level-select-${m.id}" class="btn-edit">
             ${[...Array(41).keys()].map(i => `<option value="${i}" ${m.level == i ? 'selected' : ''}>Nv.${i}</option>`).join('')}
           </select>
+          <input type="date" id="created-at-input-${m.id}" value="${escapeHtml(formatDateForInput(m.createdAt))}" class="btn-edit">
+          <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem" class="btn-edit">
           <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch" class="btn-edit">
           <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick" class="btn-edit">
           <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
@@ -3876,6 +3911,8 @@ function updateMemberFields(id) {
   const newName = document.getElementById(`name-input-${id}`).value.trim();
   const newPoliceRank = document.getElementById(`rank-input-${id}`).value.trim();
   const newLevel = document.getElementById(`level-select-${id}`).value;
+  const newCreatedAt = document.getElementById(`created-at-input-${id}`).value;
+  const newAvatarUrl = document.getElementById(`avatar-input-${id}`).value.trim();
   const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
   const newKickRaw = document.getElementById(`kick-input-${id}`).value.trim();
   const newKick = normalizeKickUsername(newKickRaw);
@@ -3884,6 +3921,15 @@ function updateMemberFields(id) {
     if (newName) member.name = newName;
     member.policeRank = newPoliceRank || member.policeRank || 'Soldado';
     member.level = newLevel;
+    if (newCreatedAt) {
+      const parsedDate = parseStoredDate(newCreatedAt);
+      if (!parsedDate) {
+        alert('Data de cadastro inválida');
+        return;
+      }
+      member.createdAt = newCreatedAt;
+    }
+    member.avatarUrl = newAvatarUrl || null;
     member.twitch = newTwitch || null;
     member.kick = newKick || null;
     saveData();
@@ -3905,6 +3951,7 @@ function addMember() {
   
   const level = document.getElementById('new-level').value;
   const status = document.getElementById('new-status').value;
+  const createdAtInput = document.getElementById('new-created-at').value;
   const avatarUrl = document.getElementById('new-avatar').value.trim();
   const twitch = document.getElementById('new-twitch').value.trim().toLowerCase();
   const kickRaw = document.getElementById('new-kick').value.trim();
@@ -3912,6 +3959,16 @@ function addMember() {
   
   if (!name || !policeRank) { alert("Preencha nome e patente policial"); return; }
   if (!rank) { alert("Selecione ou crie uma hierarquia"); return; }
+  
+  let createdAt = formatDateForInput(new Date());
+  if (createdAtInput) {
+    const parsedDate = parseStoredDate(createdAtInput);
+    if (!parsedDate) {
+      alert('Data de cadastro inválida');
+      return;
+    }
+    createdAt = createdAtInput;
+  }
   
   const newMember = { 
     id: Date.now().toString(), 
@@ -3923,7 +3980,7 @@ function addMember() {
     avatarUrl, 
     twitch, 
     kick, 
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
 
   members.push(newMember);
@@ -3940,6 +3997,7 @@ function resetAddMemberForm() {
   document.getElementById('new-rank-custom').value = '';
   document.getElementById('new-level').value = '';
   document.getElementById('new-status').value = 'ativo';
+  document.getElementById('new-created-at').value = '';
   document.getElementById('new-avatar').value = '';
   document.getElementById('new-twitch').value = '';
   document.getElementById('new-kick').value = '';
