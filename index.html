@@ -1324,17 +1324,25 @@
       padding: 10px;
       width: 100%;
       display: flex;
-      gap: 8px;
-      align-items: flex-end;
+      gap: 10px;
+      align-items: center;
     }
 
     .live-card-avatar {
-      width: 42px;
-      height: 42px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
-      border: 2px solid #ffffff;
+      border: 2px solid var(--twitch-light);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
       object-fit: cover;
       flex-shrink: 0;
+    }
+
+    .live-card-content .member-avatar-placeholder {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--twitch-light);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
     }
 
     .live-card-info {
@@ -2898,8 +2906,9 @@ function filterByDays(items, days) {
 function createHierarchyMemberCard(member, index) {
   const memberName = (member.name || 'Sem nome').trim();
   const memberRank = (member.policeRank || 'Soldado').trim();
-  const statusClass = member.status === 'ativo' ? 'status-ativo' : 'status-inativo';
-  const statusText = member.status === 'ativo' ? 'Ativo' : 'Inativo';
+  const isActive = member.status === 'ativo';
+  const statusClass = isActive ? 'status-ativo' : 'status-inativo';
+  const statusText = isActive ? '' : 'Inativo';
   const seizureCount = getMemberSeizureCount(memberName);
   const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
   const streamInfo = getStreamBadgeInfo(member);
@@ -2995,11 +3004,14 @@ function createHierarchyMemberCard(member, index) {
     right.appendChild(streamLink);
   }
 
-  const statusBadge = document.createElement('span');
-  statusBadge.className = `member-status ${statusClass}`;
-  statusBadge.textContent = statusText;
+  if (statusText) {
+    const statusBadge = document.createElement('span');
+    statusBadge.className = `member-status ${statusClass}`;
+    statusBadge.textContent = statusText;
+    right.append(statusBadge);
+  }
 
-  right.append(footer, statusBadge);
+  right.prepend(footer);
   card.append(avatarWrapper, info, right);
 
   card.addEventListener('click', e => {
@@ -4501,11 +4513,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initRevealObserver();
   initEventListeners();
   
-  // Atualizar status dos streams em background
+  // Atualizar status dos streams uma vez ao carregar
   updateAllStreamStatus().catch(err => console.error('Erro ao atualizar status dos streams:', err));
-  const streamStatusInterval = setInterval(() => {
-    updateAllStreamStatus().catch(err => console.error('Erro ao atualizar status dos streams:', err));
-  }, 60000);
   
   // Criar overlays com tratamento de erros
   try {

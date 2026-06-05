@@ -85,7 +85,7 @@
 
     .gallery-card:hover {
       border-color: #434343;
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
 
     .gallery-img {
@@ -96,6 +96,7 @@
       object-fit: cover;
       transition: transform 0.5s ease;
       z-index: 1;
+      will-change: transform;
     }
 
     .gallery-img.placeholder {
@@ -107,8 +108,9 @@
       font-size: 2rem;
     }
 
-    .gallery-card:hover .gallery-img {
-      transform: scale(1.05);
+    .gallery-card:hover .gallery-img,
+    .gallery-card:hover .gallery-img.placeholder {
+      transform: scale(1.07);
     }
 
     .gallery-card-overlay {
