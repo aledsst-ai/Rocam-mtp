@@ -591,8 +591,8 @@
       font-weight: 600;
       font-size: 9px;
       color: rgba(255, 255, 255, 0.85);
-      transition: all 0.3s ease;
-      cursor: pointer;
+      transition: none;
+      cursor: default;
     }
     .profile-stat:hover {
       background: var(--bg-hover);
