@@ -410,6 +410,13 @@ function renderSeizures() {
     const pageItems = sorted.slice(start, end);
     
     let html = '<div class="seizures-carousel-wrapper">';
+    let hasNav = totalPages > 1;
+    
+    if (hasNav) {
+      html += '<div class="seizures-carousel-inner">';
+      html += `<button class="carousel-btn seizures-carousel-btn" onclick="seizuresPage=${Math.max(0, seizuresPage - 1)};renderSeizures()" ${seizuresPage <= 0 ? 'disabled' : ''}>❮</button>`;
+    }
+    
     html += '<div class="simple-grid">';
     
     pageItems.forEach((item, idx) => {
@@ -444,13 +451,8 @@ function renderSeizures() {
     
     html += '</div>';
     
-    if (totalPages > 1) {
-      html += '<div class="seizures-carousel-nav">';
-      html += `<button class="carousel-arrow" onclick="seizuresPage=${Math.max(0, seizuresPage - 1)};renderSeizures()" ${seizuresPage <= 0 ? 'disabled' : ''}>❮</button>`;
-      for (var i = 0; i < totalPages; i++) {
-        html += `<span class="carousel-dot ${i === seizuresPage ? 'active' : ''}" onclick="seizuresPage=${i};renderSeizures()"></span>`;
-      }
-      html += `<button class="carousel-arrow" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
+    if (hasNav) {
+      html += `<button class="carousel-btn seizures-carousel-btn" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
       html += '</div>';
     }
     
