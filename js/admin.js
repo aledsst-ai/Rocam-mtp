@@ -145,6 +145,7 @@ function switchAdminTab(tab) {
     renderAdminMembers();
   } else if (tab === 'gallery') {
     tabs[2].classList.add('active');
+    adminGalleryPage = 1;
     renderAdminGallery();
   } else if (tab === 'vehicles') {
     tabs[3].classList.add('active');
@@ -361,8 +362,15 @@ function renderAdminGallery() {
 function renderGalleryList() {
   const container = document.getElementById('gallery-list');
   if (!gallery.length) { container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>'; return; }
+  const sorted = [...gallery].reverse();
+  const totalPages = Math.ceil(sorted.length / ADMIN_GALLERY_PER_PAGE);
+  if (adminGalleryPage > totalPages) adminGalleryPage = totalPages;
+  if (adminGalleryPage < 1) adminGalleryPage = 1;
+  const start = (adminGalleryPage - 1) * ADMIN_GALLERY_PER_PAGE;
+  const end = Math.min(start + ADMIN_GALLERY_PER_PAGE, sorted.length);
+  const pageItems = sorted.slice(start, end);
   let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">';
-  [...gallery].reverse().forEach(g => {
+  pageItems.forEach(g => {
     html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;">
       <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
       <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
@@ -375,6 +383,15 @@ function renderGalleryList() {
     </div>`;
   });
   html += '</div>';
+  if (totalPages > 1) {
+    html += '<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 0;font-size:11px;font-weight:700;">';
+    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage - 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;' + (adminGalleryPage <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage <= 1 ? 'disabled' : '') + '>❮</button>';
+    for (var i = 1; i <= totalPages; i++) {
+      html += '<button onclick="adminGalleryPage=' + i + ';renderGalleryList()" style="padding:6px 10px;border-radius:6px;border:1px solid ' + (i === adminGalleryPage ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === adminGalleryPage ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;">' + i + '</button>';
+    }
+    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage + 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;' + (adminGalleryPage >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage >= totalPages ? 'disabled' : '') + '>❯</button>';
+    html += '</div>';
+  }
   container.innerHTML = html;
 }
 

@@ -9,6 +9,8 @@ let rankOrder = {};
 let adminSeizurePage = 1;
 let membersSeizurePage = 1;
 const ADMIN_SEIZURES_PER_PAGE = 8;
+const ADMIN_GALLERY_PER_PAGE = 6;
+let adminGalleryPage = 1;
 
 function normalizeMemberAvatar(member) {
   if (!member || typeof member !== 'object') return null;
