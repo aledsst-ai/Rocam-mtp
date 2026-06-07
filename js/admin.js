@@ -364,7 +364,10 @@ function renderGalleryList() {
   let html = '<div class="admin-seizure-grid">';
   [...gallery].reverse().forEach(g => {
     html += `<div class="admin-list-item" style="font-size:11px;font-family:'Poppins',sans-serif;">
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(g.title || 'Sem título')}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(g.date).toLocaleDateString('pt-BR')}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,0.1);" onerror="this.style.display='none'">
+        <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(g.title || 'Sem título')}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(g.date).toLocaleDateString('pt-BR')}</div></div>
+      </div>
       <button class="btn btn-danger" style="padding:4px 12px;font-size:11px;font-weight:700;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
     </div>`;
   });
