@@ -1303,6 +1303,7 @@
       transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .live-card-thumbnail:hover {
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.16), rgba(145, 70, 255, 0.08));
       border-color: rgba(145, 70, 255, 0.5);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 20px rgba(145, 70, 255, 0.15);
       transform: translateY(-3px);
