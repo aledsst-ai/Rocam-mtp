@@ -594,8 +594,6 @@
       transition: all 0.3s ease;
       cursor: pointer;
     }
-    .member-profile-rank:hover,
-    .member-profile-hierarchy:hover,
     .profile-stat:hover {
       background: var(--bg-hover);
       border-color: #ffffff;
@@ -708,10 +706,12 @@
       color: #9146ff;
       border-radius: 6px;
       background: rgba(145, 70, 255, 0.08);
-      transition: background 0.2s ease;
+      transition: all 0.25s ease;
     }
     .twitch-link:hover {
-      background: rgba(145, 70, 255, 0.16);
+      background: rgba(145, 70, 255, 0.25);
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(145, 70, 255, 0.3);
     }
     .twitch-link svg {
       width: 12px;
