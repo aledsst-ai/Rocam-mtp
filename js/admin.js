@@ -361,14 +361,17 @@ function renderAdminGallery() {
 function renderGalleryList() {
   const container = document.getElementById('gallery-list');
   if (!gallery.length) { container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>'; return; }
-  let html = '<div class="admin-seizure-grid">';
+  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">';
   [...gallery].reverse().forEach(g => {
-    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Poppins',sans-serif;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid rgba(255,255,255,0.1);" onerror="this.style.display='none'">
-        <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(g.title || 'Sem título')}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(g.date).toLocaleDateString('pt-BR')}</div></div>
+    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;">
+      <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
+      <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(g.title || 'Sem título')}</div>
+          <div style="font-size:10px;color:var(--text-muted);">${new Date(g.date).toLocaleDateString('pt-BR')}</div>
+        </div>
+        <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
       </div>
-      <button class="btn btn-danger" style="padding:4px 12px;font-size:11px;font-weight:700;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
     </div>`;
   });
   html += '</div>';
