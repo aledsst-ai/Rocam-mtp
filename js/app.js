@@ -81,16 +81,16 @@ window.addEventListener('DOMContentLoaded', () => {
       intro.classList.add('hidden');
       initRevealOnScroll();
     } else {
-      console.log('⏳ Primeira visita - exibindo splash por 4.5s');
-      setTimeout(hideIntro, 4500);
+      console.log('⏳ Primeira visita - exibindo splash por 3s');
+      setTimeout(hideIntro, 3000);
 
-      // FALLBACK: Se ainda estiver visível após 8s, força remover
+      // FALLBACK: Se ainda estiver visível após 6s, força remover
       setTimeout(() => {
         if (intro && !intro.classList.contains('hidden')) {
-          console.log('⚠️ FALLBACK: Forçando remoção do intro após 8s');
+          console.log('⚠️ FALLBACK: Forçando remoção do intro após 6s');
           hideIntro();
         }
-      }, 8000);
+      }, 6000);
     }
   }
   
