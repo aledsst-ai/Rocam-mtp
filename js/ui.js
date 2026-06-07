@@ -490,6 +490,11 @@ function renderSeizures() {
     if (hasNav) {
       html += `<button class="carousel-btn seizures-carousel-btn" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
       html += '</div>';
+      html += '<div class="gallery-carousel-dots">';
+      for (var i = 0; i < totalPages; i++) {
+        html += `<span class="gallery-dot ${i === seizuresPage ? 'active' : ''}" onclick="seizuresPage=${i};renderSeizures()"></span>`;
+      }
+      html += '</div>';
     }
     
     html += '</div>';
