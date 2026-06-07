@@ -2001,7 +2001,7 @@
       background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px; color: #ffffff;
       font-size: 11px; transition: var(--transition);
-      font-weight: 400;
+      font-weight: 400; font-family: 'Poppins', sans-serif;
     }
     .form-group select {
       appearance: none;
@@ -2079,6 +2079,7 @@
       color: #ffffff;
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
     }
     .inline-edit select {
       appearance: none;
