@@ -14,11 +14,13 @@ $sections = @(
     @{name='footer'; file='footer/footer.html'}
 )
 
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+
 $combined = ""
 foreach ($s in $sections) {
-    $path = Join-Path $root "sections" $s.file
+    $path = Join-Path $root "sections\$($s.file)"
     if (Test-Path $path) {
-        $content = Get-Content $path -Raw
+        $content = [System.IO.File]::ReadAllText($path, [System.Text.Encoding]::UTF8)
         $combined += $content.TrimEnd() + "`r`n`r`n"
         Write-Host "  + $($s.file)"
     } else {
@@ -28,10 +30,10 @@ foreach ($s in $sections) {
 
 # Read index.html and replace sections inside #app
 $indexPath = Join-Path $root "index.html"
-$index = Get-Content $indexPath -Raw
+$index = [System.IO.File]::ReadAllText($indexPath, [System.Text.Encoding]::UTF8)
 
 $startMarker = '<div id="app">'
-$endMarker = '</div>'
+$endMarker = '<!-- END APP -->'
 
 $startIdx = $index.IndexOf($startMarker)
 $endIdx = $index.IndexOf($endMarker, $startIdx + $startMarker.Length)
