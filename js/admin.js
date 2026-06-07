@@ -350,8 +350,8 @@ function renderAdminGallery() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR FOTO À GALERIA</h3>
-      <div class="form-group"><label>TÍTULO</label><input id="new-gallery-title" placeholder="Título da foto"></div>
-      <div class="form-group"><label>URL DA IMAGEM</label><input id="new-gallery-img" placeholder="https://..."></div>
+      <div class="form-group"><label>TÍTULO *</label><input id="new-gallery-title" placeholder="Título da foto"></div>
+      <div class="form-group"><label>URL DA IMAGEM *</label><input id="new-gallery-img" placeholder="https://..."></div>
       <button class="btn btn-primary" onclick="addGalleryImage()">ADICIONAR À GALERIA</button>
     </div>
     <div id="gallery-list"></div>
