@@ -739,8 +739,9 @@ function deleteSeizure(id) {
 function addGalleryImage() {
   const title = document.getElementById('new-gallery-title').value.trim();
   const imageUrl = document.getElementById('new-gallery-img').value.trim();
+  if (!title) { alert("Informe o título da foto"); return; }
   if (!imageUrl) { alert("Informe a URL da imagem"); return; }
-  gallery.push({ id: Date.now().toString(), title: title || 'Sem título', imageUrl, date: new Date().toISOString() });
+  gallery.push({ id: Date.now().toString(), title, imageUrl, date: new Date().toISOString() });
   saveData();
   renderAll();
   renderAdminGallery();
