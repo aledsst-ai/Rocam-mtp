@@ -27,7 +27,7 @@
       font-family: 'Poppins', sans-serif;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      background-image: url('https://i.ibb.co/vSM49JJ/bg.png');
+      background-image: url('https://i.ibb.co/39QFHSCZ/bgfinal.png');
       background-size: cover;
       background-position: center center;
       background-attachment: fixed;
@@ -406,11 +406,61 @@
   </div>
 
   <script>
-    function renderSeizuresGrid(seizuresData, selectedMember) {
+    var seizurePage = 1;
+    var SEIZURES_PER_PAGE = 9;
+
+    function getMembersList(member) {
+      if (!member) return [];
+      if (Array.isArray(member)) return member;
+      return [member];
+    }
+
+    function makeMembersBadge(member) {
+      const list = getMembersList(member);
+      if (!list.length) return '';
+      var text = list.length <= 2 ? list.join(', ') : list.slice(0, 2).join(', ') + ' +' + (list.length - 2);
+      var json = JSON.stringify(list).replace(/"/g, '&quot;');
+      return '<span class="badge" style="cursor:pointer;" onclick="event.stopPropagation(); showMembers(this, event)" data-members=\'' + json + '\'><span class="emoji-icon">👤</span>' + escapeHtml(text) + '</span>';
+    }
+
+    function showMembers(el, e) {
+      var members = JSON.parse(el.dataset.members);
+      closeMembersTooltip();
+      var tooltip = document.createElement('div');
+      tooltip.id = 'members-tooltip';
+      tooltip.style.cssText = 'position:fixed;z-index:9999;background:rgba(10,10,10,0.95);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:0.78rem;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;';
+      tooltip.textContent = members.join(', ');
+      var x = (e ? e.clientX : window.innerWidth / 2) + 12;
+      var y = (e ? e.clientY : window.innerHeight / 2) + 8;
+      if (x + 200 > window.innerWidth) x = window.innerWidth - 210;
+      if (y + 40 > window.innerHeight) y = window.innerHeight - 50;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+      document.body.appendChild(tooltip);
+      setTimeout(function() { document.addEventListener('click', closeMembersTooltip); }, 0);
+      document.addEventListener('keydown', closeMembersTooltipEsc);
+    }
+
+    function closeMembersTooltipEsc(e) {
+      if (e.key === 'Escape') closeMembersTooltip();
+    }
+
+    function closeMembersTooltip() {
+      var t = document.getElementById('members-tooltip');
+      if (t) { t.remove(); }
+      document.removeEventListener('click', closeMembersTooltip);
+      document.removeEventListener('keydown', closeMembersTooltipEsc);
+    }
+
+    function renderSeizuresGrid(seizuresData, selectedMember, page) {
+      if (typeof page === 'undefined') page = seizurePage;
       const container = document.getElementById('seizures-complete');
       const filterSelect = document.getElementById('member-filter');
       const filteredSeizures = selectedMember
-        ? seizuresData.filter(s => String(s.member || '').trim() === selectedMember)
+        ? seizuresData.filter(s => {
+            const ms = getMembersList(s.member || s.memberName);
+            return ms.includes(selectedMember);
+          })
         : seizuresData;
 
       populateMemberFilter(seizuresData, selectedMember);
@@ -421,41 +471,81 @@
       }
 
       const sorted = [...filteredSeizures].sort((a, b) => new Date(b.date) - new Date(a.date));
+      var totalPages = Math.ceil(sorted.length / SEIZURES_PER_PAGE);
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      seizurePage = page;
 
-      container.innerHTML = sorted.map((seizure, idx) => {
-        const imageUrl = seizure.imageUrl ? escapeHtml(seizure.imageUrl) : 'https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem';
-        const clickAction = seizure.imageUrl ? `onclick="openModal('${imageUrl}')"` : '';
-        const dateText = `${new Date(seizure.date).toLocaleDateString('pt-BR')} às ${new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-        return `
-          <div class="seizure-card" ${clickAction}>
-            <div class="seizure-card-background ${seizure.imageUrl ? '' : 'seizure-card-background--empty'}" style="background-image: url('${imageUrl}');"></div>
-            <div class="seizure-card-overlay"></div>
-            <div class="seizure-card-content">
-              <div class="seizure-card-header">
-                <span class="qru-badge">${escapeHtml(seizure.description)}</span>
-              </div>
-              <div class="seizure-meta">
-                ${seizure.member ? `<span class="badge"><span class="emoji-icon">👤</span>${escapeHtml(seizure.member)}</span>` : ''}
-                ${seizure.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(seizure.location)}</span>` : ''}
-              </div>
-              <div class="seizure-footer">
-                <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
-                ${seizure.boImageUrl ? `<a href="${escapeHtml(seizure.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+      var start = (page - 1) * SEIZURES_PER_PAGE;
+      var end = Math.min(start + SEIZURES_PER_PAGE, sorted.length);
+      var pageItems = sorted.slice(start, end);
+
+      var html = '';
+      pageItems.forEach(function(seizure, idx) {
+        var imageUrl = seizure.imageUrl ? escapeHtml(seizure.imageUrl) : 'https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem';
+        var clickAction = seizure.imageUrl ? "onclick=\"openModal('" + imageUrl + "')\"" : '';
+        var dateText = new Date(seizure.date).toLocaleDateString('pt-BR') + ' às ' + new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        html += '<div class="seizure-card" ' + clickAction + '>';
+        html += '<div class="seizure-card-background ' + (seizure.imageUrl ? '' : 'seizure-card-background--empty') + '" style="background-image: url(\'' + imageUrl + '\');"></div>';
+        html += '<div class="seizure-card-overlay"></div>';
+        html += '<div class="seizure-card-content">';
+        html += '<div class="seizure-card-header"><span class="qru-badge">' + escapeHtml(seizure.description) + '</span></div>';
+        html += '<div class="seizure-meta">';
+        html += seizure.member ? makeMembersBadge(seizure.member) : '';
+        html += seizure.location ? '<span class="badge"><span class="emoji-icon">📍</span>' + escapeHtml(seizure.location) + '</span>' : '';
+        html += '</div>';
+        html += '<div class="seizure-footer">';
+        html += '<span class="badge"><span class="emoji-icon">📅</span>' + dateText + '</span>';
+        if (seizure.boImageUrl) {
+          html += '<a href="' + escapeHtml(seizure.boImageUrl) + '" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>';
+        }
+        html += '</div></div></div>';
+      });
+
+      if (totalPages > 1) {
+        html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:24px 0;flex-wrap:wrap;font-family:\'Poppins\',sans-serif;font-weight:700;font-size:9px;">';
+        html += '<button onclick="goToSeizurePage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ ANTERIOR</button>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+        for (var i = 1; i <= totalPages; i++) {
+          html += '<button onclick="goToSeizurePage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === page ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
+        }
+        html += '</div>';
+        html += '<button onclick="goToSeizurePage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>PRÓXIMA ❯</button>';
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
     }
 
-    function loadSeizuresData() {
+    function goToSeizurePage(page) {
+      var filterSelect = document.getElementById('member-filter');
+      var selectedMember = filterSelect ? filterSelect.value : '';
+      var localData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
+      var renderPage = function(data) {
+        renderSeizuresGrid(data, selectedMember, page);
+      };
+      var db = firebase.database();
+      db.ref('rocam-data').once('value').then(function(snapshot) {
+        var firebaseRoot = snapshot.val();
+        var data = [];
+        if (firebaseRoot && firebaseRoot.seizures) {
+          var fd = firebaseRoot.seizures;
+          data = Array.isArray(fd) ? fd : (fd && typeof fd === 'object' ? Object.values(fd) : []);
+        }
+        if (!data.length) data = localData;
+        renderPage(data);
+      }).catch(function() { renderPage(localData); });
+    }
+
+    function loadSeizuresData(overrideMember) {
+      seizurePage = 1;
       const localData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
       const filterSelect = document.getElementById('member-filter');
-      const selectedMember = filterSelect?.value || '';
+      const selectedMember = overrideMember || filterSelect?.value || '';
 
       const renderData = (seizuresData) => {
         localStorage.setItem('rocam_seizures', JSON.stringify(seizuresData));
-        renderSeizuresGrid(seizuresData, selectedMember);
+        renderSeizuresGrid(seizuresData, selectedMember, 1);
       };
 
       const db = firebase.database();
@@ -485,9 +575,15 @@
     function populateMemberFilter(seizuresData, selectedMember) {
       const filterSelect = document.getElementById('member-filter');
       if (!filterSelect) return;
-      const currentValue = filterSelect.value;
-      const members = [...new Set(seizuresData.map(s => String(s.member || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-      filterSelect.innerHTML = '<option value="">Todos os membros</option>' + members.map(member => `\n          <option value="${escapeHtml(member)}"${member === currentValue ? ' selected' : ''}>${escapeHtml(member)}</option>`).join('');
+      const allMembers = [];
+      seizuresData.forEach(s => {
+        const ms = getMembersList(s.member || s.memberName);
+        ms.forEach(function(m) { if (m.trim()) allMembers.push(m.trim()); });
+      });
+      const members = [...new Set(allMembers)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      filterSelect.innerHTML = '<option value="">Todos os membros</option>' + members.map(function(m) {
+        return '\n          <option value="' + escapeHtml(m) + '"' + (m === selectedMember ? ' selected' : '') + '>' + escapeHtml(m) + '</option>';
+      }).join('');
     }
 
     function escapeHtml(text) {
@@ -521,10 +617,12 @@
 
     // Carregar dados ao iniciar
     window.addEventListener('load', function() {
-      loadSeizuresData();
-      const filterSelect = document.getElementById('member-filter');
+      var urlParams = new URLSearchParams(window.location.search);
+      var urlMember = urlParams.get('member');
+      var filterSelect = document.getElementById('member-filter');
+      loadSeizuresData(urlMember || '');
       if (filterSelect) {
-        filterSelect.addEventListener('change', loadSeizuresData);
+        filterSelect.addEventListener('change', function() { loadSeizuresData(); });
       }
     });
 

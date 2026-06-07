@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ROCAM - Galeria Completa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -30,10 +33,10 @@
     body {
       background: #0a0a0a;
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      background-image: url('https://i.ibb.co/vSM49JJ/bg.png');
+      background-image: url('https://i.ibb.co/39QFHSCZ/bgfinal.png');
       background-size: cover;
       background-position: center center;
       background-attachment: fixed;
@@ -282,7 +285,11 @@
   </div>
 
   <script>
-    function renderGalleryGrid(galleryData) {
+    var galleryPage = 1;
+    const GALLERY_PER_PAGE = 12;
+
+    function renderGalleryGrid(galleryData, page) {
+      if (typeof page === 'undefined') page = galleryPage;
       const container = document.getElementById('gallery-complete');
 
       if (!galleryData.length) {
@@ -291,7 +298,16 @@
       }
 
       const sorted = [...galleryData].sort((a, b) => new Date(b.date) - new Date(a.date));
-      container.innerHTML = sorted.map((photo) => `
+      var totalPages = Math.ceil(sorted.length / GALLERY_PER_PAGE);
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      galleryPage = page;
+
+      var start = (page - 1) * GALLERY_PER_PAGE;
+      var end = Math.min(start + GALLERY_PER_PAGE, sorted.length);
+      var pageItems = sorted.slice(start, end);
+
+      var html = pageItems.map((photo) => `
         <div class="gallery-card" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
           ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img placeholder">📸</div>'}
           <div class="gallery-card-overlay"></div>
@@ -301,6 +317,38 @@
           </div>
         </div>
       `).join('');
+
+      if (totalPages > 1) {
+        html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:24px 0;flex-wrap:wrap;font-family:\'Poppins\',sans-serif;font-weight:700;font-size:11px;">';
+        html += '<button onclick="goToGalleryPage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ ANTERIOR</button>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+        for (var i = 1; i <= totalPages; i++) {
+          html += '<button onclick="goToGalleryPage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === page ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
+        }
+        html += '</div>';
+        html += '<button onclick="goToGalleryPage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>PRÓXIMA ❯</button>';
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function goToGalleryPage(page) {
+      var localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      var renderPage = function(data) {
+        renderGalleryGrid(data, page);
+      };
+      var db = firebase.database();
+      db.ref('rocam-data').once('value').then(function(snapshot) {
+        var firebaseRoot = snapshot.val();
+        var data = [];
+        if (firebaseRoot && firebaseRoot.gallery) {
+          var fd = firebaseRoot.gallery;
+          data = Array.isArray(fd) ? fd : (fd && typeof fd === 'object' ? Object.values(fd) : []);
+        }
+        if (!data.length) data = localData;
+        renderPage(data);
+      }).catch(function() { renderPage(localData); });
     }
 
     function loadGalleryData() {
