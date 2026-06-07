@@ -1202,9 +1202,6 @@
       min-width: 0;
     }
     .member-name { font-weight: 700; font-size: 11px; line-height: 1.2; color: #ffffff; text-transform: uppercase; letter-spacing: 0.02em; }
-    .member-card .member-level,
-    .member-card .member-seizures,
-    .member-card .member-status { cursor: default; }
     .member-police-rank { font-weight: 400; font-size: 0.68rem; color: rgba(255, 255, 255, 0.65); }
     .member-registered {
       font-size: 9px;
@@ -1221,6 +1218,7 @@
       border-radius: 20px;
       font-weight: 500;
       width: fit-content;
+      cursor: default;
     }
     .status-ativo { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.15); }
     .status-inativo { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
@@ -1236,8 +1234,8 @@
       max-width: 110px;
     }
     .member-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-wrap: nowrap; }
-    .member-level { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); }
-    .member-seizures { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); }
+    .member-level { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: default; }
+    .member-seizures { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: default; }
     .twitch-badge {
       display: inline-flex;
       align-items: center;
