@@ -4,26 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ROCAM - Galeria Completa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bg: #0a0a0a;
-      --bg-card: rgba(255, 255, 255, 0.06);
-      --bg-hover: rgba(255, 255, 255, 0.12);
-      --border: rgba(255, 255, 255, 0.14);
-      --text: #f8fafc;
-      --text-muted: #cbd5e1;
+      --bg-card: rgba(17, 17, 17, 0.85);
+      --bg-hover: rgba(26, 26, 26, 0.9);
+      --border: rgba(34, 34, 34, 0.8);
+      --border-light: rgba(42, 42, 42, 0.8);
+      --text: #eaeaea;
+      --text-secondary: #888888;
+      --text-muted: #777777;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --twitch: #9146ff;
+      --twitch-dark: #772ce8;
+      --twitch-light: #a970ff;
       --radius: 8px;
-      --transition: all 0.3s ease;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     body {
       background: #0a0a0a;
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      background-image: url('https://i.ibb.co/HDhK8RfC/bg-ROC.png');
+      background-image: url('https://i.ibb.co/39QFHSCZ/bgfinal.png');
       background-size: cover;
       background-position: center center;
       background-attachment: fixed;
@@ -62,63 +75,95 @@
     }
 
     .gallery-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      position: relative;
+      min-height: 520px;
       overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
       transition: var(--transition);
       cursor: pointer;
+      background: var(--bg-card);
+      display: block;
     }
 
     .gallery-card:hover {
-      border-color: #ffffff;
-      transform: translateY(-4px);
-      background: var(--bg-hover);
+      border-color: #434343;
+      transform: translateY(-3px);
     }
 
     .gallery-img {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: 480px;
+      height: 100%;
       object-fit: cover;
-      background: rgba(0,0,0,0.3);
       transition: transform 0.5s ease;
+      z-index: 1;
+      will-change: transform;
     }
 
-    .gallery-card:hover .gallery-img {
-      transform: scale(1.02);
+    .gallery-img.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.18);
+      color: var(--text-muted);
+      font-size: 2rem;
     }
 
-    .gallery-info {
-      padding: 16px;
+    .gallery-card:hover .gallery-img,
+    .gallery-card:hover .gallery-img.placeholder {
+      transform: scale(1.07);
+    }
+
+    .gallery-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.72) 100%);
+      z-index: 2;
+    }
+
+    .gallery-card-content {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      height: 100%;
+      padding: 20px;
+      gap: 6px;
     }
 
     .gallery-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      text-align: center;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #ffffff;
+      line-height: 1.2;
+      text-align: left;
     }
 
     .gallery-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-weight: 500;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.78);
+      font-weight: 400;
+      text-align: left;
     }
-
-    .gallery-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      text-align: center;
-    }
-
-    .gallery-date {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-weight: 500;
+    .gallery-date.badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 400;
+      width: auto;
+      max-width: 100%;
+      flex: none;
+      align-self: flex-start;
     }
 
     .back-button {
@@ -142,15 +187,27 @@
     }
 
     .modal {
-      display: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: fixed;
       z-index: 1000;
-      padding-top: 50px;
+      padding: 50px 20px;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.9);
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease 0.15s, visibility 0.35s ease 0.15s;
+    }
+
+    .modal.show {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .modal-content {
@@ -159,6 +216,14 @@
       max-width: 100%;
       max-height: 90vh;
       object-fit: contain;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.35s ease 0.2s, transform 0.35s ease 0.2s;
+    }
+
+    .modal.show .modal-content {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .modal-close {
@@ -187,6 +252,22 @@
       }
     }
   </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCozdD373hfDCauvNX0rkMJzSgLzB-rySw",
+      authDomain: "rocam-mtp.firebaseapp.com",
+      databaseURL: "https://rocam-mtp-default-rtdb.firebaseio.com",
+      projectId: "rocam-mtp",
+      storageBucket: "rocam-mtp.firebasestorage.app",
+      messagingSenderId: "737641702548",
+      appId: "1:737641702548:web:013c2ca52cfffabcb8c081",
+      measurementId: "G-1JTJ77R5N1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    console.log('✓ Firebase inicializado (gallery.html)');
+  </script>
 </head>
 <body>
   <div class="header">
@@ -204,8 +285,11 @@
   </div>
 
   <script>
-    function loadGalleryData() {
-      const galleryData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+    var galleryPage = 1;
+    const GALLERY_PER_PAGE = 12;
+
+    function renderGalleryGrid(galleryData, page) {
+      if (typeof page === 'undefined') page = galleryPage;
       const container = document.getElementById('gallery-complete');
 
       if (!galleryData.length) {
@@ -214,15 +298,84 @@
       }
 
       const sorted = [...galleryData].sort((a, b) => new Date(b.date) - new Date(a.date));
-      container.innerHTML = sorted.map((photo) => `
-        <div class="gallery-card" onclick="openModal('${escapeHtml(photo.imageUrl)}')">
-          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📸</div>'}
-          <div class="gallery-info">
+      var totalPages = Math.ceil(sorted.length / GALLERY_PER_PAGE);
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      galleryPage = page;
+
+      var start = (page - 1) * GALLERY_PER_PAGE;
+      var end = Math.min(start + GALLERY_PER_PAGE, sorted.length);
+      var pageItems = sorted.slice(start, end);
+
+      var html = pageItems.map((photo) => `
+        <div class="gallery-card" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
+          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img placeholder">📸</div>'}
+          <div class="gallery-card-overlay"></div>
+          <div class="gallery-card-content">
             <div class="gallery-title">${escapeHtml(photo.title || 'Sem título')}</div>
-            <div class="gallery-date">${photo.date ? new Date(photo.date).toLocaleDateString('pt-BR') : ''}</div>
+            <div class="gallery-date badge">${photo.date ? new Date(photo.date).toLocaleDateString('pt-BR') : ''}</div>
           </div>
         </div>
       `).join('');
+
+      if (totalPages > 1) {
+        html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:24px 0;flex-wrap:wrap;font-family:\'Poppins\',sans-serif;font-weight:700;font-size:11px;">';
+        html += '<button onclick="goToGalleryPage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ ANTERIOR</button>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+        for (var i = 1; i <= totalPages; i++) {
+          html += '<button onclick="goToGalleryPage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === page ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
+        }
+        html += '</div>';
+        html += '<button onclick="goToGalleryPage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>PRÓXIMA ❯</button>';
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function goToGalleryPage(page) {
+      var localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      var renderPage = function(data) {
+        renderGalleryGrid(data, page);
+      };
+      var db = firebase.database();
+      db.ref('rocam-data').once('value').then(function(snapshot) {
+        var firebaseRoot = snapshot.val();
+        var data = [];
+        if (firebaseRoot && firebaseRoot.gallery) {
+          var fd = firebaseRoot.gallery;
+          data = Array.isArray(fd) ? fd : (fd && typeof fd === 'object' ? Object.values(fd) : []);
+        }
+        if (!data.length) data = localData;
+        renderPage(data);
+      }).catch(function() { renderPage(localData); });
+    }
+
+    function loadGalleryData() {
+      const localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      const db = firebase.database();
+      db.ref('rocam-data').once('value')
+        .then(snapshot => {
+          const firebaseRoot = snapshot.val();
+          let galleryData = [];
+          if (firebaseRoot && firebaseRoot.gallery) {
+            const firebaseData = firebaseRoot.gallery;
+            if (Array.isArray(firebaseData)) {
+              galleryData = firebaseData;
+            } else if (firebaseData && typeof firebaseData === 'object') {
+              galleryData = Object.values(firebaseData);
+            }
+          }
+          if (!galleryData.length) {
+            galleryData = localData;
+          }
+          localStorage.setItem('rocam_gallery', JSON.stringify(galleryData));
+          renderGalleryGrid(galleryData);
+        })
+        .catch(error => {
+          console.warn('⚠️ Erro ao carregar galeria do Firebase:', error);
+          renderGalleryGrid(localData);
+        });
     }
 
     function escapeHtml(text) {
@@ -234,12 +387,17 @@
     function openModal(src) {
       const modal = document.getElementById('modal');
       const modalImage = document.getElementById('modal-image');
+      modalImage.style.opacity = '0';
       modalImage.src = src;
-      modal.style.display = 'block';
+      modal.classList.add('show');
+      modalImage.onload = () => {
+        modalImage.style.opacity = '1';
+      };
     }
 
     function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+      const modal = document.getElementById('modal');
+      modal.classList.remove('show');
     }
 
     document.getElementById('modal').addEventListener('click', function(event) {
