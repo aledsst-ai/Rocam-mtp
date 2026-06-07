@@ -273,7 +273,7 @@ function renderVehiclesList() {
   if (!vehicles.length) { container.innerHTML = '<div class="empty-card">Nenhuma viatura</div>'; return; }
   let html = '<div class="admin-seizure-grid">';
   vehicles.forEach(v => {
-    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Inter',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Poppins',sans-serif;">
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(v.name)}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${v.status === 'disponivel' ? 'Disponível' : v.status === 'emuso' ? 'Em Uso' : 'Manutenção'}</div></div>
       <button class="btn btn-danger" style="padding:4px 12px;font-size:11px;font-weight:700;" onclick="deleteVehicle('${v.id}')">REMOVER</button>
     </div>`;
@@ -326,7 +326,7 @@ function renderSeizuresList() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
-    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Inter',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Poppins',sans-serif;">
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
       <button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>
     </div>`;
@@ -363,7 +363,7 @@ function renderGalleryList() {
   if (!gallery.length) { container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>'; return; }
   let html = '<div class="admin-seizure-grid">';
   [...gallery].reverse().forEach(g => {
-    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Inter',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Poppins',sans-serif;">
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(g.title || 'Sem título')}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${new Date(g.date).toLocaleDateString('pt-BR')}</div></div>
       <button class="btn btn-danger" style="padding:4px 12px;font-size:11px;font-weight:700;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
     </div>`;
@@ -393,7 +393,7 @@ function renderAdminRankOrder() {
   
   sortedRanks.forEach((rank, index) => {
     html += `
-      <div class="rank-item" data-rank="${escapeHtml(rank)}" style="font-size:11px;font-family:'Inter',sans-serif;">
+      <div class="rank-item" data-rank="${escapeHtml(rank)}" style="font-size:11px;font-family:'Poppins',sans-serif;">
         <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(rank)}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${members.filter(m => m.rank === rank).length} membro(s)</div></div>
         <div class="rank-actions">
           <button onclick="moveRankUp('${escapeHtml(rank)}')" ${index === 0 ? 'disabled style="opacity:0.5;"' : ''} style="font-size:11px;font-weight:700;">↑ SUBIR</button>
@@ -476,11 +476,11 @@ function renderMembersSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU</label><select id="m-new-desc"><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
-      <div class="form-group"><label>MEMBROS RESPONSÁVEIS</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
-      <div class="form-group"><label>LOCAL</label><input id="m-new-location" placeholder="Local"></div>
-      <div class="form-group"><label>IMAGEM URL</label><input id="m-new-simg" placeholder="https://..."></div>
-      <div class="form-group"><label>BO URL</label><input id="m-new-bo" placeholder="https://..."></div>
+      <div class="form-group"><label>QRU *</label><select id="m-new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
+      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
+      <div class="form-group"><label>LOCAL *</label><input id="m-new-location" placeholder="Local" required></div>
+      <div class="form-group"><label>IMAGEM URL *</label><input id="m-new-simg" placeholder="https://..." required></div>
+      <div class="form-group"><label>BO URL *</label><input id="m-new-bo" placeholder="https://..." required></div>
       <button class="btn btn-primary" onclick="addSeizureMembers()">REGISTRAR APREENSÃO</button>
     </div>
     <div id="seizures-list-members"></div>
@@ -502,7 +502,7 @@ function renderSeizuresListMembers() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
-    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Inter',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Poppins',sans-serif;">
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
     </div>`;
   });
@@ -526,7 +526,12 @@ function addSeizureMembers() {
   const location = document.getElementById('m-new-location').value.trim();
   const imageUrl = document.getElementById('m-new-simg').value.trim();
   const boImageUrl = document.getElementById('m-new-bo').value.trim();
-  if (!desc) { alert("Informe o QRU"); return; }
+  if (!desc) { alert("Selecione o QRU"); return; }
+  if (!members.length) { alert("Selecione ao menos um membro responsável"); return; }
+  if (!location) { alert("Informe o local"); return; }
+  if (!imageUrl) { alert("Informe a URL da imagem"); return; }
+  if (!boImageUrl) { alert("Informe a URL do BO"); return; }
+  if (imageUrl === boImageUrl) { alert("A URL da imagem deve ser diferente da URL do BO"); return; }
   seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString() });
   membersSeizurePage = 1;
   saveData();
