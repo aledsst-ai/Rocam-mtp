@@ -187,16 +187,16 @@ function renderAdminMembers() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR MEMBRO</h3>
-      <div class="form-group"><label>NOME</label><input id="new-name" placeholder="Nome"></div>
-      <div class="form-group"><label>PATENTE POLICIAL</label><input id="new-police-rank" placeholder="Ex: 3º Sargento, Cabo, Soldado..."></div>
-      <div class="form-group"><label>HIERARQUIA</label><select id="new-rank"><option value="">-- Selecione ou crie nova --</option>${rankOptions}<option value="__new__">+ CRIAR NOVA</option></select><input id="new-rank-custom" placeholder="Nome da hierarquia" style="display:none; margin-top: 4px;"></div>
-      <div class="form-group"><label>NÍVEL</label><input id="new-level" type="number" value="1"></div>
+      <div class="form-group"><label>NOME *</label><input id="new-name" placeholder="Nome" required></div>
+      <div class="form-group"><label>PATENTE POLICIAL *</label><input id="new-police-rank" placeholder="Ex: 3º Sargento, Cabo, Soldado..." required></div>
+      <div class="form-group"><label>HIERARQUIA *</label><select id="new-rank" required><option value="">-- Selecione ou crie nova --</option>${rankOptions}<option value="__new__">+ CRIAR NOVA</option></select><input id="new-rank-custom" placeholder="Nome da hierarquia" style="display:none; margin-top: 4px;"></div>
+      <div class="form-group"><label>NÍVEL *</label><input id="new-level" type="number" value="1" required></div>
       <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
-      <div class="form-group"><label>DATA DE CADASTRO</label><input id="new-created-at" type="date"></div>
+      <div class="form-group"><label>DATA DE CADASTRO *</label><input id="new-created-at" type="date" required></div>
       <div class="form-group"><label>TWITCH</label><input id="new-twitch" placeholder="username (opcional)"></div>
       <div class="form-group"><label>KICK</label><input id="new-kick" placeholder="username (opcional)"></div>
       <div class="form-group"><label>TIKTOK</label><input id="new-tiktok" placeholder="username (opcional)"></div>
-      <div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="new-avatar" placeholder="https://..."></div>
+      <div class="form-group"><label>FOTO DO MEMBRO (URL) *</label><input id="new-avatar" placeholder="https://..." required></div>
       <button class="btn btn-primary" onclick="addMember()">ADICIONAR MEMBRO</button>
     </div>
     <div id="members-list"></div>
@@ -212,6 +212,7 @@ function renderAdminMembers() {
       customInput.style.display = 'none';
     }
   });
+  document.getElementById('new-created-at').value = new Date().toISOString().split('T')[0];
   
   renderMembersList();
 }
@@ -299,11 +300,11 @@ function renderAdminSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU</label><select id="new-desc"><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
-      <div class="form-group"><label>MEMBROS RESPONSÁVEIS</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
-      <div class="form-group"><label>LOCAL</label><input id="new-location" placeholder="Local"></div>
-      <div class="form-group"><label>IMAGEM URL</label><input id="new-simg" placeholder="https://..."></div>
-      <div class="form-group"><label>BO URL</label><input id="new-bo" placeholder="https://..."></div>
+      <div class="form-group"><label>QRU *</label><select id="new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
+      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
+      <div class="form-group"><label>LOCAL *</label><input id="new-location" placeholder="Local" required></div>
+      <div class="form-group"><label>IMAGEM URL *</label><input id="new-simg" placeholder="https://..." required></div>
+      <div class="form-group"><label>BO URL *</label><input id="new-bo" placeholder="https://..." required></div>
       <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR APREENSÃO</button>
     </div>
     <div id="seizures-list"></div>
@@ -605,6 +606,7 @@ function addMember() {
   
   if (!name || !policeRank) { alert("Preencha nome e patente policial"); return; }
   if (!rank) { alert("Selecione ou crie uma hierarquia"); return; }
+  if (!avatarUrl) { alert("A URL da foto do membro é obrigatória"); return; }
   
   let createdAt = formatDateForInput(new Date());
   if (createdAtInput) {
@@ -644,7 +646,7 @@ function resetAddMemberForm() {
   document.getElementById('new-rank-custom').value = '';
   document.getElementById('new-level').value = '';
   document.getElementById('new-status').value = 'ativo';
-  document.getElementById('new-created-at').value = '';
+  document.getElementById('new-created-at').value = new Date().toISOString().split('T')[0];
   document.getElementById('new-avatar').value = '';
   document.getElementById('new-twitch').value = '';
   document.getElementById('new-kick').value = '';
@@ -685,7 +687,12 @@ function addSeizure() {
   const location = document.getElementById('new-location').value.trim();
   const imageUrl = document.getElementById('new-simg').value.trim();
   const boImageUrl = document.getElementById('new-bo').value.trim();
-  if (!desc) { alert("Informe o QRU"); return; }
+  if (!desc) { alert("Selecione o QRU"); return; }
+  if (!members.length) { alert("Selecione ao menos um membro responsável"); return; }
+  if (!location) { alert("Informe o local"); return; }
+  if (!imageUrl) { alert("Informe a URL da imagem"); return; }
+  if (!boImageUrl) { alert("Informe a URL do BO"); return; }
+  if (imageUrl === boImageUrl) { alert("A URL da imagem deve ser diferente da URL do BO"); return; }
   seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString() });
   adminSeizurePage = 1;
   saveData();
