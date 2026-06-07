@@ -2015,6 +2015,7 @@
       font-size: 0.7rem; transition: var(--transition);
       font-weight: 400;
     }
+    .form-group input[type="date"] { color-scheme: dark; }
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
       outline: none; border-color: #ffffff;
     }
@@ -2088,6 +2089,9 @@
       background-repeat: no-repeat;
       background-position: right 8px center;
       padding-right: 24px;
+    }
+    .inline-edit input[type="date"] {
+      color-scheme: dark;
     }
     .inline-edit button {
       width: auto;
