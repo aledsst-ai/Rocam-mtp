@@ -1879,6 +1879,30 @@
     }
     .seizures-carousel-btn {
       flex-shrink: 0;
+      background: none !important;
+      border: none !important;
+      width: auto !important;
+      height: auto !important;
+      border-radius: 0 !important;
+      font-size: 1.8rem !important;
+      padding: 8px 4px !important;
+      box-shadow: none !important;
+      color: rgba(255,255,255,0.5);
+      overflow: visible !important;
+    }
+    .seizures-carousel-btn::before { display: none !important; }
+    .seizures-carousel-btn:hover {
+      background: none !important;
+      border-color: transparent !important;
+      transform: scale(1.15) !important;
+      box-shadow: none !important;
+      color: #fff;
+    }
+    .seizures-carousel-btn:disabled {
+      opacity: 0.15;
+      cursor: default;
+      transform: none !important;
+      color: rgba(255,255,255,0.15);
     }
 
     /* About - LOGO À ESQUERDA */

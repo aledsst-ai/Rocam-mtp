@@ -394,7 +394,7 @@ function renderSeizures() {
     const container = document.getElementById('seizures-content');
     if (!container) { return; }
     
-    const sorted = [...seizures].sort((a,b) => new Date(b.date) - new Date(a.date));
+    const sorted = [...seizures].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
     
     if (!sorted.length) {
       container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
