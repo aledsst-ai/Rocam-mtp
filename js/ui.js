@@ -387,42 +387,32 @@ function renderGallery() {
   observeRevealElements();
 }
 
+const SEIZURES_PAGE_HOME = 3;
+
 function renderSeizures() {
   try {
-    console.log('🎨 renderSeizures() chamada');
     const container = document.getElementById('seizures-content');
-    if (!container) {
-      console.warn('⚠️ Elemento seizures-content não encontrado');
-      return;
-    }
-    
-    console.log('✅ Container encontrado:', {
-      id: container.id,
-      classe: container.className,
-      display: window.getComputedStyle(container).display,
-      visibility: window.getComputedStyle(container).visibility,
-      opacity: window.getComputedStyle(container).opacity
-    });
-    
-    console.log(`📊 Verificando seizures: total = ${seizures.length}`);
-    console.log('📋 Seizures:', seizures);
+    if (!container) { return; }
     
     const sorted = [...seizures].sort((a,b) => new Date(b.date) - new Date(a.date));
-    console.log(`📊 Seizures após sort: ${sorted.length}`);
     
     if (!sorted.length) {
-      console.log('⚠️ Nenhuma apreensão encontrada');
       container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
-      console.log('✅ Container atualizado com mensagem vazia');
-      console.log('Container innerHTML:', container.innerHTML);
       return;
     }
     
-    const limited = sorted.slice(0, 3); // Mostrar apenas 3
-    console.log(`📊 Mostrando ${limited.length} de ${sorted.length} apreensões`);
-    let html = '<div class="simple-grid">';
+    const totalPages = Math.ceil(sorted.length / SEIZURES_PAGE_HOME);
+    if (seizuresPage < 0) seizuresPage = 0;
+    if (seizuresPage >= totalPages) seizuresPage = Math.max(0, totalPages - 1);
     
-    limited.forEach((item, idx) => {
+    const start = seizuresPage * SEIZURES_PAGE_HOME;
+    const end = Math.min(start + SEIZURES_PAGE_HOME, sorted.length);
+    const pageItems = sorted.slice(start, end);
+    
+    let html = '<div class="seizures-carousel-wrapper">';
+    html += '<div class="simple-grid">';
+    
+    pageItems.forEach((item, idx) => {
       try {
         const backgroundStyle = item.imageUrl && item.imageUrl.trim()
           ? `background-image: url('${escapeHtml(item.imageUrl)}');`
@@ -453,31 +443,21 @@ function renderSeizures() {
     });
     
     html += '</div>';
+    
+    if (totalPages > 1) {
+      html += '<div class="seizures-carousel-nav">';
+      html += `<button class="carousel-arrow" onclick="seizuresPage=${Math.max(0, seizuresPage - 1)};renderSeizures()" ${seizuresPage <= 0 ? 'disabled' : ''}>❮</button>`;
+      for (var i = 0; i < totalPages; i++) {
+        html += `<span class="carousel-dot ${i === seizuresPage ? 'active' : ''}" onclick="seizuresPage=${i};renderSeizures()"></span>`;
+      }
+      html += `<button class="carousel-arrow" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
+      html += '</div>';
+    }
+    
+    html += '</div>';
     container.innerHTML = html;
-    console.log(`✅ ${limited.length} apreensões renderizadas com sucesso`);
-    console.log('📍 Container innerHTML atualizado');
-    console.log('Container HTML length:', container.innerHTML.length);
-    console.log('Container classes:', container.className);
     
-    // IMPORTANTE: Observar elementos após renderizar
     observeRevealElements();
-    console.log('👁️ observeRevealElements() chamada para animar cards');
-    
-    // Verificar visibilidade APÓS renderizar
-    setTimeout(() => {
-      console.log('🔍 Verificação PÓS-RENDERIZAÇÃO:');
-      console.log('Container display:', window.getComputedStyle(container).display);
-      console.log('Container visibility:', window.getComputedStyle(container).visibility);
-      console.log('Container opacity:', window.getComputedStyle(container).opacity);
-      console.log('Container HTML atualmente:', container.innerHTML.substring(0, 100) + '...');
-      
-      // Verificar se cards têm classe 'visible'
-      const cards = container.querySelectorAll('.seizure-card');
-      console.log(`📊 Total de cards: ${cards.length}`);
-      cards.forEach((card, idx) => {
-        console.log(`Card ${idx}: classes=${card.className}, opacity=${window.getComputedStyle(card).opacity}`);
-      });
-    }, 100);
   } catch (error) {
     console.error('❌ Erro ao renderizar apreensões:', error);
   }
