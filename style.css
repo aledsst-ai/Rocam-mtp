@@ -1014,24 +1014,30 @@
       padding: 4px 0 6px;
     }
     .stat {
-      background: rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius);
-      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 14px 18px;
       min-width: 140px;
       max-width: 180px;
       text-align: center;
-      transition: var(--transition);
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       justify-content: center;
       width: auto;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     }
-    .stat:hover { border-color: #434343; transform: translateY(-2px); }
+    .stat:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      background: rgba(255, 255, 255, 0.06);
+    }
     .stat-value {
       display: inline-block;
       font-size: 1.3rem;
@@ -1083,12 +1089,13 @@
     }
     
     .member-card {
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px 14px;
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       width: auto;
       max-width: 320px;
       min-width: 220px;
@@ -1100,74 +1107,41 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     .member-card:hover {
-      border-color: #434343;
-      background: var(--bg-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
     
-    .member-card.twitch-live-card {
-      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
-      border: 1px solid #343434;
-      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+    .member-card.twitch-live-card,
+    .member-card.kick-live-only-card,
+    .member-card.tiktok-live-card {
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.08), rgba(145, 70, 255, 0.03));
+      border-color: rgba(145, 70, 255, 0.2);
+      box-shadow: 0 2px 12px rgba(145, 70, 255, 0.1);
       cursor: pointer;
     }
-    .member-card.twitch-live-card:hover {
-      background: linear-gradient(135deg, rgba(119, 44, 232, 0.14), rgba(145, 70, 255, 0.14));
-      border-color: var(--twitch-light);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 18px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
+    .member-card.twitch-live-card:hover,
+    .member-card.kick-live-only-card:hover,
+    .member-card.tiktok-live-card:hover {
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.14), rgba(145, 70, 255, 0.06));
+      border-color: rgba(145, 70, 255, 0.5);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 20px rgba(145, 70, 255, 0.15);
+      transform: translateY(-3px);
     }
     .member-card.twitch-live-card .member-name,
     .member-card.twitch-live-card .member-police-rank,
     .member-card.twitch-live-card .member-status,
     .member-card.twitch-live-card .member-level,
-    .member-card.twitch-live-card .member-seizures {
-      color: #ffffff;
-    }
-    .member-card.twitch-live-card .member-avatar {
-      border-color: var(--twitch-light);
-      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
-    }
-    
-    /* Card KICK Online (Verde) */
-    .member-card.kick-live-only-card {
-      background: linear-gradient(135deg, rgba(145, 70, 255, 0.15), rgba(168, 85, 247, 0.15));
-      border: 1px solid #9146ff;
-      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
-      cursor: pointer;
-    }
-    .member-card.kick-live-only-card:hover {
-      background: linear-gradient(135deg, rgba(145, 70, 255, 0.25), rgba(168, 85, 247, 0.25));
-      border-color: #343434;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.14), 0 0 20px rgba(145, 70, 255, 0.2);
-      transform: translateY(-2px);
-    }
+    .member-card.twitch-live-card .member-seizures,
     .member-card.kick-live-only-card .member-name,
     .member-card.kick-live-only-card .member-police-rank,
     .member-card.kick-live-only-card .member-status,
     .member-card.kick-live-only-card .member-level,
-    .member-card.kick-live-only-card .member-seizures {
-      color: #ffffff;
-    }
-    .member-card.kick-live-only-card .member-avatar {
-      border-color: #9146ff;
-      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
-    }
-    .member-card.tiktok-live-card {
-      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
-      border: 1px solid #343434;
-      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
-      cursor: pointer;
-    }
-    .member-card.tiktok-live-card:hover {
-      background: linear-gradient(135deg, rgba(119, 44, 232, 0.14), rgba(145, 70, 255, 0.14));
-      border-color: var(--twitch-light);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06), 0 6px 18px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
-    }
+    .member-card.kick-live-only-card .member-seizures,
     .member-card.tiktok-live-card .member-name,
     .member-card.tiktok-live-card .member-police-rank,
     .member-card.tiktok-live-card .member-status,
@@ -1175,36 +1149,38 @@
     .member-card.tiktok-live-card .member-seizures {
       color: #ffffff;
     }
+    .member-card.twitch-live-card .member-avatar,
+    .member-card.kick-live-only-card .member-avatar,
     .member-card.tiktok-live-card .member-avatar {
-      border-color: var(--twitch-light);
-      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+      border-color: rgba(145, 70, 255, 0.5);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
     }
     
     .member-avatar {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 2px solid #434343;
+      border: 2px solid rgba(255, 255, 255, 0.12);
       object-fit: cover;
-      transition: transform 0.3s ease;
+      transition: transform 0.35s ease, border-color 0.3s ease;
       flex-shrink: 0;
     }
-    .member-card:hover .member-avatar { transform: scale(1.02); }
+    .member-card:hover .member-avatar { transform: scale(1.05); border-color: rgba(255, 255, 255, 0.25); }
     .member-avatar-placeholder {
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      border: 2px solid #434343;
-      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255,255,255,0.04);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 1.3rem;
       color: var(--text-muted);
-      transition: transform 0.3s ease;
+      transition: transform 0.35s ease, border-color 0.3s ease;
       flex-shrink: 0;
     }
-    .member-card:hover .member-avatar-placeholder { transform: scale(1.02); }
+    .member-card:hover .member-avatar-placeholder { transform: scale(1.05); border-color: rgba(255, 255, 255, 0.25); }
     
     .member-info {
       flex: 1;
@@ -1212,11 +1188,11 @@
       gap: 3px;
       min-width: 0;
     }
-    .member-name { font-weight: 700; font-size: 0.85rem; line-height: 1.1; }
-    .member-police-rank { font-weight: 400; font-size: 0.68rem; color: #cccccc; }
+    .member-name { font-weight: 700; font-size: 0.85rem; line-height: 1.1; color: #ffffff; }
+    .member-police-rank { font-weight: 400; font-size: 0.68rem; color: rgba(255, 255, 255, 0.65); }
     .member-registered {
       font-size: 9px;
-      color: #a2a2a2;
+      color: rgba(255, 255, 255, 0.4);
       line-height: 1.2;
       margin-top: 2px;
     }
@@ -1225,57 +1201,60 @@
       align-items: center;
       gap: 4px;
       font-size: 0.5rem;
-      padding: 2px 6px;
+      padding: 2px 8px;
       border-radius: 20px;
-      font-weight: 400;
+      font-weight: 500;
       width: fit-content;
     }
-    .status-ativo { background: rgba(16,185,129,0.15); color: var(--success); }
-    .status-inativo { background: rgba(136,136,136,0.15); color: var(--text-muted); }
+    .status-ativo { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.15); }
+    .status-inativo { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
     
     .member-right {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       justify-content: center;
-      gap: 4px;
+      gap: 5px;
       flex-shrink: 0;
       min-width: 90px;
       max-width: 110px;
     }
     .member-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-wrap: nowrap; }
-    .member-level { font-size: 9px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
-    .member-seizures { font-size: 9px; background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 20px; color: #ffffff; font-weight: 400; white-space: nowrap; }
+    .member-level { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); }
+    .member-seizures { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); }
     .twitch-badge {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       font-size: 0.5rem;
-      padding: 0;
+      padding: 2px 8px;
       border-radius: 20px;
       text-decoration: none;
-      font-weight: 400;
+      font-weight: 500;
+      transition: all 0.25s ease;
     }
-    .twitch-badge:hover { transform: scale(1.02); }
+    .twitch-badge:hover { transform: scale(1.05); }
     .twitch-badge svg {
       width: 8px;
       height: 8px;
       fill: currentColor;
     }
-    .twitch-online { background: rgba(145,70,255,0.25); color: #ffffff; }
-    .twitch-offline { background: rgba(136,136,136,0.15); color: var(--text-muted); }
-    .kick-online { background: rgba(76,175,80,0.25); color: #ffffff; }
-    .kick-offline { background: rgba(136,136,136,0.15); color: var(--text-muted); }
-    .tiktok-online { background: rgba(255,0,80,0.25); color: #ffffff; }
-    .tiktok-offline { background: rgba(136,136,136,0.15); color: var(--text-muted); }
+    .twitch-online { background: rgba(145,70,255,0.2); color: #ffffff; border: 1px solid rgba(145,70,255,0.25); }
+    .twitch-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
+    .kick-online { background: rgba(76,175,80,0.2); color: #ffffff; border: 1px solid rgba(76,175,80,0.25); }
+    .kick-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
+    .tiktok-online { background: rgba(255,0,80,0.2); color: #ffffff; border: 1px solid rgba(255,0,80,0.25); }
+    .tiktok-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
 
     /* Seção Membros Ao Vivo */
     .live-members-section {
-      background: rgba(17, 17, 17, 0.5);
-      backdrop-filter: blur(8px);
-      border-radius: var(--radius);
-      padding: 14px;
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 18px;
       margin-top: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
     }
     .live-members-title {
       font-size: 0.9rem;
@@ -1296,113 +1275,115 @@
 
     /* Card ao vivo com thumbnail */
     .live-card-thumbnail {
-      background: linear-gradient(135deg, rgba(119, 44, 232, 0.1), rgba(145, 70, 255, 0.1));
-      border: 1px solid var(--twitch-light);
-      box-shadow: 0 0 15px rgba(145, 70, 255, 0.2);
+      background: linear-gradient(135deg, rgba(145, 70, 255, 0.08), rgba(145, 70, 255, 0.03));
+      border: 1px solid rgba(145, 70, 255, 0.2);
+      box-shadow: 0 2px 12px rgba(145, 70, 255, 0.1);
       cursor: pointer;
       position: relative;
       width: 420px;
       height: 240px;
-      border-radius: var(--radius);
+      border-radius: 14px;
       overflow: hidden;
       display: flex;
       align-items: flex-end;
-      transition: var(--transition);
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .live-card-thumbnail:hover {
-      border-color: #343434;
-      box-shadow: 0 0 25px rgba(145, 70, 255, 0.4);
-      transform: translateY(-2px);
+      border-color: rgba(145, 70, 255, 0.5);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 20px rgba(145, 70, 255, 0.15);
+      transform: translateY(-3px);
     }
-
+    
     .live-card-background {
       position: absolute;
       inset: 0;
       background-size: cover;
       background-position: center;
       opacity: 1;
-      transition: transform 0.5s ease;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .live-card-thumbnail:hover .live-card-background {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
-
+    
     .live-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.65) 100%);
       z-index: 1;
     }
-
+    
     .live-card-content {
       position: relative;
       z-index: 2;
-      padding: 10px;
+      padding: 14px;
       width: 100%;
       display: flex;
       gap: 10px;
       align-items: center;
     }
-
+    
     .live-card-avatar {
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      border: 2px solid var(--twitch-light);
-      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+      border: 2px solid rgba(145, 70, 255, 0.5);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
       object-fit: cover;
       flex-shrink: 0;
     }
-
+    
     .live-card-content .member-avatar-placeholder {
       width: 50px;
       height: 50px;
-      border: 2px solid var(--twitch-light);
-      box-shadow: 0 0 10px rgba(145, 70, 255, 0.3);
+      border: 2px solid rgba(145, 70, 255, 0.5);
+      box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
     }
-
+    
     .live-card-info {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
-
+    
     .live-card-name {
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #ffffff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
-
+    
     .live-card-rank {
       font-size: 0.6rem;
-      color: #aaaaaa;
+      color: rgba(255, 255, 255, 0.65);
       font-weight: 500;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 4px;
     }
-
+    
     .live-card-level {
-      color: #cccccc;
+      color: rgba(255, 255, 255, 0.7);
       font-weight: 600;
       white-space: nowrap;
     }
-
+    
     .live-card-badge {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
       font-size: 0.5rem;
-      padding: 2px 6px;
+      padding: 3px 8px;
       border-radius: 20px;
-      background: rgba(145,70,255,0.25);
+      background: rgba(145,70,255,0.2);
       color: #ffffff;
       font-weight: 600;
       width: fit-content;
+      border: 1px solid rgba(145,70,255,0.25);
     }
-
+    
     .live-card-badge svg {
       width: 8px;
       height: 8px;
@@ -1421,14 +1402,15 @@
       position: relative;
       min-height: 350px;
       overflow: hidden;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      transition: var(--transition);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       cursor: pointer;
-      background: var(--bg-card);
+      background: rgba(255, 255, 255, 0.02);
       display: block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    .vehicle-card:hover { border-color: #434343; transform: translateY(-2px); }
+    .vehicle-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
     .vehicle-img {
       position: absolute;
       inset: 0;
@@ -1436,7 +1418,7 @@
       height: 100%;
       object-fit: cover;
       opacity: 1;
-      transition: transform 0.5s ease;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 1;
     }
     .vehicle-img.placeholder {
@@ -1447,11 +1429,11 @@
       color: var(--text-muted);
       font-size: 2rem;
     }
-    .vehicle-card:hover .vehicle-img { transform: scale(1.05); }
+    .vehicle-card:hover .vehicle-img { transform: scale(1.06); }
     .vehicle-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.55) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.6) 100%);
       z-index: 2;
     }
     .vehicle-card-content {
@@ -1463,7 +1445,7 @@
       align-items: center;
       text-align: center;
       height: 100%;
-      padding: 20px;
+      padding: 24px;
       gap: 6px;
     }
     .vehicle-name {
@@ -1472,26 +1454,29 @@
       color: #ffffff;
       line-height: 1.2;
       width: 100%;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
     /* Seizures Card */
     .seizure-card {
       position: relative;
-      background: var(--bg-card);
-      backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
       overflow: hidden;
-      transition: var(--transition);
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       cursor: pointer;
       min-height: 280px;
       display: flex;
       align-items: flex-end;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     .seizure-card:hover {
-      border-color: #434343;
-      transform: translateY(-2px);
-      background: var(--bg-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
     .seizure-card-background {
       position: absolute;
@@ -1499,26 +1484,26 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      transition: transform 0.5s ease;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
     .seizure-card-background--empty {
-      background: radial-gradient(circle at top left, rgba(255,255,255,0.08), rgba(0,0,0,0.35));
+      background: radial-gradient(circle at top left, rgba(255,255,255,0.04), rgba(0,0,0,0.4));
     }
     .seizure-card:hover .seizure-card-background {
-      transform: scale(1.03);
+      transform: scale(1.04);
     }
     .seizure-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.48) 25%, rgba(0,0,0,0.68) 55%, rgba(0,0,0,0.82) 85%, rgba(0,0,0,0.92) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,0.65) 55%, rgba(0,0,0,0.85) 85%, rgba(0,0,0,0.95) 100%);
       z-index: 1;
     }
     .seizure-card-header {
       position: absolute;
-      top: 10px;
+      top: 12px;
       left: 50%;
       transform: translateX(-50%);
-      width: calc(100% - 22px);
+      width: calc(100% - 24px);
       display: flex;
       justify-content: center;
       z-index: 3;
@@ -1528,25 +1513,18 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 10px 2px 2px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.24);
+      padding: 4px 14px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 999px;
       color: #ffffff;
       font-weight: 700;
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       text-transform: none;
       letter-spacing: 0;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       line-height: 1.2;
-    }
-    .qru-badge::before {
-      content: "";
-      display: inline-block;
-      margin-right: 0;
-      font-size: 0.85rem;
-      line-height: 1;
-      color: #ffffff;
     }
     .emoji-icon {
       display: inline-flex;
@@ -1558,30 +1536,19 @@
     .seizure-card-content {
       position: static;
       z-index: 2;
-      padding: 10px 12px 12px;
+      padding: 12px 14px 14px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       width: 100%;
       margin-top: 20px;
-    }
-    .seizure-meta span,
-    .seizure-footer span {
-      gap: 4px;
-      padding: 0;
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.92);
-      font-size: 0.82rem;
-      font-weight: 500;
-      line-height: 1.2;
     }
     .seizure-desc {
       font-weight: 700;
       font-size: 0.95rem;
       line-height: 1.3;
       color: #ffffff;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
     }
     .seizure-meta {
       display: flex;
@@ -1597,24 +1564,23 @@
       padding: 0;
       background: transparent;
       border: none;
-      color: rgba(255, 255, 255, 0.92);
-      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.8rem;
       font-weight: 500;
       line-height: 1.2;
     }
     .seizure-meta .badge,
     .seizure-footer .badge {
-      padding: 2px 4px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.15);
+      padding: 3px 8px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
-      color: #ffffff;
+      color: rgba(255, 255, 255, 0.9);
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 500;
       line-height: 1.2;
-    }
-    .seizure-footer .badge {
-      font-weight: 400;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
     .seizure-footer {
       display: flex;
@@ -1622,33 +1588,40 @@
       align-items: center;
       gap: 8px;
       font-size: 12px;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255,255,255,0.8);
       font-weight: 500;
     }
     .seizure-footer a {
       color: #ffffff;
       text-decoration: none;
       font-weight: 600;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      transition: all 0.25s ease;
+      font-size: 11px;
     }
     .seizure-footer a:hover {
-      text-decoration: underline;
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.25);
+      text-decoration: none;
     }
-    .seizure-footer a { color: #ffffff; text-decoration: none; font-weight: 600; }
-    .seizure-footer a:hover { text-decoration: underline; }
 
     /* Gallery Card */
     .gallery-card {
       position: relative;
       min-height: 520px;
       overflow: hidden;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      transition: var(--transition);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       cursor: pointer;
-      background: var(--bg-card);
+      background: rgba(255, 255, 255, 0.02);
       display: block;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    .gallery-card:hover { border-color: #434343; transform: translateY(-2px); }
+    .gallery-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); }
     .gallery-img {
       position: absolute;
       inset: 0;
@@ -1656,7 +1629,7 @@
       height: 100%;
       object-fit: cover;
       opacity: 1;
-      transition: transform 0.5s ease;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 1;
     }
     .gallery-img.placeholder {
@@ -1667,11 +1640,11 @@
       color: var(--text-muted);
       font-size: 2rem;
     }
-    .gallery-card:hover .gallery-img { transform: scale(1.05); }
+    .gallery-card:hover .gallery-img { transform: scale(1.06); }
     .gallery-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.12) 40%, rgba(0,0,0,0.55) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 35%, rgba(0,0,0,0.6) 100%);
       z-index: 2;
     }
     .gallery-card-content {
@@ -1682,7 +1655,7 @@
       justify-content: flex-end;
       align-items: flex-start;
       height: 100%;
-      padding: 20px;
+      padding: 24px;
       gap: 6px;
     }
     .gallery-title {
@@ -1691,10 +1664,11 @@
       color: #ffffff;
       line-height: 1.2;
       text-align: left;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     .gallery-date {
       font-size: 0.85rem;
-      color: rgba(255,255,255,0.78);
+      color: rgba(255,255,255,0.7);
       font-weight: 400;
       text-align: left;
     }
@@ -1702,16 +1676,18 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px;
-      background: rgba(255,255,255,0.08);
+      padding: 3px 8px;
+      background: rgba(0, 0, 0, 0.3);
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.12);
-      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
       font-size: 10px;
-      font-weight: 400;
+      font-weight: 500;
       width: auto;
       max-width: 100%;
       align-self: flex-start;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     /* Carrossel Refinado */
@@ -2036,25 +2012,27 @@
     .admin-list-item {
       display: flex; justify-content: space-between;
       align-items: center;
-      padding: 10px 14px;
-      background: #111111;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
       flex-wrap: wrap;
       gap: 8px;
-      transition: var(--transition);
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
-    .admin-list-item:hover { border-color: #ffffff; }
+    .admin-list-item:hover { border-color: rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.05); }
     .admin-list-item .item-info { flex: 1; }
     .admin-list-item .item-actions { display: flex; gap: 6px; }
-    .admin-seizure-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px; }
+    .admin-seizure-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px; }
     .form-card {
-      background: #111111; padding: 14px;
-      border-radius: 10px; margin-bottom: 18px;
-      border: 1px solid var(--border);
-      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.02); padding: 16px;
+      border-radius: 12px; margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.3s ease;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     }
-    .form-card:hover { border-color: #ffffff; }
+    .form-card:hover { border-color: rgba(255, 255, 255, 0.15); }
 
     .inline-edit {
       display: flex;
