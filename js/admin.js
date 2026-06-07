@@ -193,10 +193,10 @@ function renderAdminMembers() {
       <div class="form-group"><label>NÍVEL</label><input id="new-level" type="number" value="1"></div>
       <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
       <div class="form-group"><label>DATA DE CADASTRO</label><input id="new-created-at" type="date"></div>
-      <div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="new-avatar" placeholder="https://..."></div>
       <div class="form-group"><label>TWITCH</label><input id="new-twitch" placeholder="username (opcional)"></div>
       <div class="form-group"><label>KICK</label><input id="new-kick" placeholder="username (opcional)"></div>
       <div class="form-group"><label>TIKTOK</label><input id="new-tiktok" placeholder="username (opcional)"></div>
+      <div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="new-avatar" placeholder="https://..."></div>
       <button class="btn btn-primary" onclick="addMember()">ADICIONAR MEMBRO</button>
     </div>
     <div id="members-list"></div>
@@ -221,30 +221,31 @@ function renderMembersList() {
   if (!members.length) { container.innerHTML = '<div class="empty-card">Nenhum membro</div>'; return; }
   let html = '';
   members.forEach(m => {
-    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Inter',sans-serif;">
+    const social = [m.twitch ? `twitch.tv/${m.twitch}` : '', m.kick ? `kick.com/${m.kick}` : '', m.tiktok ? `tiktok.com/@${m.tiktok}` : ''].filter(Boolean).join(' · ');
+    html += `<div class="admin-list-item">
       <div class="item-info">
-        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(m.name)}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Patente: ${escapeHtml(m.policeRank || 'Soldado')} | Nv.${m.level} | ${m.status}</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Cadastrado: ${parseStoredDate(m.createdAt) ? parseStoredDate(m.createdAt).toLocaleDateString('pt-BR') : '---'}</div>
-        ${m.twitch ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">twitch.tv/${m.twitch}</div>` : ''}
-        ${m.kick ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">kick.com/${m.kick}</div>` : ''}
-        ${m.tiktok ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">tiktok.com/@${m.tiktok}</div>` : ''}
-        <div class="inline-edit" style="margin-top:6px;">
-          <input type="text" id="name-input-${m.id}" value="${escapeHtml(m.name || '')}" placeholder="Nome" class="btn-edit" style="font-size:11px;">
-          <input type="text" id="rank-input-${m.id}" value="${escapeHtml(m.policeRank || '')}" placeholder="Patente" class="btn-edit" style="font-size:11px;">
-          <select id="level-select-${m.id}" class="btn-edit" style="font-size:11px;">
+        <div class="admin-info-row">
+          <span class="admin-item-name">${escapeHtml(m.name)}</span>
+          <span class="admin-item-detail">Patente: ${escapeHtml(m.policeRank || 'Soldado')} · Nv.${m.level} · ${m.status}</span>
+          <span class="admin-item-detail">${parseStoredDate(m.createdAt) ? parseStoredDate(m.createdAt).toLocaleDateString('pt-BR') : '---'}</span>
+          ${social ? `<span class="admin-item-detail">${social}</span>` : ''}
+        </div>
+        <div class="inline-edit">
+          <input type="text" id="name-input-${m.id}" value="${escapeHtml(m.name || '')}" placeholder="Nome">
+          <input type="text" id="rank-input-${m.id}" value="${escapeHtml(m.policeRank || '')}" placeholder="Patente">
+          <select id="level-select-${m.id}">
             ${[...Array(100).keys()].map(i => `<option value="${i}" ${m.level == i ? 'selected' : ''}>Nv.${i}</option>`).join('')}
           </select>
-          <input type="date" id="created-at-input-${m.id}" value="${escapeHtml(formatDateForInput(m.createdAt))}" class="btn-edit" style="font-size:11px;">
-          <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem" class="btn-edit" style="font-size:11px;">
-          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch" class="btn-edit" style="font-size:11px;">
-          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick" class="btn-edit" style="font-size:11px;">
-          <input type="text" id="tiktok-input-${m.id}" value="${escapeHtml(m.tiktok || '')}" placeholder="TikTok" class="btn-edit" style="font-size:11px;">
-          <button class="btn-edit" onclick="updateMemberFields('${m.id}')" style="font-size:11px;font-weight:700;">SALVAR</button>
+          <input type="date" id="created-at-input-${m.id}" value="${escapeHtml(formatDateForInput(m.createdAt))}">
+          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch">
+          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick">
+          <input type="text" id="tiktok-input-${m.id}" value="${escapeHtml(m.tiktok || '')}" placeholder="TikTok">
+          <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem">
+          <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
         </div>
       </div>
       <div class="item-actions">
-        <button class="btn btn-danger" style="padding: 4px 12px;font-size:11px;" onclick="deleteMember('${m.id}')">REMOVER</button>
+        <button class="btn btn-danger" onclick="deleteMember('${m.id}')">REMOVER</button>
       </div>
     </div>`;
   });
