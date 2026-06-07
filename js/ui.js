@@ -376,12 +376,11 @@ function renderGallery() {
   const end = Math.min(start + GALLERY_PAGE_HOME, sorted.length);
   const pageItems = sorted.slice(start, end);
   
-  let html = '<div class="gallery-carousel-wrapper">';
+  let html = '<div class="gallery-carousel-wrapper" style="position:relative;">';
   let hasNav = totalPages > 1;
   
   if (hasNav) {
-    html += '<div class="seizures-carousel-inner">';
-    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn" onclick="galleryPage=${Math.max(0, galleryPage - 1)};renderGallery()" ${galleryPage <= 0 ? 'disabled' : ''}>❮</button>`;
+    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn gallery-arrow-left" onclick="galleryPage=${Math.max(0, galleryPage - 1)};renderGallery()" ${galleryPage <= 0 ? 'disabled' : ''}>❮</button>`;
   }
   
   html += '<div class="simple-grid">';
@@ -408,8 +407,7 @@ function renderGallery() {
   html += '</div>';
   
   if (hasNav) {
-    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn" onclick="galleryPage=${Math.min(totalPages - 1, galleryPage + 1)};renderGallery()" ${galleryPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
-    html += '</div>';
+    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn gallery-arrow-right" onclick="galleryPage=${Math.min(totalPages - 1, galleryPage + 1)};renderGallery()" ${galleryPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
     
     html += '<div class="gallery-carousel-dots">';
     for (var i = 0; i < totalPages; i++) {
@@ -445,12 +443,11 @@ function renderSeizures() {
     const end = Math.min(start + SEIZURES_PAGE_HOME, sorted.length);
     const pageItems = sorted.slice(start, end);
     
-    let html = '<div class="seizures-carousel-wrapper">';
+    let html = '<div class="seizures-carousel-wrapper" style="position:relative;">';
     let hasNav = totalPages > 1;
     
     if (hasNav) {
-      html += '<div class="seizures-carousel-inner">';
-      html += `<button class="carousel-btn seizures-carousel-btn" onclick="seizuresPage=${Math.max(0, seizuresPage - 1)};renderSeizures()" ${seizuresPage <= 0 ? 'disabled' : ''}>❮</button>`;
+      html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-left" onclick="seizuresPage=${Math.max(0, seizuresPage - 1)};renderSeizures()" ${seizuresPage <= 0 ? 'disabled' : ''}>❮</button>`;
     }
     
     html += '<div class="simple-grid">';
@@ -488,8 +485,7 @@ function renderSeizures() {
     html += '</div>';
     
     if (hasNav) {
-      html += `<button class="carousel-btn seizures-carousel-btn" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
-      html += '</div>';
+      html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-right" onclick="seizuresPage=${Math.min(totalPages - 1, seizuresPage + 1)};renderSeizures()" ${seizuresPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
       html += '<div class="gallery-carousel-dots">';
       for (var i = 0; i < totalPages; i++) {
         html += `<span class="gallery-dot ${i === seizuresPage ? 'active' : ''}" onclick="seizuresPage=${i};renderSeizures()"></span>`;
