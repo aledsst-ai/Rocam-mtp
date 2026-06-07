@@ -1069,7 +1069,7 @@
       background: rgba(145, 71, 255, 0.05);
       border-color: rgba(145, 71, 255, 0.15);
     }
-    .stat-live:hover { border-color: rgba(145, 71, 255, 0.4); }
+    .stat-live:hover { background: rgba(145, 71, 255, 0.12); border-color: rgba(145, 71, 255, 0.4); }
     .stat-live .stat-value { color: var(--twitch-light); }
     .stat-live .stat-label { color: var(--twitch-light); }
 
@@ -1326,6 +1326,10 @@
       inset: 0;
       background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.65) 100%);
       z-index: 1;
+      transition: background 0.35s ease;
+    }
+    .live-card-thumbnail:hover .live-card-overlay {
+      background: linear-gradient(180deg, rgba(145,70,255,0) 0%, rgba(145,70,255,0.15) 40%, rgba(145,70,255,0.35) 100%);
     }
     
     .live-card-content {
