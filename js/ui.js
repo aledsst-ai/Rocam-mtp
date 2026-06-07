@@ -355,16 +355,37 @@ function renderVehicles() {
   `).join('') + '</div>';
 }
 
+const GALLERY_PAGE_HOME = 6;
+
 function renderGallery() {
-  const filtered = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date));
   const container = document.getElementById('gallery-content');
-  if (!filtered.length) {
+  if (!container) return;
+  
+  const sorted = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, GALLERY_PAGE_HOME * 3);
+  
+  if (!sorted.length) {
     container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>';
     return;
   }
   
-  const limited = filtered.slice(0, 3); // Mostrar apenas 3
-  container.innerHTML = '<div class="simple-grid">' + limited.map((item, idx) => {
+  const totalPages = Math.ceil(sorted.length / GALLERY_PAGE_HOME);
+  if (galleryPage < 0) galleryPage = 0;
+  if (galleryPage >= totalPages) galleryPage = Math.max(0, totalPages - 1);
+  
+  const start = galleryPage * GALLERY_PAGE_HOME;
+  const end = Math.min(start + GALLERY_PAGE_HOME, sorted.length);
+  const pageItems = sorted.slice(start, end);
+  
+  let html = '<div class="gallery-carousel-wrapper">';
+  let hasNav = totalPages > 1;
+  
+  if (hasNav) {
+    html += '<div class="seizures-carousel-inner">';
+    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn" onclick="galleryPage=${Math.max(0, galleryPage - 1)};renderGallery()" ${galleryPage <= 0 ? 'disabled' : ''}>❮</button>`;
+  }
+  
+  html += '<div class="simple-grid">';
+  html += pageItems.map((item, idx) => {
     const imageUrl = item.imageUrl ? String(item.imageUrl).trim() : '';
     const safeImageUrl = escapeHtml(imageUrl);
     const title = escapeHtml(item.title || 'Sem título');
@@ -383,7 +404,22 @@ function renderGallery() {
         </div>
       </div>
     `;
-  }).join('') + '</div>';
+  }).join('');
+  html += '</div>';
+  
+  if (hasNav) {
+    html += `<button class="carousel-btn seizures-carousel-btn gallery-carousel-btn" onclick="galleryPage=${Math.min(totalPages - 1, galleryPage + 1)};renderGallery()" ${galleryPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
+    html += '</div>';
+    
+    html += '<div class="gallery-carousel-dots">';
+    for (var i = 0; i < totalPages; i++) {
+      html += `<span class="gallery-dot ${i === galleryPage ? 'active' : ''}" onclick="galleryPage=${i};renderGallery()"></span>`;
+    }
+    html += '</div>';
+  }
+  
+  html += '</div>';
+  container.innerHTML = html;
   observeRevealElements();
 }
 
