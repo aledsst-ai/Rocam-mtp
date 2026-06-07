@@ -2075,10 +2075,19 @@
       flex: 1 1 100px;
       min-width: 80px;
       width: auto;
-      background: rgba(255,255,255,0.06);
+      background: #1a1a1a;
       color: #ffffff;
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
+    }
+    .inline-edit select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 24px;
     }
     .inline-edit button {
       width: auto;
