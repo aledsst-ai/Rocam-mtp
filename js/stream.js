@@ -30,7 +30,7 @@ async function checkTikTokStatus(username) {
   } catch(e) { return false; }
 }
 
-async function updateAllStreamStatus() {
+async function updateAllStreamStatus(skipSave) {
   if (streamStatusUpdateScheduled) return;
   streamStatusUpdateScheduled = true;
   
@@ -51,10 +51,12 @@ async function updateAllStreamStatus() {
       }
     }
     
-    if (!firebaseInitialSyncCompleted && dataListenerRegistered) {
-      console.log('⏭️ Ignorando saveData() até o Firebase carregar a primeira vez');
-    } else {
-      saveData();
+    if (!skipSave) {
+      if (!firebaseInitialSyncCompleted && dataListenerRegistered) {
+        console.log('⏭️ Ignorando saveData() até o Firebase carregar a primeira vez');
+      } else {
+        saveData();
+      }
     }
     
     renderLiveMembers();

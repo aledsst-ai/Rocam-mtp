@@ -171,6 +171,9 @@ function loadData() {
         renderAll();
         firebaseInitialSyncCompleted = true;
         console.log('✅ Firebase initial sync completed');
+        if (typeof updateAllStreamStatus === 'function') {
+          setTimeout(() => updateAllStreamStatus(true), 50);
+        }
       }, (error) => {
         console.warn('⚠️ Erro ao carregar do Firebase:', error);
         console.log('💾 Usando dados do localStorage');
