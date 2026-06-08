@@ -182,10 +182,16 @@ function renderLiveMembers() {
     return;
   }
 
-  let html = `<div class="live-members-grid${liveMembers.length === 1 ? ' live-members-grid--single' : ''}">`;
-  liveMembers.forEach((m, idx) => {
-    const statusClass = m.status === 'ativo' ? 'status-ativo' : 'status-inativo';
-    const statusText = m.status === 'ativo' ? 'Ativo' : 'Inativo';
+  const useCarousel = liveMembers.length > LIVE_MEMBERS_PER_PAGE;
+  const totalPages = useCarousel ? Math.ceil(liveMembers.length / LIVE_MEMBERS_PER_PAGE) : 1;
+  if (liveMembersPage < 0) liveMembersPage = 0;
+  if (liveMembersPage >= totalPages) liveMembersPage = Math.max(0, totalPages - 1);
+
+  const start = useCarousel ? liveMembersPage * LIVE_MEMBERS_PER_PAGE : 0;
+  const end = useCarousel ? Math.min(start + LIVE_MEMBERS_PER_PAGE, liveMembers.length) : liveMembers.length;
+  const pageItems = liveMembers.slice(start, end);
+
+  const renderCard = (m, idx) => {
     const seizureCount = getMemberSeizureCount(m.name);
     const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
     const avatarHtml = m.avatarUrl
@@ -195,7 +201,7 @@ function renderLiveMembers() {
     const streamInfo = getLiveStreamInfo(m) || {};
     const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
 
-    html += `
+    return `
       <div class="live-card-thumbnail reveal" data-member-name="${escapeHtml(m.name)}" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
         <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
         <div class="live-card-overlay"></div>
@@ -215,9 +221,27 @@ function renderLiveMembers() {
         </div>
       </div>
     `;
-  });
-  html += '</div>';
-  container.innerHTML = html;
+  };
+
+  if (useCarousel) {
+    let html = '<div class="seizures-carousel-wrapper" style="position:relative;">';
+    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-left" onclick="liveMembersPage=${Math.max(0, liveMembersPage - 1)};renderLiveMembers()" ${liveMembersPage <= 0 ? 'disabled' : ''}>❮</button>`;
+    html += '<div class="live-members-grid">';
+    pageItems.forEach((m, idx) => { html += renderCard(m, idx); });
+    html += '</div>';
+    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-right" onclick="liveMembersPage=${Math.min(totalPages - 1, liveMembersPage + 1)};renderLiveMembers()" ${liveMembersPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
+    html += '<div class="gallery-carousel-dots">';
+    for (var i = 0; i < totalPages; i++) {
+      html += `<span class="gallery-dot ${i === liveMembersPage ? 'active' : ''}" onclick="liveMembersPage=${i};renderLiveMembers()"></span>`;
+    }
+    html += '</div></div>';
+    container.innerHTML = html;
+  } else {
+    let html = `<div class="live-members-grid${liveMembers.length === 1 ? ' live-members-grid--single' : ''}">`;
+    liveMembers.forEach((m, idx) => { html += renderCard(m, idx); });
+    html += '</div>';
+    container.innerHTML = html;
+  }
 }
 
 // ==================== CARROSSEL ====================
