@@ -401,6 +401,14 @@
           <option value="">Todos os membros</option>
         </select>
       </label>
+      <label for="date-filter">Período:
+        <select id="date-filter">
+          <option value="">Todos</option>
+          <option value="7">Últimos 7 dias</option>
+          <option value="15">Últimos 15 dias</option>
+          <option value="30">Últimos 30 dias</option>
+        </select>
+      </label>
     </div>
     <div class="seizures-grid" id="seizures-complete"></div>
   </div>
@@ -457,16 +465,26 @@
       document.removeEventListener('keydown', closeMembersTooltipEsc);
     }
 
-    function renderSeizuresGrid(seizuresData, selectedMember, page) {
+    function renderSeizuresGrid(seizuresData, selectedMember, selectedDays, page) {
       if (typeof page === 'undefined') page = seizurePage;
       const container = document.getElementById('seizures-complete');
       const filterSelect = document.getElementById('member-filter');
-      const filteredSeizures = selectedMember
-        ? seizuresData.filter(s => {
-            const ms = getMembersList(s.member || s.memberName);
-            return ms.includes(selectedMember);
-          })
-        : seizuresData;
+      const dateSelect = document.getElementById('date-filter');
+      let filteredSeizures = seizuresData;
+
+      if (selectedMember) {
+        filteredSeizures = filteredSeizures.filter(s => {
+          const ms = getMembersList(s.member || s.memberName);
+          return ms.includes(selectedMember);
+        });
+      }
+
+      if (selectedDays) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - parseInt(selectedDays, 10));
+        cutoff.setHours(0, 0, 0, 0);
+        filteredSeizures = filteredSeizures.filter(s => new Date(s.date) >= cutoff);
+      }
 
       populateMemberFilter(seizuresData, selectedMember);
 
@@ -524,10 +542,12 @@
 
     function goToSeizurePage(page) {
       var filterSelect = document.getElementById('member-filter');
+      var dateSelect = document.getElementById('date-filter');
       var selectedMember = filterSelect ? filterSelect.value : '';
+      var selectedDays = dateSelect ? dateSelect.value : '';
       var localData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
       var renderPage = function(data) {
-        renderSeizuresGrid(data, selectedMember, page);
+        renderSeizuresGrid(data, selectedMember, selectedDays, page);
       };
       var db = firebase.database();
       db.ref('rocam-data').once('value').then(function(snapshot) {
@@ -542,15 +562,17 @@
       }).catch(function() { renderPage(localData); });
     }
 
-    function loadSeizuresData(overrideMember) {
+    function loadSeizuresData(overrideMember, overrideDays) {
       seizurePage = 1;
       const localData = JSON.parse(localStorage.getItem('rocam_seizures') || '[]');
       const filterSelect = document.getElementById('member-filter');
+      const dateSelect = document.getElementById('date-filter');
       const selectedMember = overrideMember || filterSelect?.value || '';
+      const selectedDays = overrideDays || dateSelect?.value || '';
 
       const renderData = (seizuresData) => {
         localStorage.setItem('rocam_seizures', JSON.stringify(seizuresData));
-        renderSeizuresGrid(seizuresData, selectedMember, 1);
+        renderSeizuresGrid(seizuresData, selectedMember, selectedDays, 1);
       };
 
       const db = firebase.database();
@@ -625,9 +647,13 @@
       var urlParams = new URLSearchParams(window.location.search);
       var urlMember = urlParams.get('member');
       var filterSelect = document.getElementById('member-filter');
+      var dateSelect = document.getElementById('date-filter');
       loadSeizuresData(urlMember || '');
       if (filterSelect) {
         filterSelect.addEventListener('change', function() { loadSeizuresData(); });
+      }
+      if (dateSelect) {
+        dateSelect.addEventListener('change', function() { loadSeizuresData(); });
       }
     });
 
