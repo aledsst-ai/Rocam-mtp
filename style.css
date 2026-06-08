@@ -1281,9 +1281,8 @@
     }
     .live-members-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
       justify-content: center;
-      justify-items: center;
       gap: 16px;
     }
 
@@ -1294,8 +1293,9 @@
       box-shadow: 0 2px 12px rgba(145, 70, 255, 0.1);
       cursor: pointer;
       position: relative;
-      width: 420px;
-      height: 240px;
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 7 / 4;
       border-radius: 14px;
       overflow: hidden;
       display: flex;
@@ -2384,7 +2384,6 @@
       ::-webkit-scrollbar { width: 4px; }
       .cards-grid { grid-template-columns: 1fr; }
       .live-members-grid { grid-template-columns: 1fr; justify-content: center; }
-      .live-card-thumbnail { width: 100%; max-width: 480px; }
     }
     .footer-copyright {
       font-weight: 700;
