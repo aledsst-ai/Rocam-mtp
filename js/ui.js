@@ -762,6 +762,7 @@ function renderMemberProfile(member) {
                   </div>
                 </div>
               </div>
+            </div>
             <div class="member-social-row">
               ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
               ${member.x ? `<a href="https://x.com/${escapeHtml(member.x)}" target="_blank" class="member-social-link" aria-label="X (Twitter)">${getXSVG()}</a>` : ''}
