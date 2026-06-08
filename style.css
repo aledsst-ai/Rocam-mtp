@@ -1779,7 +1779,7 @@
       font-weight: 500;
       width: auto;
       max-width: 100%;
-      align-self: flex-start;
+      align-self: center;
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
     }
