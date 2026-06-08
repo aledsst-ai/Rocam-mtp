@@ -8,6 +8,16 @@ async function checkTwitchStatus(username) {
   } catch(e) { return false; }
 }
 
+async function checkTwitchGame(username) {
+  if (!username) return '';
+  try {
+    const response = await fetch(`https://decapi.me/twitch/game/${username}`);
+    const text = await response.text();
+    if (text.includes("offline") || text.includes("error") || text.includes("404")) return '';
+    return text.trim();
+  } catch(e) { return ''; }
+}
+
 function normalizeTikTokUsername(value) {
   if (!value) return '';
   let sanitized = value.trim().toLowerCase();
@@ -37,12 +47,16 @@ async function updateAllStreamStatus(skipSave) {
   try {
     for (const member of members) {
       member.twitchLive = false;
+      member.twitchCategory = '';
       member.tiktokLive = false;
     }
     
     for (const member of members) {
       if (member.twitch) {
         member.twitchLive = await checkTwitchStatus(member.twitch);
+        if (member.twitchLive) {
+          member.twitchCategory = await checkTwitchGame(member.twitch);
+        }
       }
       
       if (member.tiktok) {

@@ -1251,6 +1251,14 @@
     .twitch-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
     .tiktok-online { background: rgba(255,0,80,0.2); color: #ffffff; border: 1px solid rgba(255,0,80,0.25); }
     .tiktok-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
+    .member-card-category {
+      display: inline;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+    .member-card-category::before {
+      content: ' · ';
+    }
 
     /* Seção Membros Ao Vivo */
     .live-members-section {
@@ -1399,6 +1407,15 @@
       width: 8px;
       height: 8px;
       fill: currentColor;
+    }
+    
+    .live-card-category {
+      display: inline;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+    .live-card-category::before {
+      content: '· ';
     }
 
     /* Cards Grid */
