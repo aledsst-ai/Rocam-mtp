@@ -67,7 +67,9 @@ function createHierarchyMemberCard(member, index) {
   if (registeredText) {
     const registeredEl = document.createElement('div');
     registeredEl.className = 'member-registered';
-    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
+    const registeredSpan = document.createElement('span');
+    registeredSpan.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
+    registeredEl.appendChild(registeredSpan);
     info.appendChild(registeredEl);
   }
 
