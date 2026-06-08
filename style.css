@@ -1280,9 +1280,8 @@
       gap: 8px;
     }
     .live-members-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
 
@@ -1293,8 +1292,7 @@
       box-shadow: 0 2px 12px rgba(145, 70, 255, 0.1);
       cursor: pointer;
       position: relative;
-      flex: 1 1 360px;
-      min-width: 0;
+      width: 100%;
       aspect-ratio: 7 / 4;
       border-radius: 14px;
       overflow: hidden;
