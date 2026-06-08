@@ -272,11 +272,17 @@ function renderAdminVehicles() {
 function renderVehiclesList() {
   const container = document.getElementById('vehicles-list');
   if (!vehicles.length) { container.innerHTML = '<div class="empty-card">Nenhuma viatura</div>'; return; }
-  let html = '<div class="admin-seizure-grid">';
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:center;">';
   vehicles.forEach(v => {
-    html += `<div class="admin-list-item" style="font-size:11px;font-family:'Poppins',sans-serif;">
-      <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(v.name)}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${v.status === 'disponivel' ? 'Disponível' : v.status === 'emuso' ? 'Em Uso' : 'Manutenção'}</div></div>
-      <button class="btn btn-danger" style="padding:4px 12px;font-size:11px;font-weight:700;" onclick="deleteVehicle('${v.id}')">REMOVER</button>
+    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;width:300px;">
+      <img src="${escapeHtml(v.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
+      <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(v.name)}</div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${v.status === 'disponivel' ? 'Disponível' : v.status === 'emuso' ? 'Em Uso' : 'Manutenção'}</div>
+        </div>
+        <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;" onclick="deleteVehicle('${v.id}')">REMOVER</button>
+      </div>
     </div>`;
   });
   html += '</div>';
@@ -369,9 +375,9 @@ function renderGalleryList() {
   const start = (adminGalleryPage - 1) * ADMIN_GALLERY_PER_PAGE;
   const end = Math.min(start + ADMIN_GALLERY_PER_PAGE, sorted.length);
   const pageItems = sorted.slice(start, end);
-  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;">';
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:center;">';
   pageItems.forEach(g => {
-    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;">
+    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;width:300px;">
       <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
       <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
         <div style="min-width:0;flex:1;">
