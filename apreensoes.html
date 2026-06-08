@@ -536,6 +536,12 @@
         html += '</div></div></div>';
       });
 
+      var filterInfo = '';
+      if (selectedMember && selectedDays) filterInfo = ' (' + escapeHtml(selectedMember) + ', últimos ' + selectedDays + ' dias)';
+      else if (selectedMember) filterInfo = ' (' + escapeHtml(selectedMember) + ')';
+      else if (selectedDays) filterInfo = ' (últimos ' + selectedDays + ' dias)';
+      html += '<div style="grid-column:1/-1;text-align:center;padding:8px 0 4px;font-family:\'Open Sans\',sans-serif;font-size:11px;color:var(--text-muted);">Total de apreensões' + filterInfo + ': <strong>' + filteredSeizures.length + '</strong></div>';
+
       if (totalPages > 1) {
         html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 0;flex-wrap:wrap;font-family:\'Open Sans\',sans-serif;font-weight:700;font-size:9px;">';
         html += '<button onclick="goToSeizurePage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:\'Open Sans\',sans-serif;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ ANTERIOR</button>';
