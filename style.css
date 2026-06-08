@@ -49,7 +49,7 @@
       overflow-x: hidden;
       background: #0a0a0a;
       color: var(--text);
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-weight: 400;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
@@ -166,7 +166,7 @@
     .skip-splash #intro .bar-fill,
     .skip-splash #intro img { animation: none !important; }
     #intro img { width: 357px; height: 357px; object-fit: contain; opacity: 0.8; animation: pulse 2s ease-in-out infinite; }
-    #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: #ffffff; font-weight: 400; font-family: 'Poppins', sans-serif; }
+    #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: #ffffff; font-weight: 400; font-family: 'Open Sans', sans-serif; }
     #intro .bar { width: 140px; height: 1px; background: var(--border); overflow: hidden; }
     #intro .bar-fill { height: 100%; width: 0%; background: #ffffff; animation: loadBar 2s ease forwards; }
     @keyframes loadBar { to { width: 100%; } }
@@ -2109,7 +2109,7 @@
       border-radius: 12px;
       width: 90%; max-width: 1000px; max-height: 85vh;
       display: flex; flex-direction: column; overflow: hidden;
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Open Sans', sans-serif;
     }
     .admin-panel * {
       font-family: inherit;
@@ -2144,7 +2144,7 @@
       background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px; color: #ffffff;
       font-size: 11px; transition: var(--transition);
-      font-weight: 400; font-family: 'Poppins', sans-serif;
+      font-weight: 400; font-family: 'Open Sans', sans-serif;
     }
     .form-group select {
       appearance: none;
@@ -2222,7 +2222,7 @@
       color: #ffffff;
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Open Sans', sans-serif;
     }
     .inline-edit select {
       appearance: none;

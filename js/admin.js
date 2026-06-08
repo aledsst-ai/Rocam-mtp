@@ -1,4 +1,4 @@
-﻿// ==================== ADMIN PANELS ====================
+// ==================== ADMIN PANELS ====================
 let currentAdminTab = 'members';
 let currentMembersTab = 'seizures';
 
@@ -331,7 +331,7 @@ function renderSeizuresList() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
-    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Poppins',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Open Sans',sans-serif;">
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
       <button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>
     </div>`;
@@ -389,11 +389,11 @@ function renderGalleryList() {
   html += '</div>';
   if (totalPages > 1) {
     html += '<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 0;font-size:11px;font-weight:700;">';
-    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage - 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;' + (adminGalleryPage <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage <= 1 ? 'disabled' : '') + '>❮</button>';
+    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage - 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Open Sans\',sans-serif;' + (adminGalleryPage <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage <= 1 ? 'disabled' : '') + '>❮</button>';
     for (var i = 1; i <= totalPages; i++) {
-      html += '<button onclick="adminGalleryPage=' + i + ';renderGalleryList()" style="padding:6px 10px;border-radius:6px;border:1px solid ' + (i === adminGalleryPage ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === adminGalleryPage ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;">' + i + '</button>';
+      html += '<button onclick="adminGalleryPage=' + i + ';renderGalleryList()" style="padding:6px 10px;border-radius:6px;border:1px solid ' + (i === adminGalleryPage ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === adminGalleryPage ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Open Sans\',sans-serif;">' + i + '</button>';
     }
-    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage + 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Poppins\',sans-serif;' + (adminGalleryPage >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage >= totalPages ? 'disabled' : '') + '>❯</button>';
+    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage + 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:\'Open Sans\',sans-serif;' + (adminGalleryPage >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage >= totalPages ? 'disabled' : '') + '>❯</button>';
     html += '</div>';
   }
   container.innerHTML = html;
@@ -420,7 +420,7 @@ function renderAdminRankOrder() {
   
   sortedRanks.forEach((rank, index) => {
     html += `
-      <div class="rank-item" data-rank="${escapeHtml(rank)}" style="font-size:11px;font-family:'Poppins',sans-serif;">
+      <div class="rank-item" data-rank="${escapeHtml(rank)}" style="font-size:11px;font-family:'Open Sans',sans-serif;">
         <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(rank)}</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">${members.filter(m => m.rank === rank).length} membro(s)</div></div>
         <div class="rank-actions">
           <button onclick="moveRankUp('${escapeHtml(rank)}')" ${index === 0 ? 'disabled style="opacity:0.5;"' : ''} style="font-size:11px;font-weight:700;">↑ SUBIR</button>
@@ -529,7 +529,7 @@ function renderSeizuresListMembers() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
-    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Poppins',sans-serif;">
+    html += `<div class="admin-list-item" style="font-size:10px;font-family:'Open Sans',sans-serif;">
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
     </div>`;
   });
