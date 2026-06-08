@@ -195,7 +195,6 @@ function renderAdminMembers() {
       <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
       <div class="form-group"><label>DATA DE CADASTRO *</label><input id="new-created-at" type="date" required></div>
       <div class="form-group"><label>TWITCH</label><input id="new-twitch" placeholder="username (opcional)"></div>
-      <div class="form-group"><label>KICK</label><input id="new-kick" placeholder="username (opcional)"></div>
       <div class="form-group"><label>TIKTOK</label><input id="new-tiktok" placeholder="username (opcional)"></div>
       <div class="form-group"><label>FOTO DO MEMBRO (URL) *</label><input id="new-avatar" placeholder="https://..." required></div>
       <button class="btn btn-primary" onclick="addMember()">ADICIONAR MEMBRO</button>
@@ -223,7 +222,7 @@ function renderMembersList() {
   if (!members.length) { container.innerHTML = '<div class="empty-card">Nenhum membro</div>'; return; }
   let html = '';
   members.forEach(m => {
-    const social = [m.twitch ? `twitch.tv/${m.twitch}` : '', m.kick ? `kick.com/${m.kick}` : '', m.tiktok ? `tiktok.com/@${m.tiktok}` : ''].filter(Boolean).join(' · ');
+    const social = [m.twitch ? `twitch.tv/${m.twitch}` : '', m.tiktok ? `tiktok.com/@${m.tiktok}` : ''].filter(Boolean).join(' · ');
     html += `<div class="admin-list-item">
       <div class="item-info">
         <div class="admin-info-row">
@@ -240,7 +239,6 @@ function renderMembersList() {
           </select>
           <input type="date" id="created-at-input-${m.id}" value="${escapeHtml(formatDateForInput(m.createdAt))}">
           <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch">
-          <input type="text" id="kick-input-${m.id}" value="${escapeHtml(m.kick || '')}" placeholder="Kick">
           <input type="text" id="tiktok-input-${m.id}" value="${escapeHtml(m.tiktok || '')}" placeholder="TikTok">
           <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem">
           <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
@@ -591,8 +589,6 @@ function updateMemberFields(id) {
   const newCreatedAt = document.getElementById(`created-at-input-${id}`).value;
   const newAvatarUrl = document.getElementById(`avatar-input-${id}`).value.trim();
   const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
-  const newKickRaw = document.getElementById(`kick-input-${id}`).value.trim();
-  const newKick = normalizeKickUsername(newKickRaw);
   const newTikTok = document.getElementById(`tiktok-input-${id}`).value.trim().toLowerCase();
   const member = members.find(m => m.id === id);
   if (member) {
@@ -609,7 +605,6 @@ function updateMemberFields(id) {
     }
     member.avatarUrl = newAvatarUrl || null;
     member.twitch = newTwitch || null;
-    member.kick = newKick || null;
     member.tiktok = newTikTok || null;
     saveData();
     renderAll();
@@ -633,8 +628,6 @@ function addMember() {
   const createdAtInput = document.getElementById('new-created-at').value;
   const avatarUrl = document.getElementById('new-avatar').value.trim();
   const twitch = document.getElementById('new-twitch').value.trim().toLowerCase();
-  const kickRaw = document.getElementById('new-kick').value.trim();
-  const kick = normalizeKickUsername(kickRaw);
   const tiktokRaw = document.getElementById('new-tiktok').value.trim();
   const tiktok = normalizeTikTokUsername(tiktokRaw);
   
@@ -661,7 +654,6 @@ function addMember() {
     status, 
     avatarUrl, 
     twitch, 
-    kick, 
     tiktok,
     createdAt,
   };
@@ -683,7 +675,6 @@ function resetAddMemberForm() {
   document.getElementById('new-created-at').value = new Date().toISOString().split('T')[0];
   document.getElementById('new-avatar').value = '';
   document.getElementById('new-twitch').value = '';
-  document.getElementById('new-kick').value = '';
   document.getElementById('new-tiktok').value = '';
 }
 

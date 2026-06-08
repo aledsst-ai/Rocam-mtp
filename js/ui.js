@@ -18,7 +18,7 @@ function createHierarchyMemberCard(member, index) {
   card.style.transitionDelay = `${index * 0.05}s`;
   card.dataset.memberName = memberName;
 
-  const isLive = member.twitchLive || member.kickLive || member.tiktokLive;
+  const isLive = member.twitchLive || member.tiktokLive;
   if (isLive) {
     card.classList.add('twitch-live-card');
   }
@@ -82,12 +82,12 @@ function createHierarchyMemberCard(member, index) {
   footer.appendChild(seizuresEl);
 
   if (streamInfo) {
-    const liveInfo = member.tiktokLive || member.kickLive || member.twitchLive ? getLiveStreamInfo(member) : streamInfo;
+    const liveInfo = member.tiktokLive || member.twitchLive ? getLiveStreamInfo(member) : streamInfo;
     const streamLink = document.createElement('a');
     streamLink.href = liveInfo.url;
     streamLink.target = '_blank';
     streamLink.rel = 'noopener noreferrer';
-    streamLink.className = `twitch-badge ${streamInfo.platform === 'kick' ? (streamInfo.isLive ? 'kick-online' : 'kick-offline') : streamInfo.platform === 'tiktok' ? (streamInfo.isLive ? 'tiktok-online' : 'tiktok-offline') : (streamInfo.isLive ? 'twitch-online' : 'twitch-offline')}`;
+    streamLink.className = `twitch-badge ${streamInfo.platform === 'tiktok' ? (streamInfo.isLive ? 'tiktok-online' : 'tiktok-offline') : (streamInfo.isLive ? 'twitch-online' : 'twitch-offline')}`;
     streamLink.addEventListener('click', e => e.stopPropagation());
 
     const iconWrapper = document.createElement('span');
@@ -174,7 +174,7 @@ function renderHierarchy() {
 // ==================== RENDER MEMBROS AO VIVO ====================
 function renderLiveMembers() {
   const container = document.getElementById('live-members-content');
-  const liveMembers = members.filter(m => (m.twitchLive === true || m.kickLive === true || m.tiktokLive === true));
+  const liveMembers = members.filter(m => (m.twitchLive === true || m.tiktokLive === true));
 
   if (!liveMembers.length) {
     container.innerHTML = '<div class="empty-card">Nenhum membro está ao vivo no momento</div>';
@@ -504,7 +504,7 @@ function renderSeizures() {
 
 function updateStats() {
   const today = new Date().toDateString();
-  const liveCount = members.filter(m => m.twitchLive === true || m.kickLive === true).length;
+  const liveCount = members.filter(m => m.twitchLive === true || m.tiktokLive === true).length;
   
   // Apreensões de hoje
   const todayCount = seizures.filter(s => new Date(s.date).toDateString() === today).length;

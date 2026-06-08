@@ -1132,7 +1132,6 @@
     }
     
     .member-card.twitch-live-card,
-    .member-card.kick-live-only-card,
     .member-card.tiktok-live-card {
       background: linear-gradient(135deg, rgba(145, 70, 255, 0.08), rgba(145, 70, 255, 0.03));
       border-color: rgba(145, 70, 255, 0.2);
@@ -1140,7 +1139,6 @@
       cursor: pointer;
     }
     .member-card.twitch-live-card:hover,
-    .member-card.kick-live-only-card:hover,
     .member-card.tiktok-live-card:hover {
       background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(145, 70, 255, 0.1));
       border-color: rgba(145, 70, 255, 0.5);
@@ -1152,11 +1150,6 @@
     .member-card.twitch-live-card .member-status,
     .member-card.twitch-live-card .member-level,
     .member-card.twitch-live-card .member-seizures,
-    .member-card.kick-live-only-card .member-name,
-    .member-card.kick-live-only-card .member-police-rank,
-    .member-card.kick-live-only-card .member-status,
-    .member-card.kick-live-only-card .member-level,
-    .member-card.kick-live-only-card .member-seizures,
     .member-card.tiktok-live-card .member-name,
     .member-card.tiktok-live-card .member-police-rank,
     .member-card.tiktok-live-card .member-status,
@@ -1165,7 +1158,6 @@
       color: #ffffff;
     }
     .member-card.twitch-live-card .member-avatar,
-    .member-card.kick-live-only-card .member-avatar,
     .member-card.tiktok-live-card .member-avatar {
       border-color: rgba(145, 70, 255, 0.5);
       box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
@@ -1257,8 +1249,6 @@
     }
     .twitch-online { background: rgba(145,70,255,0.2); color: #ffffff; border: 1px solid rgba(145,70,255,0.25); }
     .twitch-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
-    .kick-online { background: rgba(76,175,80,0.2); color: #ffffff; border: 1px solid rgba(76,175,80,0.25); }
-    .kick-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
     .tiktok-online { background: rgba(255,0,80,0.2); color: #ffffff; border: 1px solid rgba(255,0,80,0.25); }
     .tiktok-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
 

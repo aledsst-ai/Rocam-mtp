@@ -80,10 +80,6 @@ function getTwitchSVG() {
   return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M11.571 4.714h1.715v5.143h-1.715V4.714zm4.715 0H18v5.143h-1.714V4.714zm0 2.286l1.715 1.715-1.715 1.715V6.999zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z"/></svg>`;
 }
 
-function getKickSVG() {
-  return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 3v18h6v-8h2v8h4v-9h1l2 1v8h4V7c0-2.2-1.8-4-4-4h-3V1h-2v2H7c-2.2 0-4 1.8-4 4zm8 4h4c1.1 0 2 .9 2 2s-.9 2-2 2h-4V7z"/></svg>`;
-}
-
 function getTikTokSVG() {
   return `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>`;
 }
@@ -120,15 +116,7 @@ function formatDateForInput(value) {
 }
 
 function getStreamBadgeInfo(member) {
-  if (member.kick) {
-    const kickName = normalizeKickUsername(member.kick);
-    return {
-      url: `https://kick.com/${kickName}`,
-      svg: getKickSVG(),
-      platform: 'kick',
-      isLive: member.kickLive
-    };
-  } else if (member.twitch) {
+  if (member.twitch) {
     return {
       url: `https://twitch.tv/${member.twitch}`,
       svg: getTwitchSVG(),
@@ -148,14 +136,9 @@ function getStreamBadgeInfo(member) {
 }
 
 function getLiveStreamInfo(member) {
-  // Retorna o info da plataforma que está realmente ao vivo
   if (member.tiktok && member.tiktokLive) {
     const tiktokName = normalizeTikTokUsername(member.tiktok);
     return { url: `https://tiktok.com/@${tiktokName}/live`, svg: getTikTokSVG(), platform: 'tiktok', isLive: true };
-  }
-  if (member.kick && member.kickLive) {
-    const kickName = normalizeKickUsername(member.kick);
-    return { url: `https://kick.com/${kickName}`, svg: getKickSVG(), platform: 'kick', isLive: true };
   }
   if (member.twitch && member.twitchLive) {
     return { url: `https://twitch.tv/${member.twitch}`, svg: getTwitchSVG(), platform: 'twitch', isLive: true };
@@ -168,9 +151,6 @@ function getStreamThumbnailUrl(member, width = 640, height = 360) {
     const name = normalizeTikTokUsername(member.tiktok);
     return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/eee?text=%40${encodeURIComponent(name)}+%F0%9F%94%B4`;
   }
-  if (member.kickLive) {
-    return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Kick+Live`;
-  }
   const streamInfo = getStreamBadgeInfo(member);
   if (!streamInfo) {
     return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Offline`;
@@ -178,9 +158,6 @@ function getStreamThumbnailUrl(member, width = 640, height = 360) {
   if (streamInfo.platform === 'twitch') {
     const user = member.twitch || '';
     return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${encodeURIComponent(user)}-${width}x${height}.jpg`;
-  }
-  if (streamInfo.platform === 'kick') {
-    return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Kick`;
   }
   if (streamInfo.platform === 'tiktok') {
     return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=TikTok`;
