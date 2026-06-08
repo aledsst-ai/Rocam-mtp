@@ -191,57 +191,57 @@ function renderLiveMembers() {
   const end = useCarousel ? Math.min(start + LIVE_MEMBERS_PER_PAGE, liveMembers.length) : liveMembers.length;
   const pageItems = liveMembers.slice(start, end);
 
-  const renderCard = (m, idx) => {
-    const seizureCount = getMemberSeizureCount(m.name);
-    const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
-    const avatarHtml = m.avatarUrl
-      ? `<img class="live-card-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.src='https://placehold.co/48x48/1a1a1a/555?text=%F0%9F%91%A4'">`
-      : `<div class="member-avatar-placeholder">👤</div>`;
+  try {
+    let html = '';
+    if (useCarousel) {
+      html += '<div class="seizures-carousel-wrapper" style="position:relative;">';
+      html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-left" data-carousel-type="live" data-carousel-direction="prev" ${liveMembersPage <= 0 ? 'disabled' : ''}>❮</button>`;
+      html += '<div class="live-members-grid">';
+      pageItems.forEach((m, idx) => { html += renderLiveMemberCard(m, idx); });
+      html += '</div>';
+      html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-right" data-carousel-type="live" data-carousel-direction="next" ${liveMembersPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
+      html += '<div class="gallery-carousel-dots">';
+      for (var i = 0; i < totalPages; i++) {
+        html += `<span class="gallery-dot ${i === liveMembersPage ? 'active' : ''}" data-carousel-type="live" data-carousel-page="${i}"></span>`;
+      }
+      html += '</div></div>';
+    } else {
+      html += `<div class="live-members-grid${liveMembers.length === 1 ? ' live-members-grid--single' : ''}">`;
+      liveMembers.forEach((m, idx) => { html += renderLiveMemberCard(m, idx); });
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  } catch(e) { console.error('renderLiveMembers error:', e); }
+}
 
-    const streamInfo = getLiveStreamInfo(m) || {};
-    const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
+function renderLiveMemberCard(m, idx) {
+  const avatarHtml = m.avatarUrl
+    ? `<img class="live-card-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.src='https://placehold.co/48x48/1a1a1a/555?text=%F0%9F%91%A4'">`
+    : `<div class="member-avatar-placeholder">👤</div>`;
 
-    return `
-      <div class="live-card-thumbnail reveal" data-member-name="${escapeHtml(m.name)}" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
-        <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
-        <div class="live-card-overlay"></div>
-        <div class="live-card-live-badge">AO VIVO</div>
-        <div class="live-card-viewers">${m.twitchViewers !== null && m.twitchViewers !== undefined ? `👁 ${m.twitchViewers}` : ''}</div>
-        <div class="live-card-content">
-          ${avatarHtml}
-          <div class="live-card-info">
-            <div class="live-card-name">${escapeHtml(m.name)}</div>
-            <div class="live-card-rank">
-              ${escapeHtml(m.policeRank || 'Soldado')}
-              ${m.rank ? `· ${escapeHtml(m.rank)}` : ''}
-              ${m.level ? `<span class="live-card-level">Nv.${m.level}</span>` : ''}
-            </div>
-            ${m.twitchCategory ? `<div class="live-card-badge"><span class="live-card-category">${escapeHtml(m.twitchCategory)}</span></div>` : ''}
+  const streamInfo = getLiveStreamInfo(m) || {};
+  const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
+
+  return `
+    <div class="live-card-thumbnail reveal" data-member-name="${escapeHtml(m.name)}" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
+      <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
+      <div class="live-card-overlay"></div>
+      <div class="live-card-live-badge">AO VIVO</div>
+      <div class="live-card-viewers">${m.twitchViewers !== null && m.twitchViewers !== undefined ? `👁 ${m.twitchViewers}` : ''}</div>
+      <div class="live-card-content">
+        ${avatarHtml}
+        <div class="live-card-info">
+          <div class="live-card-name">${escapeHtml(m.name)}</div>
+          <div class="live-card-rank">
+            ${escapeHtml(m.policeRank || 'Soldado')}
+            ${m.rank ? `· ${escapeHtml(m.rank)}` : ''}
+            ${m.level ? `<span class="live-card-level">Nv.${m.level}</span>` : ''}
           </div>
+          ${m.twitchCategory ? `<div class="live-card-badge"><span class="live-card-category">${escapeHtml(m.twitchCategory)}</span></div>` : ''}
         </div>
       </div>
-    `;
-  };
-
-  if (useCarousel) {
-    let html = '<div class="seizures-carousel-wrapper" style="position:relative;">';
-    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-left" onclick="liveMembersPage=${Math.max(0, liveMembersPage - 1)};renderLiveMembers()" ${liveMembersPage <= 0 ? 'disabled' : ''}>❮</button>`;
-    html += '<div class="live-members-grid">';
-    pageItems.forEach((m, idx) => { html += renderCard(m, idx); });
-    html += '</div>';
-    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-right" onclick="liveMembersPage=${Math.min(totalPages - 1, liveMembersPage + 1)};renderLiveMembers()" ${liveMembersPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
-    html += '<div class="gallery-carousel-dots">';
-    for (var i = 0; i < totalPages; i++) {
-      html += `<span class="gallery-dot ${i === liveMembersPage ? 'active' : ''}" onclick="liveMembersPage=${i};renderLiveMembers()"></span>`;
-    }
-    html += '</div></div>';
-    container.innerHTML = html;
-  } else {
-    let html = `<div class="live-members-grid${liveMembers.length === 1 ? ' live-members-grid--single' : ''}">`;
-    liveMembers.forEach((m, idx) => { html += renderCard(m, idx); });
-    html += '</div>';
-    container.innerHTML = html;
-  }
+    </div>
+  `;
 }
 
 // ==================== CARROSSEL ====================
@@ -255,6 +255,9 @@ function carouselPrevNext(type, direction) {
   } else if (type === 'seizures') {
     seizuresPage = direction === 'prev' ? Math.max(0, seizuresPage - 1) : seizuresPage + 1;
     renderSeizures();
+  } else if (type === 'live') {
+    liveMembersPage = direction === 'prev' ? Math.max(0, liveMembersPage - 1) : liveMembersPage + 1;
+    renderLiveMembers();
   }
 }
 
@@ -268,6 +271,9 @@ function goToCarouselPage(type, page) {
   } else if (type === 'seizures') {
     seizuresPage = page;
     renderSeizures();
+  } else if (type === 'live') {
+    liveMembersPage = page;
+    renderLiveMembers();
   }
 }
 

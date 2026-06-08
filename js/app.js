@@ -7,6 +7,11 @@ function initEventListeners() {
       const type = btn.dataset.carouselType;
       const direction = btn.dataset.carouselDirection;
       carouselPrevNext(type, direction);
+      return;
+    }
+    const dot = e.target.closest('.gallery-dot[data-carousel-type][data-carousel-page]');
+    if (dot) {
+      goToCarouselPage(dot.dataset.carouselType, parseInt(dot.dataset.carouselPage, 10));
     }
   });
 
