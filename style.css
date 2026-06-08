@@ -518,6 +518,36 @@
       gap: 3px;
       width: auto;
     }
+    .member-social-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px 2px;
+      flex-wrap: wrap;
+    }
+    .member-social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.75);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .member-social-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      transform: scale(1.12);
+    }
+    .member-social-link svg {
+      width: 14px;
+      height: 14px;
+    }
     .member-avatar-stats {
       display: flex;
       justify-content: flex-start;
@@ -1424,7 +1454,7 @@
       z-index: 3;
       background: #e91916;
       color: #ffffff;
-      font-size: 1.17rem;
+      font-size: 0.84rem;
       font-weight: 700;
       text-transform: uppercase;
       padding: 6px 18px;
