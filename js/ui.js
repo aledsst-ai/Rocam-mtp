@@ -602,6 +602,7 @@ function openMemberProfile(memberName) {
       backdrop.onclick = closeMemberProfile;
     }
     
+    document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', handleProfileEscape);
   } catch (error) {
     console.error('❌ Erro ao abrir perfil:', error);
@@ -625,6 +626,7 @@ function closeMemberProfile() {
     }
     
     currentMemberProfile = null;
+    document.body.style.overflow = '';
     document.removeEventListener('keydown', handleProfileEscape);
     
     // Re-renderizar apreensões com garantias múltiplas
