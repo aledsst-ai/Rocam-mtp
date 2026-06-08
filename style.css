@@ -1216,6 +1216,7 @@
     
     .member-info {
       flex: 1;
+      align-self: stretch;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -1228,7 +1229,9 @@
       font-size: 10px;
       color: rgba(255, 255, 255, 0.4);
       line-height: 1.2;
-      margin-top: 2px;
+      text-align: center;
+      margin-top: auto;
+      margin-bottom: auto;
     }
     .member-status {
       display: inline-flex;
@@ -1249,6 +1252,7 @@
       flex-direction: column;
       align-items: flex-end;
       justify-content: flex-start;
+      align-self: stretch;
       gap: 5px;
       flex-shrink: 0;
       min-width: 90px;
