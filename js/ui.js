@@ -198,6 +198,7 @@ function renderLiveMembers() {
       <div class="live-card-thumbnail reveal" style="transition-delay: ${idx * 0.05}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
         <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
         <div class="live-card-overlay"></div>
+        ${m.twitchViewers !== null && m.twitchViewers !== undefined ? `<div class="live-card-viewers">👁 ${m.twitchViewers}</div>` : ''}
         <div class="live-card-content">
           ${avatarHtml}
           <div class="live-card-info">

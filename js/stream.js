@@ -18,6 +18,16 @@ async function checkTwitchGame(username) {
   } catch(e) { return ''; }
 }
 
+async function checkTwitchViewers(username) {
+  if (!username) return null;
+  try {
+    const response = await fetch(`https://decapi.me/twitch/viewers/${username}`);
+    const text = await response.text();
+    const num = parseInt(text, 10);
+    return Number.isNaN(num) ? null : num;
+  } catch(e) { return null; }
+}
+
 function normalizeTikTokUsername(value) {
   if (!value) return '';
   let sanitized = value.trim().toLowerCase();
@@ -48,6 +58,7 @@ async function updateAllStreamStatus(skipSave) {
     for (const member of members) {
       member.twitchLive = false;
       member.twitchCategory = '';
+      member.twitchViewers = null;
       member.tiktokLive = false;
     }
     
@@ -56,6 +67,7 @@ async function updateAllStreamStatus(skipSave) {
         member.twitchLive = await checkTwitchStatus(member.twitch);
         if (member.twitchLive) {
           member.twitchCategory = await checkTwitchGame(member.twitch);
+          member.twitchViewers = await checkTwitchViewers(member.twitch);
         }
       }
       
