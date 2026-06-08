@@ -434,21 +434,14 @@
     });
 
     function observeRevealElements() {
-      const revealDone = sessionStorage.getItem('revealDone') === 'true';
-      const elements = document.querySelectorAll('.gallery-card.reveal');
-      if (revealDone) {
-        elements.forEach(el => el.classList.add('visible'));
-        return;
-      }
       const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
       }, { threshold: 0.1 });
-      elements.forEach(el => {
+      document.querySelectorAll('.gallery-card.reveal').forEach(el => {
         revealObserver.observe(el);
         const rect = el.getBoundingClientRect();
         if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
       });
-      setTimeout(() => { sessionStorage.setItem('revealDone', 'true'); }, 1000);
     }
   </script>
 </body>
