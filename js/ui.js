@@ -24,6 +24,7 @@ function createHierarchyMemberCard(member, index) {
   }
 
   const avatarWrapper = document.createElement('div');
+  avatarWrapper.className = 'member-avatar-wrapper';
   if (member.avatarUrl) {
     const avatar = document.createElement('img');
     avatar.className = 'member-avatar';
