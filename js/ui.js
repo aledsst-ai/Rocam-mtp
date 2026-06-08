@@ -15,7 +15,7 @@ function createHierarchyMemberCard(member, index) {
 
   const card = document.createElement('div');
   card.className = 'member-card reveal';
-  card.style.transitionDelay = `${index * 0.05}s`;
+  card.style.transitionDelay = `${index * 0.03}s`;
   card.dataset.memberName = memberName;
 
   const isLive = member.twitchLive || member.tiktokLive;
@@ -195,7 +195,7 @@ function renderLiveMembers() {
     const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
 
     html += `
-      <div class="live-card-thumbnail reveal" style="transition-delay: ${idx * 0.05}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
+      <div class="live-card-thumbnail reveal" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
         <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
         <div class="live-card-overlay"></div>
         <div class="live-card-live-badge">AO VIVO</div>
@@ -281,7 +281,7 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
   
   currentItems.forEach((item, idx) => {
     if (carouselType === 'gallery') {
-      html += `<div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+      html += `<div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
         ${item.imageUrl ? `<img class="gallery-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro+ao+carregar'" alt="${escapeHtml(item.title || 'Foto da galeria')}">` : '<div class="gallery-img placeholder">📸</div>'}
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
@@ -290,7 +290,7 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
         </div>
       </div>`;
     } else if (carouselType === 'vehicles') {
-      html += `<div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+      html += `<div class="vehicle-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
         ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.name)}">` : '<div class="vehicle-img placeholder">🚗</div>'}
         <div class="vehicle-card-overlay"></div>
         <div class="vehicle-card-content">
@@ -299,7 +299,7 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
       </div>`;
     } else if (carouselType === 'seizures') {
       const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-      html += `<div class="seizure-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
+      html += `<div class="seizure-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
         ${item.imageUrl ? `<img class="seizure-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.description)}">` : '<div class="seizure-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📷</div>'}
         <div class="seizure-info">
           <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description)}</span></div>
@@ -347,7 +347,7 @@ function renderVehicles() {
   }
   
   container.innerHTML = '<div class="simple-grid">' + sorted.map((item, idx) => `
-    <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
+    <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
       ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img placeholder">🚗</div>'}
       <div class="vehicle-card-overlay"></div>
       <div class="vehicle-card-content">
@@ -396,7 +396,7 @@ function renderGallery() {
       : '<div class="gallery-img placeholder">📸</div>';
 
     return `
-      <div class="gallery-card reveal" style="transition-delay: ${idx * 0.05}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
+      <div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
         ${imgHtml}
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
@@ -463,7 +463,7 @@ function renderSeizures() {
         const imgUrl = escapeHtml(item.imageUrl || '');
         
         html += `
-          <div class="seizure-card reveal" style="transition-delay: ${idx * 0.05}s" onclick="openModal('${imgUrl}')">
+          <div class="seizure-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${imgUrl}')">
             <div class="seizure-card-background ${item.imageUrl ? '' : 'seizure-card-background--empty'}" style="${backgroundStyle}"></div>
             <div class="seizure-card-overlay"></div>
             <div class="seizure-card-content">
