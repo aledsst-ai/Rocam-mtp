@@ -147,7 +147,7 @@
     }
 
     .gallery-date {
-      font-size: 0.85rem;
+      font-size: 14px;
       color: rgba(255,255,255,0.7);
       font-weight: 400;
       text-align: left;
@@ -169,6 +169,14 @@
       align-self: flex-start;
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
+    }
+
+    .emoji-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      filter: none;
+      opacity: 0.95;
     }
 
     .back-button {
@@ -318,7 +326,7 @@
           <div class="gallery-card-overlay"></div>
           <div class="gallery-card-content">
             <div class="gallery-title">${escapeHtml(photo.title || 'Sem título')}</div>
-            <div class="gallery-date badge">${photo.date ? new Date(photo.date).toLocaleDateString('pt-BR') : ''}</div>
+            <div class="gallery-date badge">${photo.date ? `<span class="emoji-icon">📅</span>${new Date(photo.date).toLocaleDateString('pt-BR')} às ${new Date(photo.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}</div>
           </div>
         </div>
       `).join('');

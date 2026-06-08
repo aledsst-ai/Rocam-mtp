@@ -286,7 +286,7 @@ function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPer
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
           <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
-          <div class="gallery-date badge">${new Date(item.date).toLocaleDateString('pt-BR')}</div>
+          <div class="gallery-date badge"><span class="emoji-icon">📅</span>${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
       </div>`;
     } else if (carouselType === 'vehicles') {
@@ -390,7 +390,7 @@ function renderGallery() {
     const imageUrl = item.imageUrl ? String(item.imageUrl).trim() : '';
     const safeImageUrl = escapeHtml(imageUrl);
     const title = escapeHtml(item.title || 'Sem título');
-    const dateText = item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '';
+    const dateText = item.date ? `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : '';
     const imgHtml = imageUrl
       ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
       : '<div class="gallery-img placeholder">📸</div>';
@@ -401,7 +401,7 @@ function renderGallery() {
         <div class="gallery-card-overlay"></div>
         <div class="gallery-card-content">
           <div class="gallery-title">${title}</div>
-          <div class="gallery-date badge">${dateText}</div>
+          <div class="gallery-date badge"><span class="emoji-icon">📅</span>${dateText}</div>
         </div>
       </div>
     `;
