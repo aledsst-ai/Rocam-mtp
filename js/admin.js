@@ -198,7 +198,6 @@ function renderAdminMembers() {
         <div><label>TWITCH</label><input id="new-twitch" placeholder="username"></div>
         <div><label>INSTAGRAM</label><input id="new-instagram" placeholder="username"></div>
         <div><label>X (TWITTER)</label><input id="new-x" placeholder="username"></div>
-        <div><label>STEAM</label><input id="new-steam" placeholder="username ou ID"></div>
         <div><label>DISCORD ID</label><input id="new-discord" placeholder="usuario#0000 ou ID"></div>
       </div>
       <div class="form-group"><label>FOTO DO MEMBRO (URL) *</label><input id="new-avatar" placeholder="https://..." required></div>
@@ -231,7 +230,6 @@ function renderMembersList() {
     if (m.twitch) socialParts.push(`twitch.tv/${m.twitch}`);
     if (m.instagram) socialParts.push(`ig:${m.instagram}`);
     if (m.x) socialParts.push(`x:${m.x}`);
-    if (m.steam) socialParts.push(`steam:${m.steam}`);
     if (m.discord) socialParts.push(`discord:${m.discord}`);
     const social = socialParts.join(' · ');
     html += `<div class="admin-list-item">
@@ -252,7 +250,6 @@ function renderMembersList() {
           <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch">
           <input type="text" id="instagram-input-${m.id}" value="${escapeHtml(m.instagram || '')}" placeholder="Instagram">
           <input type="text" id="x-input-${m.id}" value="${escapeHtml(m.x || '')}" placeholder="X (Twitter)">
-          <input type="text" id="steam-input-${m.id}" value="${escapeHtml(m.steam || '')}" placeholder="Steam">
           <input type="text" id="discord-input-${m.id}" value="${escapeHtml(m.discord || '')}" placeholder="Discord ID">
           <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem">
           <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
@@ -605,7 +602,6 @@ function updateMemberFields(id) {
   const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
   const newInstagram = document.getElementById(`instagram-input-${id}`).value.trim().toLowerCase();
   const newX = document.getElementById(`x-input-${id}`).value.trim().toLowerCase();
-  const newSteam = document.getElementById(`steam-input-${id}`).value.trim().toLowerCase();
   const newDiscord = document.getElementById(`discord-input-${id}`).value.trim();
   const member = members.find(m => m.id === id);
   if (member) {
@@ -624,7 +620,6 @@ function updateMemberFields(id) {
     member.twitch = newTwitch || null;
     member.instagram = newInstagram || null;
     member.x = newX || null;
-    member.steam = newSteam || null;
     member.discord = newDiscord || null;
     saveData();
     renderAll();
@@ -650,7 +645,6 @@ function addMember() {
   const twitch = document.getElementById('new-twitch').value.trim().toLowerCase();
   const instagram = document.getElementById('new-instagram').value.trim().toLowerCase();
   const x = document.getElementById('new-x').value.trim().toLowerCase();
-  const steam = document.getElementById('new-steam').value.trim().toLowerCase();
   const discord = document.getElementById('new-discord').value.trim();
   if (!name || !policeRank) { alert("Preencha nome e patente policial"); return; }
   if (!rank) { alert("Selecione ou crie uma hierarquia"); return; }
@@ -677,7 +671,6 @@ function addMember() {
     twitch,
     instagram: instagram || null,
     x: x || null,
-    steam: steam || null,
     discord: discord || null,
     createdAt,
   };
@@ -701,7 +694,6 @@ function resetAddMemberForm() {
   document.getElementById('new-twitch').value = '';
   document.getElementById('new-instagram').value = '';
   document.getElementById('new-x').value = '';
-  document.getElementById('new-steam').value = '';
   document.getElementById('new-discord').value = '';
 }
 
