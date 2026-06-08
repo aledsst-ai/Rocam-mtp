@@ -102,15 +102,15 @@ function createHierarchyMemberCard(member, index) {
     right.append(statusBadge);
   }
 
+  right.prepend(footer);
+  card.append(avatarWrapper, info, right);
+
   if (registeredText) {
     const registeredEl = document.createElement('div');
     registeredEl.className = 'member-registered';
     registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
-    info.appendChild(registeredEl);
+    card.appendChild(registeredEl);
   }
-
-  right.prepend(footer);
-  card.append(avatarWrapper, info, right);
 
   card.addEventListener('click', e => {
     if (e.target.closest('a')) return;
