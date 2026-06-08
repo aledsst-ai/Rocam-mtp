@@ -330,6 +330,7 @@
       font-weight: 700;
       cursor: pointer;
       transition: var(--transition);
+      font-family: 'Open Sans', sans-serif;
     }
     .admin-option:hover {
       background: rgba(255,255,255,0.14);
@@ -2162,6 +2163,7 @@
       color: var(--text-secondary); font-size: 0.7rem;
       font-weight: 700; border-bottom: 2px solid transparent;
       transition: var(--transition);
+      font-family: 'Open Sans', sans-serif;
     }
     .admin-tab.active { color: #ffffff; border-bottom-color: #ffffff; }
     .admin-body { flex: 1; overflow-y: auto; padding: 18px; background: #0a0a0a; }
