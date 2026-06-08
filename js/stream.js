@@ -6,7 +6,9 @@ function normalizeKickUsername(value) {
   sanitized = sanitized.replace(/^www\./, '');
   sanitized = sanitized.replace(/^kick\.com\//, '');
   sanitized = sanitized.replace(/^kick\.com$/, '');
+  sanitized = sanitized.replace(/^@/, '');
   sanitized = sanitized.replace(/^\/+/, '');
+  sanitized = sanitized.split('/')[0];
   return sanitized;
 }
 
@@ -22,11 +24,35 @@ async function checkTwitchStatus(username) {
 async function checkKickStatus(username) {
   const normalized = normalizeKickUsername(username);
   if (!normalized) return false;
-  try {
-    const response = await fetch(`https://decapi.me/kick/uptime/${normalized}`);
-    const text = await response.text();
-    return !text.includes("offline") && !text.includes("error");
-  } catch(e) { return false; }
+
+  const apiUrl = `https://kick.com/api/v2/channels/${encodeURIComponent(normalized)}`;
+  const proxies = [
+    url => url,
+    url => `https://corsproxy.io/?url=${encodeURIComponent(url)}`,
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://cors.x2u.in/${url}`,
+    url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
+
+  for (const proxy of proxies) {
+    try {
+      const url = proxy(apiUrl);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const resp = await fetch(url, { mode: 'cors', signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!resp.ok) { console.warn('Kick API', resp.status, 'for', url); continue; }
+      const data = await resp.json();
+      if (data && data.livestream !== null && data.livestream !== undefined) return true;
+      if (data && data.livestream === null) return false;
+      console.warn('Kick API unexpected response shape for', url);
+    } catch(e) {
+      console.warn('Kick API fetch error for', proxy(apiUrl), e.message);
+      continue;
+    }
+  }
+  console.warn('Kick API all proxies failed for', normalized);
+  return false;
 }
 
 function normalizeTikTokUsername(value) {
@@ -52,55 +78,41 @@ async function checkTikTokStatus(username) {
 }
 
 async function updateAllStreamStatus() {
-  // Evitar múltiplas atualizações simultâneas
   if (streamStatusUpdateScheduled) return;
   streamStatusUpdateScheduled = true;
   
   try {
-    let statusChanged = false;
+    for (const member of members) {
+      member.twitchLive = false;
+      member.kickLive = false;
+      member.tiktokLive = false;
+    }
     
     for (const member of members) {
-      let oldTwitchLive = member.twitchLive;
-      let oldKickLive = member.kickLive;
-      let oldTikTokLive = member.tiktokLive;
-      
       if (member.twitch) {
         member.twitchLive = await checkTwitchStatus(member.twitch);
-      } else {
-        member.twitchLive = false;
       }
       
       if (member.kick) {
         member.kick = normalizeKickUsername(member.kick);
+        console.log('Kick: checking', member.name, member.kick);
         member.kickLive = await checkKickStatus(member.kick);
-      } else {
-        member.kickLive = false;
       }
       
       if (member.tiktok) {
         member.tiktok = normalizeTikTokUsername(member.tiktok);
         member.tiktokLive = await checkTikTokStatus(member.tiktok);
-      } else {
-        member.tiktokLive = false;
-      }
-      
-      if (oldTwitchLive !== member.twitchLive || oldKickLive !== member.kickLive || oldTikTokLive !== member.tiktokLive) {
-        statusChanged = true;
       }
     }
     
-    // Salvar só depois do primeiro carregamento do Firebase
     if (!firebaseInitialSyncCompleted && dataListenerRegistered) {
       console.log('⏭️ Ignorando saveData() até o Firebase carregar a primeira vez');
     } else {
       saveData();
     }
     
-    // Re-renderizar apenas se algo mudou
-    if (statusChanged) {
-      renderLiveMembers();
-      renderHierarchy();
-    }
+    renderLiveMembers();
+    renderHierarchy();
   } finally {
     streamStatusUpdateScheduled = false;
   }

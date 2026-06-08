@@ -165,7 +165,7 @@
     .skip-splash #intro { opacity: 0; visibility: hidden; pointer-events: none; transition: none !important; }
     .skip-splash #intro .bar-fill,
     .skip-splash #intro img { animation: none !important; }
-    #intro img { width: 255px; height: 255px; object-fit: contain; opacity: 0.8; animation: pulse 2s ease-in-out infinite; }
+    #intro img { width: 357px; height: 357px; object-fit: contain; opacity: 0.8; animation: pulse 2s ease-in-out infinite; }
     #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; text-transform: uppercase; color: #ffffff; font-weight: 400; font-family: 'Poppins', sans-serif; }
     #intro .bar { width: 140px; height: 1px; background: var(--border); overflow: hidden; }
     #intro .bar-fill { height: 100%; width: 0%; background: #ffffff; animation: loadBar 2s ease forwards; }
