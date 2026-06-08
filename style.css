@@ -1131,15 +1131,13 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
     
-    .member-card.twitch-live-card,
-    .member-card.tiktok-live-card {
+    .member-card.twitch-live-card {
       background: linear-gradient(135deg, rgba(145, 70, 255, 0.08), rgba(145, 70, 255, 0.03));
       border-color: rgba(145, 70, 255, 0.2);
       box-shadow: 0 2px 12px rgba(145, 70, 255, 0.1);
       cursor: pointer;
     }
-    .member-card.twitch-live-card:hover,
-    .member-card.tiktok-live-card:hover {
+    .member-card.twitch-live-card:hover {
       background: linear-gradient(135deg, rgba(145, 70, 255, 0.2), rgba(145, 70, 255, 0.1));
       border-color: rgba(145, 70, 255, 0.5);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 20px rgba(145, 70, 255, 0.15);
@@ -1149,16 +1147,10 @@
     .member-card.twitch-live-card .member-police-rank,
     .member-card.twitch-live-card .member-status,
     .member-card.twitch-live-card .member-level,
-    .member-card.twitch-live-card .member-seizures,
-    .member-card.tiktok-live-card .member-name,
-    .member-card.tiktok-live-card .member-police-rank,
-    .member-card.tiktok-live-card .member-status,
-    .member-card.tiktok-live-card .member-level,
-    .member-card.tiktok-live-card .member-seizures {
+    .member-card.twitch-live-card .member-seizures {
       color: #ffffff;
     }
-    .member-card.twitch-live-card .member-avatar,
-    .member-card.tiktok-live-card .member-avatar {
+    .member-card.twitch-live-card .member-avatar {
       border-color: rgba(145, 70, 255, 0.5);
       box-shadow: 0 0 10px rgba(145, 70, 255, 0.2);
     }
@@ -1249,8 +1241,7 @@
     }
     .twitch-online { background: rgba(145,70,255,0.2); color: #ffffff; border: 1px solid rgba(145,70,255,0.25); }
     .twitch-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
-    .tiktok-online { background: rgba(255,0,80,0.2); color: #ffffff; border: 1px solid rgba(255,0,80,0.25); }
-    .tiktok-offline { background: rgba(136,136,136,0.08); color: var(--text-muted); border: 1px solid rgba(136,136,136,0.1); }
+
     .member-card-category {
       display: inline;
       font-weight: 400;

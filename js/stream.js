@@ -28,28 +28,6 @@ async function checkTwitchViewers(username) {
   } catch(e) { return null; }
 }
 
-function normalizeTikTokUsername(value) {
-  if (!value) return '';
-  let sanitized = value.trim().toLowerCase();
-  sanitized = sanitized.replace(/^https?:\/\//, '');
-  sanitized = sanitized.replace(/^www\./, '');
-  sanitized = sanitized.replace(/^tiktok\.com\//, '');
-  sanitized = sanitized.replace(/^@/, '');
-  sanitized = sanitized.replace(/^\/+/, '');
-  sanitized = sanitized.split('/')[0];
-  return sanitized;
-}
-
-async function checkTikTokStatus(username) {
-  const normalized = normalizeTikTokUsername(username);
-  if (!normalized) return false;
-  try {
-    const response = await fetch(`https://decapi.me/tiktok/uptime/${normalized}`);
-    const text = await response.text();
-    return !text.includes("offline") && !text.includes("error");
-  } catch(e) { return false; }
-}
-
 async function updateAllStreamStatus(skipSave) {
   if (streamStatusUpdateScheduled) return;
   streamStatusUpdateScheduled = true;
@@ -59,7 +37,6 @@ async function updateAllStreamStatus(skipSave) {
       member.twitchLive = false;
       member.twitchCategory = '';
       member.twitchViewers = null;
-      member.tiktokLive = false;
     }
     
     for (const member of members) {
@@ -69,11 +46,6 @@ async function updateAllStreamStatus(skipSave) {
           member.twitchCategory = await checkTwitchGame(member.twitch);
           member.twitchViewers = await checkTwitchViewers(member.twitch);
         }
-      }
-      
-      if (member.tiktok) {
-        member.tiktok = normalizeTikTokUsername(member.tiktok);
-        member.tiktokLive = await checkTikTokStatus(member.tiktok);
       }
     }
     

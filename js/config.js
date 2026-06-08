@@ -24,7 +24,7 @@ function sanitizeMembersData(data) {
   if (!Array.isArray(data)) return [];
   return data.map(member => {
     if (member && typeof member === 'object') {
-      const { songUrl, songTitle, avatar, photoUrl, twitchLive, twitchCategory, twitchViewers, tiktokLive, ...cleanMember } = member;
+      const { songUrl, songTitle, avatar, photoUrl, twitchLive, twitchCategory, twitchViewers, ...cleanMember } = member;
       if (!cleanMember.avatarUrl) {
         cleanMember.avatarUrl = avatar || photoUrl || null;
       }
