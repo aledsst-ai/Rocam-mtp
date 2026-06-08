@@ -321,8 +321,8 @@
       var end = Math.min(start + GALLERY_PER_PAGE, sorted.length);
       var pageItems = sorted.slice(start, end);
 
-      var html = pageItems.map((photo) => `
-        <div class="gallery-card" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
+      var html = pageItems.map((photo, idx) => `
+        <div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
           ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img placeholder">📸</div>'}
           <div class="gallery-card-overlay"></div>
           <div class="gallery-card-content">
@@ -418,10 +418,24 @@
       if (event.target === this) closeModal();
     });
 
-    window.addEventListener('load', loadGalleryData);
+    window.addEventListener('load', function() {
+      loadGalleryData();
+      initRevealObserver();
+    });
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') closeModal();
     });
+
+    function initRevealObserver() {
+      const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.gallery-card.reveal').forEach(el => {
+        revealObserver.observe(el);
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
+      });
+    }
   </script>
 </body>
 </html>

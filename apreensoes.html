@@ -510,7 +510,7 @@
         var imageUrl = seizure.imageUrl ? escapeHtml(seizure.imageUrl) : 'https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem';
         var clickAction = seizure.imageUrl ? "onclick=\"openModal('" + imageUrl + "')\"" : '';
         var dateText = new Date(seizure.date).toLocaleDateString('pt-BR') + ' às ' + new Date(seizure.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        html += '<div class="seizure-card" ' + clickAction + '>';
+        html += '<div class="seizure-card reveal" style="transition-delay: ' + (idx * 0.03) + 's" ' + clickAction + '>';
         html += '<div class="seizure-card-background ' + (seizure.imageUrl ? '' : 'seizure-card-background--empty') + '" style="background-image: url(\'' + imageUrl + '\');"></div>';
         html += '<div class="seizure-card-overlay"></div>';
         html += '<div class="seizure-card-content">';
@@ -657,7 +657,19 @@
       if (dateSelect) {
         dateSelect.addEventListener('change', function() { loadSeizuresData(); });
       }
+      initRevealObserver();
     });
+
+    function initRevealObserver() {
+      const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.seizure-card.reveal').forEach(el => {
+        revealObserver.observe(el);
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
+      });
+    }
 
     // Tecla ESC para fechar modal
     document.addEventListener('keydown', function(event) {
