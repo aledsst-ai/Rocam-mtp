@@ -1791,8 +1791,8 @@
     
     .simple-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(340px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(3, minmax(360px, 1fr));
+      gap: 12px;
       margin-top: 20px;
       max-width: 100%;
     }
@@ -1802,9 +1802,9 @@
       justify-content: center;
     }
     
-    @media (max-width: 1400px) { .simple-grid { grid-template-columns: repeat(3, minmax(300px, 1fr)); gap: 24px; } }
-    @media (max-width: 1200px) { .simple-grid { grid-template-columns: repeat(2, minmax(320px, 1fr)); gap: 20px; } }
-    @media (max-width: 768px) { .simple-grid { grid-template-columns: repeat(1, 1fr); gap: 16px; } }
+    @media (max-width: 1400px) { .simple-grid { grid-template-columns: repeat(3, minmax(300px, 1fr)); gap: 12px; } }
+    @media (max-width: 1200px) { .simple-grid { grid-template-columns: repeat(2, minmax(320px, 1fr)); gap: 12px; } }
+    @media (max-width: 768px) { .simple-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; } }
     
     .carousel-container {
       position: relative;
