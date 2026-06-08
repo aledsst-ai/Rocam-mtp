@@ -738,11 +738,6 @@ function renderMemberProfile(member) {
               <img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(member.name)}" class="member-profile-avatar" onerror="this.src='https://placehold.co/140x140/1a1a1a/9146ff?text=👤'">
               <div class="member-avatar-overlay">
                 <div class="member-avatar-title">${escapeHtml(member.name)}</div>
-                <div class="member-social-row">
-                  ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
-                  ${member.x ? `<a href="https://x.com/${escapeHtml(member.x)}" target="_blank" class="member-social-link" aria-label="X (Twitter)">${getXSVG()}</a>` : ''}
-                  ${member.discord ? `<span class="member-social-link member-social-discord" title="${escapeHtml(member.discord)}" aria-label="Discord">${getDiscordSVG()}</span>` : ''}
-                </div>
                 <div class="member-avatar-badges">
                   <span class="member-profile-badge">${escapeHtml(member.policeRank || 'Soldado')}</span>
                   <span class="badge-sep">-</span>
@@ -750,6 +745,11 @@ function renderMemberProfile(member) {
                   <span class="badge-sep">-</span>
                   <span class="member-profile-badge">Nv.${member.level || '-'}</span>
                   ${member.twitch ? `<span class="badge-sep">-</span><a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="member-profile-badge member-profile-twitch">${escapeHtml(member.twitch)}</a>` : ''}
+                </div>
+                <div class="member-social-row">
+                  ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
+                  ${member.x ? `<a href="https://x.com/${escapeHtml(member.x)}" target="_blank" class="member-social-link" aria-label="X (Twitter)">${getXSVG()}</a>` : ''}
+                  ${member.discord ? `<span class="member-social-link member-social-discord" title="${escapeHtml(member.discord)}" aria-label="Discord">${getDiscordSVG()}</span>` : ''}
                 </div>
               </div>
             </div>
