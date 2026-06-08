@@ -25,6 +25,34 @@ async function checkKickStatus(username) {
   const normalized = normalizeKickUsername(username);
   if (!normalized) return false;
 
+  async function tryFetch(url, timeout = 5000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const resp = await fetch(url, { mode: 'cors', signal: controller.signal });
+      return resp;
+    } finally {
+      clearTimeout(id);
+    }
+  }
+
+  async function parseLive(data) {
+    if (data && data.livestream !== null && data.livestream !== undefined) return true;
+    if (data && data.livestream === null) return false;
+    return null;
+  }
+
+  // 1) Vercel API proxy
+  try {
+    const resp = await tryFetch(`/api/kick?user=${encodeURIComponent(normalized)}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      const live = await parseLive(data);
+      if (live !== null) return live;
+    }
+  } catch(e) { console.warn('Kick Vercel API failed:', e.message); }
+
+  // 2) CORS proxies fallback
   const apiUrl = `https://kick.com/api/v2/channels/${encodeURIComponent(normalized)}`;
   const proxies = [
     url => url,
@@ -37,21 +65,18 @@ async function checkKickStatus(username) {
   for (const proxy of proxies) {
     try {
       const url = proxy(apiUrl);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      const resp = await fetch(url, { mode: 'cors', signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!resp.ok) { console.warn('Kick API', resp.status, 'for', url); continue; }
+      const resp = await tryFetch(url);
+      if (!resp.ok) { console.warn('Kick proxy', resp.status, 'for', url); continue; }
       const data = await resp.json();
-      if (data && data.livestream !== null && data.livestream !== undefined) return true;
-      if (data && data.livestream === null) return false;
-      console.warn('Kick API unexpected response shape for', url);
+      const live = await parseLive(data);
+      if (live !== null) return live;
+      console.warn('Kick unexpected response for', url);
     } catch(e) {
-      console.warn('Kick API fetch error for', proxy(apiUrl), e.message);
+      console.warn('Kick proxy error for', proxy(apiUrl), e.message);
       continue;
     }
   }
-  console.warn('Kick API all proxies failed for', normalized);
+  console.warn('Kick all proxies failed for', normalized);
   return false;
 }
 
