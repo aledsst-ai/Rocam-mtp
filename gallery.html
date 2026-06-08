@@ -428,15 +428,12 @@
       if (event.target === this) closeModal();
     });
 
-    window.addEventListener('load', function() {
-      loadGalleryData();
-      initRevealObserver();
-    });
+    window.addEventListener('load', loadGalleryData);
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Escape') closeModal();
     });
 
-    function initRevealObserver() {
+    function observeRevealElements() {
       const revealObserver = new IntersectionObserver(entries => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
       }, { threshold: 0.1 });
