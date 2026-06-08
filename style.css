@@ -2363,6 +2363,10 @@
       font-size: 20px;
       font-weight: 500;
     }
+    .footer-rights {
+      color: #ffffff;
+      font-size: 14px;
+    }
 
     .reveal {
       opacity: 0;
