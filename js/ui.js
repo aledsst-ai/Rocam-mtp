@@ -62,14 +62,25 @@ function createHierarchyMemberCard(member, index) {
     rankEl.appendChild(levelEl);
   }
 
-  const topRow = document.createElement('div');
-  topRow.className = 'member-top-row';
-  topRow.append(nameEl);
+  info.append(nameEl, rankEl);
+
+  if (registeredText) {
+    const registeredEl = document.createElement('div');
+    registeredEl.className = 'member-registered';
+    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
+    info.appendChild(registeredEl);
+  }
+
+  const right = document.createElement('div');
+  right.className = 'member-right';
+
+  const footer = document.createElement('div');
+  footer.className = 'member-footer';
 
   const seizuresEl = document.createElement('span');
   seizuresEl.className = 'member-seizures';
   seizuresEl.textContent = `📋 ${seizureCount} ${seizureText}`;
-  topRow.appendChild(seizuresEl);
+  footer.appendChild(seizuresEl);
 
   if (streamInfo) {
     const liveInfo = member.twitchLive ? getLiveStreamInfo(member) : streamInfo;
@@ -88,26 +99,18 @@ function createHierarchyMemberCard(member, index) {
     label.textContent = streamInfo.isLive ? 'AO VIVO' : 'OFFLINE';
 
     streamLink.append(iconWrapper, label);
-    topRow.appendChild(streamLink);
-  }
-
-  info.append(topRow, rankEl);
-
-  if (registeredText) {
-    const registeredEl = document.createElement('div');
-    registeredEl.className = 'member-registered';
-    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
-    info.appendChild(registeredEl);
+    right.appendChild(streamLink);
   }
 
   if (statusText) {
     const statusBadge = document.createElement('span');
     statusBadge.className = `member-status ${statusClass}`;
     statusBadge.textContent = statusText;
-    info.appendChild(statusBadge);
+    right.append(statusBadge);
   }
 
-  card.append(avatarWrapper, info);
+  right.prepend(footer);
+  card.append(avatarWrapper, info, right);
 
   card.addEventListener('click', e => {
     if (e.target.closest('a')) return;
