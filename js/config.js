@@ -79,23 +79,32 @@ function observeRevealElements() {
     return;
   }
 
-  if (!revealObserver) initRevealObserver();
+  const revealDone = sessionStorage.getItem('revealDone') === 'true';
   
-  // Selecionar TODOS os elementos que precisam animar
   const elements = document.querySelectorAll(
     '.member-card.reveal, .vehicle-card, .seizure-card, .gallery-card, .live-card-thumbnail, .reveal, .reveal-left, .reveal-right, .about-title, .section-title, .section-title-wrapper'
   );
   
+  if (revealDone) {
+    elements.forEach(el => el.classList.add('visible'));
+    return;
+  }
+  
+  if (!revealObserver) initRevealObserver();
+  
   elements.forEach(el => {
     revealObserver.observe(el);
     
-    // Verificar se o elemento já está visível e adicionar classe imediatamente
     const rect = el.getBoundingClientRect();
     const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
     if (isVisible) {
       el.classList.add('visible');
     }
   });
+  
+  setTimeout(() => {
+    sessionStorage.setItem('revealDone', 'true');
+  }, 1000);
 }
 
 function loadData() {
