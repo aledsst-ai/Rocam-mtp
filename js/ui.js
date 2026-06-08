@@ -181,7 +181,7 @@ function renderLiveMembers() {
     return;
   }
 
-  let html = '<div class="live-members-grid">';
+  let html = `<div class="live-members-grid${liveMembers.length === 1 ? ' live-members-grid--single' : ''}">`;
   liveMembers.forEach((m, idx) => {
     const statusClass = m.status === 'ativo' ? 'status-ativo' : 'status-inativo';
     const statusText = m.status === 'ativo' ? 'Ativo' : 'Inativo';

@@ -1275,6 +1275,11 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
     }
+    .live-members-grid--single {
+      grid-template-columns: minmax(0, 480px);
+      justify-content: center;
+      justify-items: center;
+    }
 
     /* Card ao vivo com thumbnail */
     .live-card-thumbnail {
