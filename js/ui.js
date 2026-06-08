@@ -210,7 +210,7 @@ function renderLiveMembers() {
               ${m.rank ? `· ${escapeHtml(m.rank)}` : ''}
               ${m.level ? `<span class="live-card-level">Nv.${m.level}</span>` : ''}
             </div>
-            <div class="live-card-badge">${streamInfo.svg || ''} AO VIVO ${m.twitchCategory ? `<span class="live-card-category">${escapeHtml(m.twitchCategory)}</span>` : ''}</div>
+            ${m.twitchCategory ? `<div class="live-card-badge"><span class="live-card-category">${escapeHtml(m.twitchCategory)}</span></div>` : ''}
           </div>
         </div>
       </div>
