@@ -196,11 +196,11 @@ function renderLiveMembers() {
     const thumbUrl = getStreamThumbnailUrl(m, 640, 360);
 
     html += `
-      <div class="live-card-thumbnail reveal" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
+      <div class="live-card-thumbnail reveal" data-member-name="${escapeHtml(m.name)}" style="transition-delay: ${idx * 0.03}s" onclick="window.open('${streamInfo.url || '#'}', '_blank')">
         <div class="live-card-background" style="background-image: url('${escapeHtml(thumbUrl)}');"></div>
         <div class="live-card-overlay"></div>
         <div class="live-card-live-badge">AO VIVO</div>
-        ${m.twitchViewers !== null && m.twitchViewers !== undefined ? `<div class="live-card-viewers">👁 ${m.twitchViewers}</div>` : ''}
+        <div class="live-card-viewers">${m.twitchViewers !== null && m.twitchViewers !== undefined ? `👁 ${m.twitchViewers}` : ''}</div>
         <div class="live-card-content">
           ${avatarHtml}
           <div class="live-card-info">

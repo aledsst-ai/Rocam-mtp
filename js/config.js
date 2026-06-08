@@ -167,10 +167,11 @@ function loadData() {
         } else {
           console.log('ℹ️ Firebase vazio, usando dados do localStorage');
         }
-        console.log('🎨 Chamando renderAll()');
-        renderAll();
         firebaseInitialSyncCompleted = true;
         console.log('✅ Firebase initial sync completed');
+        renderVehicles();
+        renderSeizures();
+        renderGallery();
         if (typeof updateAllStreamStatus === 'function') {
           setTimeout(() => updateAllStreamStatus(true), 50);
         }

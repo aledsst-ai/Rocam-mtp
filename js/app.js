@@ -100,9 +100,6 @@ window.addEventListener('DOMContentLoaded', () => {
   initRevealObserver();
   initEventListeners();
   
-  // Atualizar status dos streams uma vez ao carregar
-  updateAllStreamStatus().then(() => startViewerRefresh()).catch(err => console.error('Erro ao atualizar status dos streams:', err));
-  
   // Criar overlays com tratamento de erros
   try {
     const adminOverlay = document.createElement('div');
