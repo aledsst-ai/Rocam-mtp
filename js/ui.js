@@ -64,13 +64,6 @@ function createHierarchyMemberCard(member, index) {
 
   info.append(nameEl, rankEl);
 
-  if (registeredText) {
-    const registeredEl = document.createElement('div');
-    registeredEl.className = 'member-registered';
-    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
-    info.appendChild(registeredEl);
-  }
-
   const right = document.createElement('div');
   right.className = 'member-right';
 
@@ -111,6 +104,13 @@ function createHierarchyMemberCard(member, index) {
 
   right.prepend(footer);
   card.append(avatarWrapper, info, right);
+
+  if (registeredText) {
+    const registeredEl = document.createElement('div');
+    registeredEl.className = 'member-registered';
+    registeredEl.textContent = registeredText.replace('Cadastrado em', 'Membro desde');
+    card.appendChild(registeredEl);
+  }
 
   card.addEventListener('click', e => {
     if (e.target.closest('a')) return;
