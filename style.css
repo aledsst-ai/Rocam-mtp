@@ -1418,6 +1418,22 @@
       content: '· ';
     }
     
+    .live-card-live-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 3;
+      background: #e91916;
+      color: #ffffff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 6px;
+      line-height: 1;
+      letter-spacing: 0.03em;
+    }
+
     .live-card-viewers {
       position: absolute;
       bottom: 12px;
