@@ -1747,24 +1747,24 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      align-items: flex-start;
+      align-items: center;
       height: 100%;
       padding: 24px;
-      gap: 6px;
+      gap: 3px;
     }
     .gallery-title {
       font-weight: 700;
       font-size: 1.05rem;
       color: #ffffff;
       line-height: 1.2;
-      text-align: left;
+      text-align: center;
       text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     .gallery-date {
       font-size: 12px;
       color: rgba(255,255,255,0.7);
       font-weight: 400;
-      text-align: left;
+      text-align: center;
     }
     .gallery-date.badge {
       display: inline-flex;
