@@ -96,12 +96,6 @@ function createHierarchyMemberCard(member, index) {
 
     const label = document.createElement('span');
     label.textContent = streamInfo.isLive ? 'AO VIVO' : 'OFFLINE';
-    if (streamInfo.isLive && member.twitchCategory) {
-      const catSpan = document.createElement('span');
-      catSpan.className = 'member-card-category';
-      catSpan.textContent = member.twitchCategory;
-      label.appendChild(catSpan);
-    }
 
     streamLink.append(iconWrapper, label);
     right.appendChild(streamLink);
