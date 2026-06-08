@@ -211,6 +211,7 @@ function renderLiveMembers() {
       html += '</div>';
     }
     container.innerHTML = html;
+    observeRevealElements();
   } catch(e) { console.error('renderLiveMembers error:', e); }
 }
 
