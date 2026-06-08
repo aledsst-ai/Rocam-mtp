@@ -153,7 +153,7 @@ function renderHierarchy() {
     const headerEl = document.createElement('div');
     headerEl.className = 'rank-group-header';
     const titleEl = document.createElement('h3');
-    titleEl.textContent = `💀 ${rank}`;
+    titleEl.textContent = rank;
     headerEl.appendChild(titleEl);
 
     const gridEl = document.createElement('div');
