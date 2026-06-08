@@ -101,7 +101,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initEventListeners();
   
   // Atualizar status dos streams uma vez ao carregar
-  updateAllStreamStatus().catch(err => console.error('Erro ao atualizar status dos streams:', err));
+  updateAllStreamStatus().then(() => startViewerRefresh()).catch(err => console.error('Erro ao atualizar status dos streams:', err));
   
   // Criar overlays com tratamento de erros
   try {

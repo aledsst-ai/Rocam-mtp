@@ -59,7 +59,25 @@ async function updateAllStreamStatus(skipSave) {
     
     renderLiveMembers();
     renderHierarchy();
+    updateStats();
   } finally {
     streamStatusUpdateScheduled = false;
   }
+}
+
+async function updateLiveViewers() {
+  const liveMembers = members.filter(m => m.twitchLive === true && m.twitch);
+  if (liveMembers.length === 0) return;
+  
+  for (const member of liveMembers) {
+    member.twitchCategory = await checkTwitchGame(member.twitch);
+    member.twitchViewers = await checkTwitchViewers(member.twitch);
+  }
+  
+  renderLiveMembers();
+  updateStats();
+}
+
+function startViewerRefresh(intervalMs = 60000) {
+  setInterval(updateLiveViewers, intervalMs);
 }
