@@ -1416,6 +1416,10 @@
       content: '· ';
     }
     
+    @keyframes live-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(0.95); }
+    }
     .live-card-live-badge {
       position: absolute;
       top: 10px;
@@ -1430,6 +1434,7 @@
       border-radius: 8px;
       line-height: 1;
       letter-spacing: 0.03em;
+      animation: live-pulse 1.8s ease-in-out infinite;
     }
 
     .live-card-viewers {
@@ -1443,7 +1448,6 @@
       border-radius: 8px;
       font-size: 15px;
       color: #ffffff;
-      font-weight: 600;
       line-height: 1;
     }
 
