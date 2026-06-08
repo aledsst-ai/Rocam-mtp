@@ -389,13 +389,13 @@ function renderVehicles() {
   `).join('') + '</div>';
 }
 
-const GALLERY_PAGE_HOME = 6;
+const GALLERY_PAGE_HOME = 3;
 
 function renderGallery() {
   const container = document.getElementById('gallery-content');
   if (!container) return;
   
-  const sorted = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, GALLERY_PAGE_HOME * 3);
+  const sorted = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
   
   if (!sorted.length) {
     container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>';
