@@ -579,7 +579,7 @@
     .member-profile-badge {
       display: inline-flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 999px;
@@ -593,10 +593,28 @@
       cursor: default;
       text-decoration: none;
     }
+    .member-profile-badge svg {
+      width: 10px;
+      height: 10px;
+      display: block;
+    }
     .member-profile-twitch {
+      position: relative;
+      overflow: hidden;
       color: #9146ff;
       background: rgba(145, 70, 255, 0.15);
       border-color: rgba(145, 70, 255, 0.25);
+    }
+    .member-profile-twitch::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -60%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+      transform: skewX(-20deg);
+      animation: metallic-sweep 2.8s ease-in-out infinite;
     }
     .member-profile-twitch:hover {
       background: rgba(145, 70, 255, 0.25);

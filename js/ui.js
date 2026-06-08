@@ -744,7 +744,7 @@ function renderMemberProfile(member) {
                   <span class="member-profile-badge">${escapeHtml(member.rank || 'Membro')}</span>
                   <span class="badge-sep">-</span>
                   <span class="member-profile-badge">Nv.${member.level || '-'}</span>
-                  ${member.twitch ? `<span class="badge-sep">-</span><a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="member-profile-badge member-profile-twitch">${escapeHtml(member.twitch)}</a>` : ''}
+                  ${member.twitch ? `<span class="badge-sep">-</span><a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="member-profile-badge member-profile-twitch">${getTwitchSVG()} ${escapeHtml(member.twitch)}</a>` : ''}
                 </div>
                 <div class="member-social-row">
                   ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
