@@ -1103,7 +1103,7 @@
       position: relative;
       z-index: 2;
     }
-    .rank-group-header h3 { font-size: 0.75rem; font-weight: 700; color: #ffffff; letter-spacing: 0.05em; }
+    .rank-group-header h3 { font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.05em; }
     
     .members-grid {
       display: flex;
