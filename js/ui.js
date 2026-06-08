@@ -738,36 +738,20 @@ function renderMemberProfile(member) {
               <img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(member.name)}" class="member-profile-avatar" onerror="this.src='https://placehold.co/140x140/1a1a1a/9146ff?text=👤'">
               <div class="member-avatar-overlay">
                 <div class="member-avatar-title">${escapeHtml(member.name)}</div>
-                <div class="member-avatar-badges">
-                  <span class="member-profile-rank">${escapeHtml(member.policeRank || 'Soldado')}</span>
-                  <span class="member-profile-hierarchy">${escapeHtml(member.rank || 'Membro')}</span>
-                  ${member.twitch ? `
-                  <a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="twitch-link" aria-label="Abrir canal Twitch">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2.149 0l-1.612 4.119v16.836h5.731v3.045h3.224l3.045-3.045h4.657l6.767-6.767V0H2.149zm15.966 13.23l-3.737 3.737H9.851L7.347 19.28v-2.313H4.028V1.577h14.087v11.653z" fill="currentColor"/>
-                      <rect x="11.636" y="4.769" width="1.577" height="5.731" fill="currentColor"/>
-                      <rect x="15.825" y="4.769" width="1.577" height="5.731" fill="currentColor"/>
-                    </svg>
-                  </a>
-                  ` : ''}
-
+                <div class="member-social-row">
+                  ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
+                  ${member.x ? `<a href="https://x.com/${escapeHtml(member.x)}" target="_blank" class="member-social-link" aria-label="X (Twitter)">${getXSVG()}</a>` : ''}
+                  ${member.discord ? `<span class="member-social-link member-social-discord" title="${escapeHtml(member.discord)}" aria-label="Discord">${getDiscordSVG()}</span>` : ''}
                 </div>
-                <div class="member-avatar-stats">
-                  <div class="member-avatar-stat">
-                    <span>Nível</span>
-                    <strong>${member.level || '-'}</strong>
-                  </div>
-                  <div class="member-avatar-stat">
-                    <span>Apreensões</span>
-                    <strong>${seizureCount}</strong>
-                  </div>
+                <div class="member-avatar-badges">
+                  <span class="member-profile-badge">${escapeHtml(member.policeRank || 'Soldado')}</span>
+                  <span class="badge-sep">-</span>
+                  <span class="member-profile-badge">${escapeHtml(member.rank || 'Membro')}</span>
+                  <span class="badge-sep">-</span>
+                  <span class="member-profile-badge">Nv.${member.level || '-'}</span>
+                  ${member.twitch ? `<span class="badge-sep">-</span><a href="https://twitch.tv/${escapeHtml(member.twitch)}" target="_blank" class="member-profile-badge member-profile-twitch">${escapeHtml(member.twitch)}</a>` : ''}
                 </div>
               </div>
-            </div>
-            <div class="member-social-row">
-              ${member.instagram ? `<a href="https://instagram.com/${escapeHtml(member.instagram)}" target="_blank" class="member-social-link" aria-label="Instagram">${getInstagramSVG()}</a>` : ''}
-              ${member.x ? `<a href="https://x.com/${escapeHtml(member.x)}" target="_blank" class="member-social-link" aria-label="X (Twitter)">${getXSVG()}</a>` : ''}
-              ${member.discord ? `<span class="member-social-link member-social-discord" title="${escapeHtml(member.discord)}" aria-label="Discord">${getDiscordSVG()}</span>` : ''}
             </div>
           </div>
         </div>

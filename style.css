@@ -462,15 +462,11 @@
       flex-shrink: 0;
     }
     .member-social-row {
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      z-index: 10;
+      width: 100%;
     }
     .member-profile-avatar-inner {
       position: relative;
@@ -497,14 +493,14 @@
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 2px;
+      padding: 4px 2px;
       border-bottom-left-radius: 22px;
       border-bottom-right-radius: 22px;
       background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(6, 6, 6, 0.5) 35%, rgba(8, 8, 8, 0.92) 100%);
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      gap: 2px;
+      align-items: center;
+      gap: 3px;
     }
     .member-avatar-title {
       width: 100%;
@@ -512,9 +508,9 @@
       font-size: 15px;
       font-weight: 800;
       letter-spacing: 0.02em;
-      text-align: left;
+      text-align: center;
       margin: 0;
-      padding-left: 6px;
+      padding: 0 6px;
       text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
       overflow-wrap: break-word;
       line-height: 1.2;
@@ -522,7 +518,7 @@
     }
     .member-avatar-badges {
       display: flex;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: center;
       flex-wrap: wrap;
       gap: 3px;
@@ -532,62 +528,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.75);
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
       transition: all 0.2s ease;
       text-decoration: none;
       cursor: pointer;
+      padding: 2px;
     }
     .member-social-link:hover {
-      background: rgba(255, 255, 255, 0.15);
+      background: none;
       color: #ffffff;
-      transform: scale(1.12);
+      transform: scale(1.15);
     }
     .member-social-link svg {
-      width: 36px;
-      height: 36px;
-    }
-    .member-avatar-stats {
-      display: flex;
-      justify-content: flex-start;
-      flex-wrap: nowrap;
-      gap: 4px;
-      width: auto;
-    }
-    .member-avatar-stat {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 3px;
-      min-width: auto;
-      padding: 3px 6px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 10px;
-      color: #ffffff;
-      font-size: 9px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      white-space: nowrap;
-      backdrop-filter: blur(4px);
-    }
-    .member-avatar-stat span {
-      display: inline-block;
-      font-size: 9px;
-      color: rgba(255, 255, 255, 0.72);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .member-avatar-stat strong {
-      font-size: 9px;
-      font-weight: 700;
-      color: #ffffff;
-      letter-spacing: normal;
-      text-transform: none;
+      width: 18px;
+      height: 18px;
+      display: block;
     }
     .member-profile-name-rank {
       display: none;
@@ -611,8 +571,12 @@
       font-size: 9px;
       line-height: 1.0;
     }
-    .member-profile-rank,
-    .member-profile-hierarchy {
+    .badge-sep {
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 9px;
+      user-select: none;
+    }
+    .member-profile-badge {
       display: inline-flex;
       align-items: center;
       gap: 2px;
@@ -627,16 +591,21 @@
       color: rgba(255, 255, 255, 0.85);
       transition: none;
       cursor: default;
+      text-decoration: none;
+    }
+    .member-profile-twitch {
+      color: #9146ff;
+      background: rgba(145, 70, 255, 0.15);
+      border-color: rgba(145, 70, 255, 0.25);
+    }
+    .member-profile-twitch:hover {
+      background: rgba(145, 70, 255, 0.25);
     }
     .profile-stat:hover {
       background: var(--bg-hover);
       border-color: #ffffff;
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    }
-    .member-profile-hierarchy {
-      background: rgba(255, 255, 255, 0.05);
-      color: rgba(255, 255, 255, 0.85);
     }
     .member-profile-summary {
       position: absolute;
