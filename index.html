@@ -7,7 +7,7 @@
   <meta name="description" content="Rondas Ostensivas Comando de Ações Motorizadas"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="icon" type="image/png" href="assets/img/logo.png">
   <link rel="stylesheet" href="style.css">
   <script>
@@ -44,20 +44,21 @@
       <span>ROCAM</span>
     </a>
     <ul class="nav-links">
-      <li><a href="#home">INÍCIO</a></li>
-      <li><a href="#about">SOBRE</a></li>
-      <li><a href="#hierarchy">HIERARQUIA</a></li>
-      <li><a href="#live">AO VIVO</a></li>
-      <li><a href="#gallery">GALERIA</a></li>
-      <li><a href="#vehicles">VIATURAS</a></li>
-      <li><a href="#seizures">APREENSÕES</a></li>
+      <li><a href="#home">Início</a></li>
+      <li><a href="#about">Sobre</a></li>
+      <li><a href="#live">Ao vivo</a></li>
+      <li><a href="#hierarchy">Hierarquia</a></li>
+      <li><a href="#gallery">Galeria</a></li>
+      <li><a href="#vehicles">Viaturas</a></li>
+      <li><a href="#seizures">Apreensões</a></li>
     </ul>
     <div class="nav-actions">
       <div class="admin-menu">
         <button id="adminMenuToggle" class="admin-menu-toggle" onclick="toggleAdminMenu()" aria-expanded="false" aria-label="Abrir opções administrativas">
-          <span></span>
-          <span></span>
-          <span></span>
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
         </button>
         <div id="admin-options" class="admin-options" role="menu" aria-hidden="true">
           <button class="admin-option" type="button" onclick="openMembersPanel(); closeAdminMenu()">MEMBROS</button>
@@ -79,35 +80,46 @@
     </div>
   </div>
   <div class="stats">
-    <div class="stat stat-live" onclick="document.getElementById('live').scrollIntoView({ behavior: 'smooth' })">
-      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;flex-shrink:0;color:var(--twitch-light);"><path d="M11.571 4.714h1.715v5.143h-1.715V4.714zm4.715 0H18v5.143h-1.714V4.714zm0 2.286l1.715 1.715-1.715 1.715V6.999zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z"/></svg>
-      <div>
-        <div class="stat-value" id="stat-ao-vivo">0</div>
-        <div class="stat-label">AO VIVO</div>
+    <div class="stats-group">
+      <div class="stats-group-title">UNIDADE</div>
+      <div class="stats-group-cards">
+        <div class="stat stat-live" onclick="document.getElementById('live').scrollIntoView({ behavior: 'smooth' })">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;flex-shrink:0;color:var(--twitch-light);"><path d="M11.571 4.714h1.715v5.143h-1.715V4.714zm4.715 0H18v5.143h-1.714V4.714zm0 2.286l1.715 1.715-1.715 1.715V6.999zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z"/></svg>
+          <div>
+            <div class="stat-value" id="stat-ao-vivo">0</div>
+            <div class="stat-label">AO VIVO</div>
+          </div>
+        </div>
+        <div class="stat" onclick="document.getElementById('hierarchy').scrollIntoView({ behavior: 'smooth' })">
+          <div>
+            <div class="stat-value" id="stat-membros">0</div>
+            <div class="stat-label">MEMBROS</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="stat" onclick="document.getElementById('hierarchy').scrollIntoView({ behavior: 'smooth' })">
-      <div>
-        <div class="stat-value" id="stat-membros">0</div>
-        <div class="stat-label">MEMBROS</div>
-      </div>
-    </div>
-    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
-      <div>
-        <div class="stat-value" id="stat-hoje">0</div>
-        <div class="stat-label">APREENSÕES HOJE</div>
-      </div>
-    </div>
-    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
-      <div>
-        <div class="stat-value" id="stat-semana">0</div>
-        <div class="stat-label">APREENSÕES NA SEMANA</div>
-      </div>
-    </div>
-    <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
-      <div>
-        <div class="stat-value" id="stat-total">0</div>
-        <div class="stat-label">TOTAL</div>
+    <div class="stats-divider"></div>
+    <div class="stats-group">
+      <div class="stats-group-title">APREENSÕES</div>
+      <div class="stats-group-cards">
+        <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+          <div>
+            <div class="stat-value" id="stat-hoje">0</div>
+            <div class="stat-label">HOJE</div>
+          </div>
+        </div>
+        <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+          <div>
+            <div class="stat-value" id="stat-semana">0</div>
+            <div class="stat-label">NA SEMANA</div>
+          </div>
+        </div>
+        <div class="stat" onclick="document.getElementById('seizures').scrollIntoView({ behavior: 'smooth' })">
+          <div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">TOTAL</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
