@@ -267,23 +267,34 @@
       font-weight: 500;
     }
 
-    .seizure-footer a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      transition: all 0.25s ease;
-      font-size: 13px;
+    .seizure-footer-left {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
     }
-
-    .seizure-footer a:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.25);
+    .seizure-bo-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-secondary);
       text-decoration: none;
+      position: relative;
+      transition: color 0.3s ease;
     }
+    .seizure-bo-link::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -6px;
+      width: 0;
+      height: 1.5px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+      border-radius: 1px;
+    }
+    .seizure-bo-link:hover { color: #ffffff; }
+    .seizure-bo-link:hover::after { width: 100%; }
 
     .back-button {
       display: inline-block;
@@ -527,12 +538,14 @@
         html += '<div class="seizure-card-header"><span class="qru-badge">' + escapeHtml(seizure.description) + '</span></div>';
         html += '<div class="seizure-meta">';
         html += seizure.member ? makeMembersBadge(seizure.member) : '';
-        html += seizure.location ? '<span class="badge"><span class="emoji-icon">📍</span>' + escapeHtml(seizure.location) + '</span>' : '';
         html += '</div>';
         html += '<div class="seizure-footer">';
+        html += '<div class="seizure-footer-left">';
         html += '<span class="badge"><span class="emoji-icon">📅</span>' + dateText + '</span>';
+        html += seizure.location ? '<span class="badge"><span class="emoji-icon">📍</span>' + escapeHtml(seizure.location) + '</span>' : '';
+        html += '</div>';
         if (seizure.boImageUrl) {
-          html += '<a href="' + escapeHtml(seizure.boImageUrl) + '" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>';
+          html += '<a class="seizure-bo-link" href="' + escapeHtml(seizure.boImageUrl) + '" target="_blank" onclick="event.stopPropagation()" title="Visualizar boletim" aria-label="Visualizar boletim"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="12" y2="18"/></svg></a>';
         }
         html += '</div></div></div>';
       });
