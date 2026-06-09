@@ -34,7 +34,7 @@ function makeMembersBadge(member) {
   if (!list.length) return '';
   let text = list.length <= 2 ? list.join(', ') : list.slice(0, 2).join(', ') + ' +' + (list.length - 2);
   const json = JSON.stringify(list).replace(/"/g, '&quot;');
-  return '<span class="badge" style="cursor:pointer;" onclick="event.stopPropagation(); showMembers(this, event)" data-members=\'' + json + '\'><span class="emoji-icon">👤</span>' + escapeHtml(text) + '</span>';
+  return '<span class="badge" style="cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="event.stopPropagation(); showMembers(this, event)" data-members=\'' + json + '\'><span class="emoji-icon">👤</span><span style="overflow:hidden;text-overflow:ellipsis;">' + escapeHtml(text) + '</span></span>';
 }
 
 function showMembers(el, e) {

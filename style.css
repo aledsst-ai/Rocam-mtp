@@ -1686,6 +1686,7 @@
       gap: 6px;
       width: 100%;
       margin-top: 20px;
+      min-width: 0;
     }
     .seizure-desc {
       font-weight: 700;
@@ -1699,6 +1700,14 @@
       flex-wrap: wrap;
       gap: 8px;
       margin: 0;
+      min-width: 0;
+    }
+    .seizure-meta .badge {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
     .seizure-meta span,
     .seizure-footer span {
@@ -1734,6 +1743,14 @@
       font-size: 14px;
       color: rgba(255,255,255,0.8);
       font-weight: 500;
+      min-width: 0;
+    }
+    .seizure-footer .badge {
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
     .seizure-footer a {
       color: #ffffff;
