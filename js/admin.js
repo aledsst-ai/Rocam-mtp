@@ -345,7 +345,7 @@ function renderSeizuresList() {
     const actionBtn = isApproved
       ? `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>`
       : `<div style="display:flex;gap:4px;">` +
-        `<button class="btn btn-primary" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="approveSeizure('${s.id}')">APROVAR</button>` +
+        `<button class="btn" style="padding:4px 12px;font-size:10px;font-weight:700;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;" onclick="approveSeizure('${s.id}')">APROVAR</button>` +
         `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>` +
         `</div>`;
     var thumbnails = '';
