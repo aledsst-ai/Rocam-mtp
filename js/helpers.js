@@ -68,7 +68,7 @@ function closeMembersTooltip() {
 
 function getMemberSeizureCount(memberName) {
   if (!memberName) return 0;
-  return seizures.filter(s => {
+  return seizures.filter(s => s.approved !== false).filter(s => {
     const ms = getMembersList(s.member || s.memberName);
     return ms.includes(memberName);
   }).length;

@@ -338,9 +338,19 @@ function renderSeizuresList() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
+    const isApproved = s.approved !== false;
+    const statusBadge = isApproved
+      ? '<span style="font-size:8px;color:var(--success);font-weight:700;margin-left:6px;">✓ APROVADO</span>'
+      : '<span style="font-size:8px;color:#ffa500;font-weight:700;margin-left:6px;">● PENDENTE</span>';
+    const actionBtn = isApproved
+      ? `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>`
+      : `<div style="display:flex;gap:4px;">` +
+        `<button class="btn btn-primary" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="approveSeizure('${s.id}')">APROVAR</button>` +
+        `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>` +
+        `</div>`;
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
-      <button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
+      ${actionBtn}
     </div>`;
   });
   html += '</div>';
@@ -535,8 +545,12 @@ function renderSeizuresListMembers() {
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
+    const isApproved = s.approved !== false;
+    const statusBadge = isApproved
+      ? '<span style="font-size:8px;color:var(--success);font-weight:700;margin-left:6px;">✓ APROVADO</span>'
+      : '<span style="font-size:8px;color:#ffa500;font-weight:700;margin-left:6px;">● PENDENTE</span>';
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
     </div>`;
   });
   html += '</div>';
@@ -565,10 +579,9 @@ function addSeizureMembers() {
   if (!imageUrl) { alert("Informe a URL da imagem"); return; }
   if (!boImageUrl) { alert("Informe a URL do BO"); return; }
   if (imageUrl === boImageUrl) { alert("A URL da imagem deve ser diferente da URL do BO"); return; }
-  seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString() });
+  seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString(), approved: false });
   membersSeizurePage = 1;
   saveData();
-  renderAll();
   renderMembersSeizures();
 }
 
@@ -730,7 +743,7 @@ function addSeizure() {
   if (!imageUrl) { alert("Informe a URL da imagem"); return; }
   if (!boImageUrl) { alert("Informe a URL do BO"); return; }
   if (imageUrl === boImageUrl) { alert("A URL da imagem deve ser diferente da URL do BO"); return; }
-  seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString() });
+  seizures.push({ id: Date.now().toString(), description: desc, member: members, location, imageUrl, boImageUrl, date: new Date().toISOString(), approved: true });
   adminSeizurePage = 1;
   saveData();
   renderAll();
@@ -740,6 +753,15 @@ function addSeizure() {
 function deleteSeizure(id) {
   if (!confirm("Remover esta apreensão?")) return;
   seizures = seizures.filter(s => s.id !== id);
+  saveData();
+  renderAll();
+  renderAdminSeizures();
+}
+
+function approveSeizure(id) {
+  const s = seizures.find(s => s.id === id);
+  if (!s) return;
+  s.approved = true;
   saveData();
   renderAll();
   renderAdminSeizures();

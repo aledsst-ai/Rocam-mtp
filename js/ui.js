@@ -360,7 +360,8 @@ function renderSeizures() {
     const container = document.getElementById('seizures-content');
     if (!container) { return; }
     
-    const sorted = [...seizures].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
+    const approved = seizures.filter(s => s.approved !== false);
+    const sorted = [...approved].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
     
     if (!sorted.length) {
       container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
@@ -438,18 +439,19 @@ function updateStats() {
   const today = new Date().toDateString();
   const liveCount = members.filter(m => m.twitchLive === true).length;
   
-  const todayCount = seizures.filter(s => new Date(s.date).toDateString() === today).length;
-  
+  const approved = seizures.filter(s => s.approved !== false);
+  const todayCount = approved.filter(s => new Date(s.date).toDateString() === today).length;
+
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
-  const weekCount = seizures.filter(s => new Date(s.date) >= weekAgo).length;
+  const weekCount = approved.filter(s => new Date(s.date) >= weekAgo).length;
   
   const run = () => {
     animateStatValue('stat-ao-vivo', liveCount);
     animateStatValue('stat-membros', members.length);
     animateStatValue('stat-hoje', todayCount);
     animateStatValue('stat-semana', weekCount);
-    animateStatValue('stat-total', seizures.length);
+    animateStatValue('stat-total', approved.length);
   };
 
   const intro = document.getElementById('intro');
@@ -607,7 +609,7 @@ function renderMemberProfile(member) {
     }
     
     const seizureCount = getMemberSeizureCount(member.name);
-    const memberSeizures = seizures.filter(s => {
+    const memberSeizures = seizures.filter(s => s.approved !== false).filter(s => {
       const ms = getMembersList(s.member || s.memberName);
       return ms.includes(member.name);
     });
