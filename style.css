@@ -196,7 +196,7 @@
       text-decoration: none;
       white-space: nowrap;
     }
-    .nav-brand img { width: 36px; height: 36px; border-radius: 6px; object-fit: contain; }
+    .nav-brand img { width: 52px; height: 52px; border-radius: 8px; object-fit: contain; }
     .nav-brand span { font-weight: 700; font-family: 'Geist', sans-serif; font-size: 1.24rem; letter-spacing: 0; color: var(--text); }
     .nav-links {
       display: flex;
@@ -961,8 +961,8 @@
         max-height: 420px;
       }
     }
-    .section-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
-    .section-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+    .section-title { font-size: 1.03rem; font-weight: 600; letter-spacing: 0.03em; }
+    .section-sub { font-size: 0.76rem; color: var(--text-muted); margin-top: 2px; }
     
     .filter-buttons {
       display: flex;
@@ -1653,8 +1653,8 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 999px;
       color: #ffffff;
-      font-weight: 700;
-      font-size: 0.925rem;
+      font-weight: 400;
+      font-size: 0.8rem;
       text-transform: none;
       letter-spacing: 0;
       backdrop-filter: blur(8px);
@@ -2359,7 +2359,6 @@
       .stat { padding: 6px 14px; min-width: 85px; }
       .stat-value { font-size: 1.1rem; }
 
-      .section-title { font-size: 0.85rem; }
       .members-grid { gap: 10px; }
       .admin-list-item { flex-direction: column; align-items: stretch; }
       .admin-list-item .item-actions { justify-content: flex-end; }
