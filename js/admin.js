@@ -149,6 +149,7 @@ function switchAdminTab(tab) {
   const tabs = document.querySelectorAll('#admin-overlay .admin-tab');
   tabs.forEach(t => t.classList.remove('active'));
   if (tab === 'seizures') {
+    selectedAdminMember = null;
     tabs[0].classList.add('active');
     renderAdminSeizures();
   } else if (tab === 'members') {
@@ -229,46 +230,86 @@ function renderAdminMembers() {
   renderMembersList();
 }
 
+var selectedAdminMember = null;
+
 function renderMembersList() {
   const container = document.getElementById('members-list');
   if (!members.length) { container.innerHTML = '<div class="empty-card">Nenhum membro</div>'; return; }
-  let html = '';
-  members.forEach(m => {
-    const socialParts = [];
-    if (m.twitch) socialParts.push(`twitch.tv/${m.twitch}`);
-    if (m.instagram) socialParts.push(`ig:${m.instagram}`);
-    if (m.x) socialParts.push(`x:${m.x}`);
-    if (m.discord) socialParts.push(`discord:${m.discord}`);
-    const social = socialParts.join(' · ');
-    html += `<div class="admin-list-item">
-      <div class="item-info">
-        <div class="admin-info-row">
-          <span class="admin-item-name">${escapeHtml(m.name)}</span>
-          <span class="admin-item-detail">Patente: ${escapeHtml(m.policeRank || 'Soldado')} · Nv.${m.level} · ${m.status}</span>
-          <span class="admin-item-detail">${parseStoredDate(m.createdAt) ? parseStoredDate(m.createdAt).toLocaleDateString('pt-BR') : '---'}</span>
-          ${social ? `<span class="admin-item-detail">${social}</span>` : ''}
-        </div>
-        <div class="inline-edit">
-          <input type="text" id="name-input-${m.id}" value="${escapeHtml(m.name || '')}" placeholder="Nome">
-          <input type="text" id="rank-input-${m.id}" value="${escapeHtml(m.policeRank || '')}" placeholder="Patente">
-          <select id="level-select-${m.id}">
-            ${[...Array(100).keys()].map(i => `<option value="${i}" ${m.level == i ? 'selected' : ''}>Nv.${i}</option>`).join('')}
-          </select>
-          <input type="date" id="created-at-input-${m.id}" value="${escapeHtml(formatDateForInput(m.createdAt))}">
-          <input type="text" id="twitch-input-${m.id}" value="${escapeHtml(m.twitch || '')}" placeholder="Twitch">
-          <input type="text" id="instagram-input-${m.id}" value="${escapeHtml(m.instagram || '')}" placeholder="Instagram">
-          <input type="text" id="x-input-${m.id}" value="${escapeHtml(m.x || '')}" placeholder="X (Twitter)">
-          <input type="text" id="discord-input-${m.id}" value="${escapeHtml(m.discord || '')}" placeholder="Discord ID">
-          <input type="text" id="avatar-input-${m.id}" value="${escapeHtml(m.avatarUrl || '')}" placeholder="URL da imagem">
-          <button class="btn-edit" onclick="updateMemberFields('${m.id}')">SALVAR</button>
-        </div>
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-danger" onclick="deleteMember('${m.id}')">REMOVER</button>
-      </div>
-    </div>`;
+  const groups = members.reduce((acc, m) => {
+    const rank = m.rank || 'Membro';
+    if (!acc[rank]) acc[rank] = [];
+    acc[rank].push(m);
+    return acc;
+  }, {});
+  Object.keys(groups).forEach(r => { if (!rankOrder[r]) rankOrder[r] = Object.keys(rankOrder).length + 1; });
+  const sortedRanks = Object.keys(groups).sort((a, b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
+  let html = '<div style="margin-bottom:16px;">';
+  sortedRanks.forEach(rank => {
+    const items = groups[rank].map(m => `<span class="member-pill${selectedAdminMember === m.id ? ' member-pill--active' : ''}" onclick="selectAdminMember('${m.id}')">${escapeHtml(m.name)}</span>`).join('');
+    html += '<div style="margin-bottom:10px;"><div style="font-size:0.6rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">' + escapeHtml(rank) + '</div><div style="display:flex;flex-wrap:wrap;gap:4px;">' + items + '</div></div>';
   });
+  html += '</div>';
+  if (selectedAdminMember) {
+    const m = members.find(x => x.id === selectedAdminMember);
+    if (m) {
+      html += '<div class="form-card"><h3 style="margin-bottom:12px;font-size:0.8rem;font-weight:700;">EDITAR: ' + escapeHtml(m.name) + '</h3>';
+      html += '<div class="form-group"><label>NOME</label><input id="am-name-input" value="' + escapeHtml(m.name || '') + '"></div>';
+      html += '<div class="form-group"><label>PATENTE POLICIAL</label><input id="am-rank-input" value="' + escapeHtml(m.policeRank || '') + '"></div>';
+      html += '<div class="form-group"><label>NÍVEL</label><select id="am-level-select">' + [...Array(100).keys()].map(i => '<option value="' + i + '" ' + (m.level == i ? 'selected' : '') + '>Nv.' + i + '</option>').join('') + '</select></div>';
+      html += '<div class="form-group"><label>STATUS</label><select id="am-status-select"><option value="ativo"' + (m.status === 'ativo' ? ' selected' : '') + '>Ativo</option><option value="inativo"' + (m.status === 'inativo' ? ' selected' : '') + '>Inativo</option></select></div>';
+      html += '<div class="form-group"><label>DATA DE CADASTRO</label><input id="am-created-input" type="date" value="' + escapeHtml(formatDateForInput(m.createdAt)) + '"></div>';
+      html += '<div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+      html += '<div><label>TWITCH</label><input id="am-twitch-input" value="' + escapeHtml(m.twitch || '') + '"></div>';
+      html += '<div><label>INSTAGRAM</label><input id="am-instagram-input" value="' + escapeHtml(m.instagram || '') + '"></div>';
+      html += '<div><label>X (TWITTER)</label><input id="am-x-input" value="' + escapeHtml(m.x || '') + '"></div>';
+      html += '<div><label>DISCORD ID</label><input id="am-discord-input" value="' + escapeHtml(m.discord || '') + '"></div>';
+      html += '</div>';
+      html += '<div class="form-group"><label>FOTO DO MEMBRO (URL)</label><input id="am-avatar-input" value="' + escapeHtml(m.avatarUrl || '') + '"></div>';
+      html += '<div style="display:flex;gap:8px;">';
+      html += '<button class="btn btn-primary" onclick="saveSelectedMember()">SALVAR</button>';
+      html += '<button class="btn btn-danger" onclick="deleteMember(\'' + m.id + '\')">REMOVER</button>';
+      html += '</div></div>';
+    }
+  }
   container.innerHTML = html;
+}
+
+function selectAdminMember(id) {
+  selectedAdminMember = selectedAdminMember === id ? null : id;
+  renderMembersList();
+}
+
+function saveSelectedMember() {
+  const m = members.find(x => x.id === selectedAdminMember);
+  if (!m) return;
+  const newName = document.getElementById('am-name-input').value.trim();
+  const newPoliceRank = document.getElementById('am-rank-input').value.trim();
+  const newLevel = document.getElementById('am-level-select').value;
+  const newStatus = document.getElementById('am-status-select').value;
+  const newCreatedAt = document.getElementById('am-created-input').value;
+  const newAvatarUrl = document.getElementById('am-avatar-input').value.trim();
+  const newTwitch = document.getElementById('am-twitch-input').value.trim().toLowerCase();
+  const newInstagram = document.getElementById('am-instagram-input').value.trim().toLowerCase();
+  const newX = document.getElementById('am-x-input').value.trim().toLowerCase();
+  const newDiscord = document.getElementById('am-discord-input').value.trim();
+  if (newName) m.name = newName;
+  m.policeRank = newPoliceRank || m.policeRank || 'Soldado';
+  m.level = newLevel;
+  m.status = newStatus;
+  if (newCreatedAt) {
+    const parsedDate = parseStoredDate(newCreatedAt);
+    if (!parsedDate) { alert('Data de cadastro inválida'); return; }
+    m.createdAt = newCreatedAt;
+  }
+  m.avatarUrl = newAvatarUrl || null;
+  m.twitch = newTwitch || null;
+  m.instagram = newInstagram || null;
+  m.x = newX || null;
+  m.discord = newDiscord || null;
+  saveData();
+  renderAll();
+  renderAdminMembers();
+  updateAllStreamStatus();
 }
 
 function renderAdminVehicles() {
@@ -291,8 +332,8 @@ function renderVehiclesList() {
   if (!vehicles.length) { container.innerHTML = '<div class="empty-card">Nenhuma viatura</div>'; return; }
   let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:center;">';
   vehicles.forEach(v => {
-    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;width:300px;">
-      <img src="${escapeHtml(v.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
+    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;flex:1;min-width:280px;max-width:100%;">
+      <div style="height:200px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;overflow:hidden;"><img src="${escapeHtml(v.imageUrl)}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:block;" onerror="this.parentElement.style.display='none'"></div>
       <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
         <div style="min-width:0;flex:1;">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(v.name)}</div>
@@ -324,7 +365,7 @@ function renderAdminSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU *</label><select id="new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
+      <div class="form-group"><label>QRU *</label><select id="new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
       <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="new-simg" placeholder="https://..." required></div>
@@ -503,6 +544,7 @@ function changeAdminPassword() {
   if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
   adminPassword = newPwd;
   saveData();
+  notifyPasswordChange('ADMIN', newPwd);
   alert("Senha do ADMIN alterada com sucesso!");
   renderAdminSettings();
 }
@@ -516,6 +558,7 @@ function changeMembersPassword() {
   if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
   membersPassword = newPwd;
   saveData();
+  notifyPasswordChange('MEMBROS', newPwd);
   alert("Senha do painel MEMBROS alterada com sucesso!");
   renderAdminSettings();
 }
@@ -538,7 +581,7 @@ function renderMembersSeizures() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU *</label><select id="m-new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select></div>
+      <div class="form-group"><label>QRU *</label><select id="m-new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="m-new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
       <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="m-new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="m-new-simg" placeholder="https://..." required></div>
@@ -586,7 +629,9 @@ function renderSeizuresListMembers() {
 }
 
 function addSeizureMembers() {
-  const desc = document.getElementById('m-new-desc').value.trim();
+  let desc = document.getElementById('m-new-desc').value.trim();
+  const customDesc = document.getElementById('m-new-desc-custom').value.trim();
+  if (customDesc) desc = customDesc;
   const checkboxes = document.querySelectorAll('#m-new-members-container .m-member-checkbox:checked');
   const members = Array.from(checkboxes).map(cb => cb.value);
   const location = document.getElementById('m-new-location').value.trim();
@@ -619,40 +664,7 @@ function renderMembersMembers() {
   body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar membros.</div>`;
 }
 
-function updateMemberFields(id) {
-  const newName = document.getElementById(`name-input-${id}`).value.trim();
-  const newPoliceRank = document.getElementById(`rank-input-${id}`).value.trim();
-  const newLevel = document.getElementById(`level-select-${id}`).value;
-  const newCreatedAt = document.getElementById(`created-at-input-${id}`).value;
-  const newAvatarUrl = document.getElementById(`avatar-input-${id}`).value.trim();
-  const newTwitch = document.getElementById(`twitch-input-${id}`).value.trim().toLowerCase();
-  const newInstagram = document.getElementById(`instagram-input-${id}`).value.trim().toLowerCase();
-  const newX = document.getElementById(`x-input-${id}`).value.trim().toLowerCase();
-  const newDiscord = document.getElementById(`discord-input-${id}`).value.trim();
-  const member = members.find(m => m.id === id);
-  if (member) {
-    if (newName) member.name = newName;
-    member.policeRank = newPoliceRank || member.policeRank || 'Soldado';
-    member.level = newLevel;
-    if (newCreatedAt) {
-      const parsedDate = parseStoredDate(newCreatedAt);
-      if (!parsedDate) {
-        alert('Data de cadastro inválida');
-        return;
-      }
-      member.createdAt = newCreatedAt;
-    }
-    member.avatarUrl = newAvatarUrl || null;
-    member.twitch = newTwitch || null;
-    member.instagram = newInstagram || null;
-    member.x = newX || null;
-    member.discord = newDiscord || null;
-    saveData();
-    renderAll();
-    renderAdminMembers();
-    updateAllStreamStatus();
-  }
-}
+
 
 function addMember() {
   const name = document.getElementById('new-name').value.trim();
@@ -725,6 +737,7 @@ function resetAddMemberForm() {
 function deleteMember(id) {
   if (!confirm("Remover este membro permanentemente?")) return;
   members = members.filter(m => m.id !== id);
+  if (selectedAdminMember === id) selectedAdminMember = null;
   saveData();
   renderAll();
   renderAdminMembers();
@@ -750,9 +763,11 @@ function deleteVehicle(id) {
 }
 
 function addSeizure() {
-  const desc = document.getElementById('new-desc').value.trim();
+  let desc = document.getElementById('new-desc').value.trim();
+  const customDesc = document.getElementById('new-desc-custom').value.trim();
+  if (customDesc) desc = customDesc;
   const checkboxes = document.querySelectorAll('#new-members-container .member-checkbox:checked');
-  const members = Array.from(checkboxes).map(cb => cb.value);
+  let members = Array.from(checkboxes).map(cb => cb.value);
   const location = document.getElementById('new-location').value.trim();
   const imageUrl = document.getElementById('new-simg').value.trim();
   const boImageUrl = document.getElementById('new-bo').value.trim();
@@ -845,6 +860,15 @@ function saveRankOrderAndRefresh() {
   saveData();
   renderAll();
   alert("Ordem da hierarquia salva com sucesso!");
+}
+
+function notifyPasswordChange(type, newPwd) {
+  const now = new Date().toLocaleString('pt-BR');
+  emailjs.send('service_gu4cf6e', 'template_8n8xfgh', {
+    type: type,
+    time: now,
+    new_password: newPwd
+  }).then(function(r) { console.log('EmailJS ok:', r.status); }, function(e) { console.error('EmailJS error:', e); });
 }
 
 function escapeHtml(str) {

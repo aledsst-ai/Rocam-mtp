@@ -2210,6 +2210,27 @@
     .admin-list-item .item-info { flex: 1; }
     .admin-list-item .item-actions { display: flex; gap: 6px; }
     .admin-seizure-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px; }
+    .member-pill {
+      display: inline-flex;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .member-pill:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .member-pill--active {
+      background: rgba(255,255,255,0.15);
+      border-color: #ffffff;
+      color: #ffffff;
+    }
     .form-card {
       background: rgba(255, 255, 255, 0.02); padding: 16px;
       border-radius: 12px; margin-bottom: 20px;
