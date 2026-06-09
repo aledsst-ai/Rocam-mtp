@@ -166,7 +166,7 @@
     .skip-splash #intro .bar-fill,
     .skip-splash #intro img { animation: none !important; }
     #intro img { width: 357px; height: 357px; object-fit: contain; opacity: 0.8; animation: pulse 2s ease-in-out infinite; }
-    #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; color: var(--text-secondary); font-weight: 400; font-family: 'Geist', sans-serif; }
+    #intro .brand { font-size: 0.8rem; letter-spacing: 0.3em; color: var(--text-secondary); font-weight: 400; font-family: inherit; }
     #intro .bar { width: 140px; height: 1px; background: var(--border); overflow: hidden; }
     #intro .bar-fill { height: 100%; width: 0%; background: #ffffff; animation: loadBar 2s ease forwards; }
     @keyframes loadBar { to { width: 100%; } }
@@ -197,7 +197,7 @@
       white-space: nowrap;
     }
     .nav-brand img { width: 52px; height: 52px; border-radius: 8px; object-fit: contain; }
-    .nav-brand span { font-weight: 700; font-family: 'Geist', sans-serif; font-size: 1.24rem; letter-spacing: 0; color: var(--text); }
+    .nav-brand span { font-weight: 700; font-family: inherit; font-size: 1.24rem; letter-spacing: 0; color: var(--text); }
     .nav-links {
       display: flex;
       align-items: center;
@@ -212,7 +212,7 @@
       padding: 8px 0;
       text-decoration: none;
       color: var(--text-secondary);
-      font-family: 'Geist', sans-serif;
+      font-family: inherit;
       font-size: 0.96rem;
       font-weight: 600;
       letter-spacing: 0.03em;
@@ -2096,10 +2096,6 @@
       border-radius: 12px;
       width: 90%; max-width: 1000px; max-height: 85vh;
       display: flex; flex-direction: column; overflow: hidden;
-      font-family: 'Geist', sans-serif;
-    }
-    .admin-panel * {
-      font-family: inherit;
     }
     .admin-header {
       padding: 14px 24px;
@@ -2116,7 +2112,7 @@
       color: var(--text-secondary); font-size: 0.7rem;
       font-weight: 700; border-bottom: 2px solid transparent;
       transition: var(--transition);
-      font-family: 'Geist', sans-serif;
+      font-family: inherit;
       text-align: center;
     }
     .admin-tab.active { color: #ffffff; border-bottom-color: #ffffff; }
@@ -2133,7 +2129,7 @@
       background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px; color: #ffffff;
       font-size: 11px; transition: var(--transition);
-      font-weight: 400; font-family: 'Geist', sans-serif;
+      font-weight: 400; font-family: inherit;
     }
     .form-group select {
       appearance: none;
@@ -2211,7 +2207,7 @@
       color: #ffffff;
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
-      font-family: 'Geist', sans-serif;
+      font-family: inherit;
     }
     .inline-edit select {
       appearance: none;
