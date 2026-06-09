@@ -1847,17 +1847,23 @@
     }
     .seizures-arrow-left {
       position: absolute;
-      left: -20px;
+      left: -24px;
       top: 50%;
       transform: translateY(-50%) !important;
       z-index: 5;
     }
     .seizures-arrow-right {
       position: absolute;
-      right: -20px;
+      right: -24px;
       top: 50%;
       transform: translateY(-50%) !important;
       z-index: 5;
+    }
+    #live-members-content .seizures-arrow-left {
+      left: -38px;
+    }
+    #live-members-content .seizures-arrow-right {
+      right: -38px;
     }
     .seizures-arrow-left:hover:not(:disabled),
     .seizures-arrow-right:hover:not(:disabled) {
