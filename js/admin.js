@@ -116,6 +116,18 @@ function closePasswordDialog(type) {
   }
 }
 
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    const adminPwd = document.getElementById('adminPasswordDialog');
+    const membersPwd = document.getElementById('membersPasswordDialog');
+    if (adminPwd && adminPwd.classList.contains('show')) {
+      closePasswordDialog('admin');
+    } else if (membersPwd && membersPwd.classList.contains('show')) {
+      closePasswordDialog('members');
+    }
+  }
+});
+
 function closeAdminPanel() {
   const adminOverlay = document.getElementById('admin-overlay');
   if (adminOverlay) {
