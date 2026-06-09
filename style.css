@@ -1842,20 +1842,17 @@
       box-shadow: none;
     }
     
-    .seizures-carousel-wrapper,
-    .gallery-carousel-wrapper {
+    .seizures-carousel-wrapper {
       max-width: 100%;
     }
-    .seizures-arrow-left,
-    .gallery-arrow-left {
+    .seizures-arrow-left {
       position: absolute;
       left: -20px;
       top: 50%;
       transform: translateY(-50%) !important;
       z-index: 5;
     }
-    .seizures-arrow-right,
-    .gallery-arrow-right {
+    .seizures-arrow-right {
       position: absolute;
       right: -20px;
       top: 50%;
@@ -1863,19 +1860,14 @@
       z-index: 5;
     }
     .seizures-arrow-left:hover:not(:disabled),
-    .gallery-arrow-left:hover:not(:disabled),
-    .seizures-arrow-right:hover:not(:disabled),
-    .gallery-arrow-right:hover:not(:disabled) {
+    .seizures-arrow-right:hover:not(:disabled) {
       transform: translateY(-50%) scale(1.15) !important;
     }
     .seizures-arrow-left:disabled,
-    .gallery-arrow-left:disabled,
-    .seizures-arrow-right:disabled,
-    .gallery-arrow-right:disabled {
+    .seizures-arrow-right:disabled {
       transform: translateY(-50%) !important;
     }
-    .seizures-carousel-btn,
-    .gallery-carousel-btn {
+    .seizures-carousel-btn {
       background: none !important;
       border: none !important;
       width: auto !important;
@@ -1889,18 +1881,15 @@
       cursor: pointer;
       transition: all 0.25s ease;
     }
-    .seizures-carousel-btn::before,
-    .gallery-carousel-btn::before { display: none !important; }
-    .seizures-carousel-btn:hover,
-    .gallery-carousel-btn:hover {
+    .seizures-carousel-btn::before { display: none !important; }
+    .seizures-carousel-btn:hover {
       background: none !important;
       border-color: transparent !important;
       transform: scale(1.15) !important;
       box-shadow: none !important;
       color: #fff;
     }
-    .seizures-carousel-btn:disabled,
-    .gallery-carousel-btn:disabled {
+    .seizures-carousel-btn:disabled {
       opacity: 0.15;
       cursor: default;
       transform: none !important;
