@@ -1012,7 +1012,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-      background: rgba(22, 22, 22, 0.55);
+      background: rgba(22, 22, 22, 0.70);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.08);
