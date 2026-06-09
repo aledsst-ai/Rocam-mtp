@@ -1,6 +1,11 @@
 ﻿function runSplashAnimation(intro, onComplete) {
   const overlay = document.getElementById('splashOverlay');
-  if (!overlay) { onComplete(); return; }
+  console.log('🎬 runSplashAnimation called, overlay:', overlay ? 'found' : 'NOT FOUND');
+  if (!overlay) { 
+    console.error('❌ splashOverlay not found!');
+    onComplete(); 
+    return; 
+  }
 
   const particleCount = 30;
   const centerX = window.innerWidth / 2;
@@ -42,8 +47,11 @@
   lineV.style.animationDelay = '0.3s';
   overlay.appendChild(lineV);
 
+  console.log('✨ Particles and lines created, starting animation...');
+
   // After animation, fade out splash and show logo
   setTimeout(() => {
+    console.log('🎬 Animation complete, fading out splash...');
     overlay.style.animation = 'splashFade 0.6s ease forwards';
     intro.classList.add('loaded');
     setTimeout(() => {
