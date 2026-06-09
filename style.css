@@ -836,7 +836,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
     .seizures-carousel-title {
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: 0.05em;
@@ -891,7 +891,7 @@
       flex-direction: column;
       justify-content: flex-end;
       padding: 10px;
-      gap: 4px;
+      gap: 0px;
     }
     .seizure-item-title {
       font-size: 12px;
@@ -907,7 +907,7 @@
       white-space: normal;
     }
     .seizure-item-date {
-      font-size: 12px;
+      font-size: 10px;
       color: rgba(255, 255, 255, 0.8);
     }
 
@@ -1285,8 +1285,8 @@
       transform: translateY(-3px);
     }
     .member-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; flex-wrap: nowrap; }
-    .member-level { font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: default; }
-    .member-seizures { font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: default; }
+    .member-level { font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
+    .member-seizures { font-size: 10px; background: rgba(255,255,255,0.06); padding: 2px 7px; border-radius: 20px; color: rgba(255,255,255,0.7); font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
     .twitch-badge {
       display: inline-flex;
       align-items: center;
