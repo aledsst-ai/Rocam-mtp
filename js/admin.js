@@ -348,8 +348,15 @@ function renderSeizuresList() {
         `<button class="btn btn-primary" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="approveSeizure('${s.id}')">APROVAR</button>` +
         `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>` +
         `</div>`;
+    var thumbnails = '';
+    if (s.imageUrl || s.boImageUrl) {
+      thumbnails = '<div style="display:flex;gap:6px;margin-top:6px;">';
+      if (s.imageUrl) thumbnails += '<img src="' + escapeHtml(s.imageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.imageUrl) + '\')" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver imagem">';
+      if (s.boImageUrl) thumbnails += '<img src="' + escapeHtml(s.boImageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.boImageUrl) + '\')" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver BO">';
+      thumbnails += '</div>';
+    }
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div>${thumbnails}</div>
       ${actionBtn}
     </div>`;
   });
