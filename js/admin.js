@@ -356,7 +356,7 @@ function renderSeizuresList() {
       thumbnails += '</div>';
     }
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div>${thumbnails}</div>
+      <div style="flex:1;min-width:0;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div>${thumbnails}</div>
       ${actionBtn}
     </div>`;
   });
