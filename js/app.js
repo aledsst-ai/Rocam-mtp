@@ -1,4 +1,59 @@
-﻿// ==================== INICIALIZAÇÃO DE EVENT LISTENERS ====================
+﻿function runSplashAnimation(intro, onComplete) {
+  const overlay = document.getElementById('splashOverlay');
+  if (!overlay) { onComplete(); return; }
+
+  const particleCount = 30;
+  const centerX = window.innerWidth / 2;
+  const centerY = window.innerHeight / 2;
+
+  // Create particles
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'splash-particle';
+    const angle = (Math.PI * 2 * i) / particleCount;
+    const distance = 50 + Math.random() * 100;
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    particle.style.left = centerX + 'px';
+    particle.style.top = centerY + 'px';
+    particle.style.setProperty('--tx', tx + 'px');
+    particle.style.setProperty('--ty', ty + 'px');
+    particle.style.animationDelay = (Math.random() * 0.3) + 's';
+    particle.style.animationDuration = (0.8 + Math.random() * 0.4) + 's';
+    overlay.appendChild(particle);
+  }
+
+  // Create expanding lines (cross)
+  const lineH = document.createElement('div');
+  lineH.className = 'splash-line horizontal';
+  lineH.style.left = '50%';
+  lineH.style.top = '50%';
+  lineH.style.transform = 'translate(-50%, -50%)';
+  lineH.style.setProperty('--w', '100vw');
+  lineH.style.animationDelay = '0.2s';
+  overlay.appendChild(lineH);
+
+  const lineV = document.createElement('div');
+  lineV.className = 'splash-line vertical';
+  lineV.style.left = '50%';
+  lineV.style.top = '50%';
+  lineV.style.transform = 'translate(-50%, -50%)';
+  lineV.style.setProperty('--h', '100vh');
+  lineV.style.animationDelay = '0.3s';
+  overlay.appendChild(lineV);
+
+  // After animation, fade out splash and show logo
+  setTimeout(() => {
+    overlay.style.animation = 'splashFade 0.6s ease forwards';
+    intro.classList.add('loaded');
+    setTimeout(() => {
+      overlay.remove();
+      onComplete();
+    }, 600);
+  }, 1600);
+}
+
+// ==================== INICIALIZAÇÃO DE EVENT LISTENERS ====================
 function initEventListeners() {
   // Listener de click para carrossel
   document.addEventListener('click', (e) => {
@@ -86,16 +141,8 @@ window.addEventListener('DOMContentLoaded', () => {
       intro.classList.add('hidden');
       initRevealOnScroll();
     } else {
-      console.log('⏳ Primeira visita - exibindo splash por 3s');
-      setTimeout(hideIntro, 3000);
-
-      // FALLBACK: Se ainda estiver visível após 6s, força remover
-      setTimeout(() => {
-        if (intro && !intro.classList.contains('hidden')) {
-          console.log('⚠️ FALLBACK: Forçando remoção do intro após 6s');
-          hideIntro();
-        }
-      }, 6000);
+      console.log('⏳ Primeira visita - exibindo splash animation');
+      runSplashAnimation(intro, hideIntro);
     }
   }
   
