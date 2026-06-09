@@ -42,17 +42,9 @@ function normalizeArrayData(value) {
 
 // Carrossel: índices de paginação
 let galleryPage = 0;
-let vehiclesPage = 0;
 let seizuresPage = 0;
 let liveMembersPage = 0;
-const ITEMS_PER_PAGE = 4;
-const GALLERY_ITEMS_PER_PAGE = 4;
-const SEIZURES_ITEMS_PER_PAGE = 4;
 const LIVE_MEMBERS_PER_PAGE = 2;
-
-// Estados dos filtros
-let galleryFilterDays = 7;
-let seizuresFilterDays = 7;
 
 // ==================== GLOBAL OBSERVER E ESTADO ====================
 let revealObserver = null;

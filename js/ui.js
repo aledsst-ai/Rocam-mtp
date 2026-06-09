@@ -85,7 +85,6 @@ function createHierarchyMemberCard(member, index) {
     streamLink.addEventListener('click', e => e.stopPropagation());
 
     const iconWrapper = document.createElement('span');
-    iconWrapper.className = 'stream-icon';
     iconWrapper.innerHTML = streamInfo.svg;
 
     const label = document.createElement('span');
@@ -250,9 +249,6 @@ function carouselPrevNext(type, direction) {
   if (type === 'gallery') {
     galleryPage = direction === 'prev' ? Math.max(0, galleryPage - 1) : galleryPage + 1;
     renderGallery();
-  } else if (type === 'vehicles') {
-    vehiclesPage = direction === 'prev' ? Math.max(0, vehiclesPage - 1) : vehiclesPage + 1;
-    renderVehicles();
   } else if (type === 'seizures') {
     seizuresPage = direction === 'prev' ? Math.max(0, seizuresPage - 1) : seizuresPage + 1;
     renderSeizures();
@@ -266,9 +262,6 @@ function goToCarouselPage(type, page) {
   if (type === 'gallery') {
     galleryPage = page;
     renderGallery();
-  } else if (type === 'vehicles') {
-    vehiclesPage = page;
-    renderVehicles();
   } else if (type === 'seizures') {
     seizuresPage = page;
     renderSeizures();
@@ -276,97 +269,6 @@ function goToCarouselPage(type, page) {
     liveMembersPage = page;
     renderLiveMembers();
   }
-}
-
-function renderCarousel(containerId, items, carouselType, emptyMessage, itemsPerPage = ITEMS_PER_PAGE) {
-  const container = document.getElementById(containerId);
-  if (!items.length) {
-    container.innerHTML = `<div class="empty-card">${emptyMessage}</div>`;
-    return;
-  }
-  
-  let page = 0;
-  if (carouselType === 'gallery') page = galleryPage;
-  else if (carouselType === 'vehicles') page = vehiclesPage;
-  else if (carouselType === 'seizures') page = seizuresPage;
-  
-  // Garantir que a página está dentro dos limites
-  const maxPage = Math.ceil(items.length / itemsPerPage) - 1;
-  if (page > maxPage) {
-    page = maxPage;
-    if (carouselType === 'gallery') galleryPage = page;
-    else if (carouselType === 'vehicles') vehiclesPage = page;
-    else if (carouselType === 'seizures') seizuresPage = page;
-  }
-  
-  const start = page * itemsPerPage;
-  const end = Math.min(start + itemsPerPage, items.length);
-  const currentItems = items.slice(start, end);
-  const hasNext = end < items.length;
-  const hasPrev = page > 0;
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-  
-  let html = '<div class="carousel-wrapper">';
-  html += '<div class="carousel-container">';
-  html += `<button class="carousel-btn" data-carousel-type="${carouselType}" data-carousel-direction="prev" ${!hasPrev ? 'disabled' : ''} title="Página anterior" aria-label="Anterior">❮</button>`;
-  html += '<div class="carousel-content">';
-  
-  currentItems.forEach((item, idx) => {
-    if (carouselType === 'gallery') {
-      html += `<div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
-        ${item.imageUrl ? `<img class="gallery-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro+ao+carregar'" alt="${escapeHtml(item.title || 'Foto da galeria')}">` : '<div class="gallery-img placeholder">📸</div>'}
-        <div class="gallery-card-overlay"></div>
-        <div class="gallery-card-content">
-          <div class="gallery-title">${escapeHtml(item.title || 'Sem título')}</div>
-          <div class="gallery-date badge"><span class="emoji-icon">📅</span>${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
-        </div>
-      </div>`;
-    } else if (carouselType === 'vehicles') {
-      html += `<div class="vehicle-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
-        ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.name)}">` : '<div class="vehicle-img placeholder">🚗</div>'}
-        <div class="vehicle-card-overlay"></div>
-        <div class="vehicle-card-content">
-          <div class="vehicle-name">${escapeHtml(item.name)}</div>
-        </div>
-      </div>`;
-    } else if (carouselType === 'seizures') {
-      const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-      html += `<div class="seizure-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') openModal('${escapeHtml(item.imageUrl)}')">
-        ${item.imageUrl ? `<img class="seizure-img" src="${escapeHtml(item.imageUrl)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'" alt="${escapeHtml(item.description)}">` : '<div class="seizure-img" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:2rem;">📷</div>'}
-        <div class="seizure-info">
-          <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description)}</span></div>
-          <div class="seizure-meta">
-            ${item.member ? makeMembersBadge(item.member) : ''}
-            ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
-          </div>
-          <div class="seizure-footer">
-            <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
-            ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
-          </div>
-        </div>
-      </div>`;
-    }
-  });
-  
-  html += '</div>';
-  html += `<button class="carousel-btn" data-carousel-type="${carouselType}" data-carousel-direction="next" ${!hasNext ? 'disabled' : ''} title="Próxima página" aria-label="Próximo">❯</button>`;
-  html += '</div>';
-  
-  // Adicionar indicadores de paginação
-  if (totalPages > 1) {
-    html += '<div class="carousel-indicators">';
-    for (let i = 0; i < totalPages; i++) {
-      const isActive = i === page ? 'active' : '';
-      html += `<button class="carousel-dot ${isActive}" data-carousel-type="${carouselType}" data-carousel-page="${i}" title="Página ${i + 1}" onclick="goToCarouselPage('${carouselType}', ${i})" aria-label="Ir para página ${i + 1}"></button>`;
-    }
-    html += '</div>';
-    
-    // Informação de paginação
-    html += `<div class="carousel-info">PÁGINA ${page + 1} DE ${totalPages}</div>`;
-  }
-  
-  html += '</div>';
-  container.innerHTML = html;
 }
 
 // ==================== RENDER COM CARROSSEL ====================
@@ -804,29 +706,6 @@ function renderMemberProfile(member) {
     if (content) {
       content.innerHTML = `<div style="padding: 20px; color: var(--danger);">Erro ao carregar perfil. Verifique o console.</div>`;
     }
-  }
-}
-
-function navigationMemberProfile(direction) {
-  try {
-    if (!currentMemberProfile) return;
-    
-    const currentIndex = members.findIndex(m => m.name === currentMemberProfile.name);
-    let newIndex = currentIndex;
-    
-    if (direction === 'prev' && currentIndex > 0) {
-      newIndex = currentIndex - 1;
-    } else if (direction === 'next' && currentIndex < members.length - 1) {
-      newIndex = currentIndex + 1;
-    }
-    
-    if (newIndex !== currentIndex) {
-      const newMember = members[newIndex];
-      console.log('➡️ Navegando para:', newMember.name);
-      openMemberProfile(newMember.name);
-    }
-  } catch (error) {
-    console.error('❌ Erro ao navegar:', error);
   }
 }
 

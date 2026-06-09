@@ -154,12 +154,6 @@ function getStreamThumbnailUrl(member, width = 640, height = 360) {
   return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Offline`;
 }
 
-function filterByDays(items, days) {
-  if (days === 'all') return items;
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - days);
-  return items.filter(item => new Date(item.date) >= cutoffDate);
-}
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, function(m) {
