@@ -20,16 +20,9 @@
             <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
           </svg>
         </button>
-        <div id="admin-sidebar-backdrop" class="admin-sidebar-backdrop" onclick="closeAdminMenu()"></div>
-        <div id="admin-sidebar" class="admin-sidebar" role="menu" aria-hidden="true">
-          <div class="admin-sidebar-header">
-            <h3>ADMIN</h3>
-            <button class="admin-sidebar-close" onclick="closeAdminMenu()">✕</button>
-          </div>
-          <div class="admin-sidebar-body">
-            <button class="admin-sidebar-option" type="button" onclick="openMembersPanel(); closeAdminMenu()">MEMBROS</button>
-            <button class="admin-sidebar-option" type="button" onclick="openAdminPanel(); closeAdminMenu()">GESTÃO</button>
-          </div>
+        <div id="admin-options" class="admin-options" role="menu" aria-hidden="true">
+          <button class="admin-option" type="button" onclick="openMembersPanel(); closeAdminMenu()">MEMBROS</button>
+          <button class="admin-option" type="button" onclick="openAdminPanel(); closeAdminMenu()">GESTÃO</button>
         </div>
       </div>
     </div>
