@@ -401,10 +401,10 @@ function renderSeizures() {
               <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description || 'Apreensão')}</span></div>
               <div class="seizure-meta">
                 ${item.member ? makeMembersBadge(item.member) : ''}
-                ${item.location ? `<span class="badge" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="emoji-icon">📍</span><span style="overflow:hidden;text-overflow:ellipsis;">${escapeHtml(item.location)}</span></span>` : ''}
+                ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
               </div>
               <div class="seizure-footer">
-                <span class="badge" style="max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><span class="emoji-icon">📅</span><span style="overflow:hidden;text-overflow:ellipsis;">${dateText}</span></span>
+                <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
                 ${item.boImageUrl ? `<a href="${escapeHtml(item.boImageUrl)}" target="_blank" onclick="event.stopPropagation()">Ver BO →</a>` : ''}
               </div>
             </div>

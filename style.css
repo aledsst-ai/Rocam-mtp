@@ -1686,7 +1686,6 @@
       gap: 6px;
       width: 100%;
       margin-top: 20px;
-      min-width: 0;
     }
     .seizure-desc {
       font-weight: 700;
@@ -1700,14 +1699,6 @@
       flex-wrap: wrap;
       gap: 8px;
       margin: 0;
-      min-width: 0;
-    }
-    .seizure-meta .badge {
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
     }
     .seizure-meta span,
     .seizure-footer span {
@@ -1718,7 +1709,7 @@
       background: transparent;
       border: none;
       color: rgba(255, 255, 255, 0.85);
-      font-size: 0.925rem;
+      font-size: 0.86rem;
       font-weight: 500;
       line-height: 1.2;
     }
@@ -1729,7 +1720,7 @@
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 999px;
       color: rgba(255, 255, 255, 0.9);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.2;
       backdrop-filter: blur(4px);
@@ -1740,17 +1731,9 @@
       justify-content: space-between;
       align-items: center;
       gap: 8px;
-      font-size: 14px;
+      font-size: 13px;
       color: rgba(255,255,255,0.8);
       font-weight: 500;
-      min-width: 0;
-    }
-    .seizure-footer .badge {
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
     }
     .seizure-footer a {
       color: #ffffff;
