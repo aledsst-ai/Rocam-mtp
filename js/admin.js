@@ -334,7 +334,9 @@ function renderSeizuresList() {
   const start = (adminSeizurePage - 1) * ADMIN_SEIZURES_PER_PAGE;
   const end = Math.min(start + ADMIN_SEIZURES_PER_PAGE, sorted.length);
   const pageItems = sorted.slice(start, end);
-  let html = '<div class="admin-seizure-grid">';
+  const pendingCount = pageItems.filter(s => s.approved === false).length;
+  var gridStyle = pendingCount === 1 ? 'display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:10px;' : 'display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;';
+  let html = '<div style="' + gridStyle + '">';
   pageItems.forEach(s => {
     const members = getMembersList(s.member);
     const memberText = members.length ? members.join(', ') : '';
@@ -348,14 +350,17 @@ function renderSeizuresList() {
         `<button class="btn btn-primary" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="approveSeizure('${s.id}')">APROVAR</button>` +
         `<button class="btn btn-danger" style="padding:4px 12px;font-size:10px;font-weight:700;" onclick="deleteSeizure('${s.id}')">REMOVER</button>` +
         `</div>`;
+    var isSinglePending = pendingCount === 1 && !isApproved;
+    var thumbSize = isSinglePending ? 120 : 60;
     var thumbnails = '';
     if (s.imageUrl || s.boImageUrl) {
-      thumbnails = '<div style="display:flex;gap:6px;margin-top:6px;">';
-      if (s.imageUrl) thumbnails += '<img src="' + escapeHtml(s.imageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.imageUrl) + '\')" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver imagem">';
-      if (s.boImageUrl) thumbnails += '<img src="' + escapeHtml(s.boImageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.boImageUrl) + '\')" style="width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver BO">';
+      thumbnails = '<div style="display:flex;gap:8px;margin-top:6px;' + (isSinglePending ? 'justify-content:center;' : '') + '">';
+      if (s.imageUrl) thumbnails += '<img src="' + escapeHtml(s.imageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.imageUrl) + '\')" style="width:' + thumbSize + 'px;height:' + thumbSize + 'px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver imagem">';
+      if (s.boImageUrl) thumbnails += '<img src="' + escapeHtml(s.boImageUrl) + '" onclick="event.stopPropagation();openModal(\'' + escapeHtml(s.boImageUrl) + '\')" style="width:' + thumbSize + 'px;height:' + thumbSize + 'px;object-fit:cover;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" title="Ver BO">';
       thumbnails += '</div>';
     }
-    html += `<div class="admin-list-item" style="font-size:10px;">
+    var itemStyle = isSinglePending ? 'max-width:500px;width:100%;text-align:center;' : '';
+    html += `<div class="admin-list-item" style="font-size:10px;${itemStyle}">
       <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))}${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)} | ${new Date(s.date).toLocaleDateString('pt-BR')}</div>${thumbnails}</div>
       ${actionBtn}
     </div>`;
