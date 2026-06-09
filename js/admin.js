@@ -1,4 +1,3 @@
-// ==================== ADMIN PANELS ====================
 let currentAdminTab = 'members';
 let currentMembersTab = 'seizures';
 
@@ -178,10 +177,8 @@ function switchMembersTab(tab) {
   }
 }
 
-// ========== ADMIN FULL PANEL ==========
 function renderAdminMembers() {
   const body = document.getElementById('admin-body');
-  // Buscar hierarquias únicas existentes
   const existingRanks = [...new Set(members.map(m => m.rank || "Membro"))];
   const rankOptions = existingRanks.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
   
@@ -206,7 +203,6 @@ function renderAdminMembers() {
     <div id="members-list"></div>
   `;
   
-  // Listener para mostrar/ocultar input de nova hierarquia
   document.getElementById('new-rank').addEventListener('change', function() {
     const customInput = document.getElementById('new-rank-custom');
     if (this.value === '__new__') {
@@ -495,7 +491,6 @@ function changeMembersPassword() {
   renderAdminSettings();
 }
 
-// ========== MEMBERS LIMITED PANEL ==========
 function renderMembersSeizures() {
   membersSeizurePage = 1;
   const body = document.getElementById('members-body');
@@ -592,7 +587,6 @@ function renderMembersMembers() {
   body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar membros.</div>`;
 }
 
-// ========== CRUD OPERATIONS ==========
 function updateMemberFields(id) {
   const newName = document.getElementById(`name-input-${id}`).value.trim();
   const newPoliceRank = document.getElementById(`rank-input-${id}`).value.trim();
@@ -633,7 +627,6 @@ function addMember() {
   const policeRank = document.getElementById('new-police-rank').value.trim();
   let rank = document.getElementById('new-rank').value.trim();
   
-  // Se selecionou "criar nova", pegar o valor do input customizado
   if (rank === '__new__') {
     rank = document.getElementById('new-rank-custom').value.trim();
   }

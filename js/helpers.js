@@ -1,5 +1,4 @@
-﻿// ==================== MODAL ====================
-function openModal(imageUrl) {
+﻿function openModal(imageUrl) {
   const modal = document.getElementById('imageModal');
   const modalImg = document.getElementById('modalImage');
   if (imageUrl && imageUrl !== '') {
@@ -24,7 +23,6 @@ document.addEventListener('keydown', function(e) {
     closeModal();
   }
 });
-// ==================== HELPER ====================
 function getMembersList(member) {
   if (!member) return [];
   if (Array.isArray(member)) return member;

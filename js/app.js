@@ -1,6 +1,4 @@
-﻿// ==================== INICIALIZAÇÃO DE EVENT LISTENERS ====================
-function initEventListeners() {
-  // Listener de click para carrossel
+﻿function initEventListeners() {
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.carousel-btn[data-carousel-type][data-carousel-direction]');
     if (btn && !btn.disabled) {
@@ -15,16 +13,13 @@ function initEventListeners() {
     }
   });
 
-  // Navegação por teclado no carrossel
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-      // Verificar se estamos dentro de um input
       if (e.target.tagName === 'INPUT') return;
       
       const carousels = document.querySelectorAll('[id$="-content"]');
       let currentCarousel = null;
       
-      // Encontrar qual carrossel está mais próximo do foco
       for (const carousel of carousels) {
         if (carousel.querySelector('.carousel-btn')) {
           currentCarousel = carousel;
@@ -56,9 +51,7 @@ function initEventListeners() {
   });
 }
 
-// ==================== INIT ====================
 window.addEventListener('DOMContentLoaded', () => {
-  // Configurar intro ANTES de carregar dados
   const intro = document.getElementById('intro');
   const splashShown = sessionStorage.getItem('rocamSplashShown') === 'true';
   
@@ -66,7 +59,6 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log('intro elemento:', intro ? '✓ encontrado' : '✗ não encontrado');
   console.log('splashShown:', splashShown);
   
-  // Função para remover o intro
   const hideIntro = () => {
     if (intro && !intro.classList.contains('hidden')) {
       console.log('🎬 Removendo intro...');
@@ -89,7 +81,6 @@ window.addEventListener('DOMContentLoaded', () => {
       console.log('⏳ Primeira visita - exibindo splash por 3s');
       setTimeout(hideIntro, 3000);
 
-      // FALLBACK: Se ainda estiver visível após 6s, força remover
       setTimeout(() => {
         if (intro && !intro.classList.contains('hidden')) {
           console.log('⚠️ FALLBACK: Forçando remoção do intro após 6s');
@@ -99,13 +90,11 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  // Carregar dados do Firebase (agora sim, após intro configurado)
   console.log('📡 Iniciando carregamento do Firebase...');
   loadData();
   initRevealObserver();
   initEventListeners();
   
-  // Criar overlays com tratamento de erros
   try {
     const adminOverlay = document.createElement('div');
     adminOverlay.className = 'overlay';
@@ -145,7 +134,6 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.appendChild(membersOverlay);
     console.log('✓ Members overlay created successfully');
     
-    // Re-attach event listeners
     const adminTabs = document.querySelectorAll('#admin-overlay .admin-tab');
     if (adminTabs.length >= 6) {
       adminTabs[0].onclick = () => switchAdminTab('seizures');
@@ -170,7 +158,6 @@ window.addEventListener('DOMContentLoaded', () => {
     alert('Erro ao inicializar painéis administrativos. Verifique o console para mais detalhes.');
   }
   
-  // Adicionar listener de scroll com proteção
   if (!scrollListenerActive) {
     scrollListenerActive = true;
     const scrollHandler = () => {

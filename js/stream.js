@@ -1,5 +1,4 @@
-﻿// ==================== TWITCH STATUS ====================
-let statusCheckInterval = null;
+﻿let statusCheckInterval = null;
 
 async function checkTwitchStatus(username) {
   if (!username) return false;

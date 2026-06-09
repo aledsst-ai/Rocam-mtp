@@ -1,6 +1,3 @@
-# build.ps1 — Rebuilds index.html from section files
-# Run this after editing files in sections/ to update index.html
-
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sections = @(
     @{name='header'; file='header/header.html'},
@@ -28,7 +25,6 @@ foreach ($s in $sections) {
     }
 }
 
-# Read index.html and replace sections inside #app
 $indexPath = Join-Path $root "index.html"
 $index = [System.IO.File]::ReadAllText($indexPath, [System.Text.Encoding]::UTF8)
 

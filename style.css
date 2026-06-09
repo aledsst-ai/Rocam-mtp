@@ -60,7 +60,6 @@
       background-repeat: no-repeat;
     }
 
-    /* Modal para imagens */
     .modal {
       display: flex;
       align-items: center;
@@ -115,7 +114,6 @@
       color: #9146ff;
     }
 
-    /* Image modal (for member profile) */
     .img-modal {
       display: none;
       position: fixed;
@@ -337,7 +335,6 @@
       border-color: rgba(255,255,255,0.18);
     }
 
-    /* ========== MEMBER PROFILE PANEL ========== */
     .member-profile-backdrop {
       position: fixed;
       inset: 0;
@@ -905,7 +902,6 @@
       color: rgba(255, 255, 255, 0.8);
     }
 
-    /* ========== TWITCH LINK ========== */
     .member-twitch-link {
       display: flex;
       align-items: center;
@@ -959,7 +955,6 @@
     .section-title { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
     .section-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
     
-    /* Filtros de data */
     .filter-buttons {
       display: flex;
       gap: 8px;
@@ -1087,7 +1082,6 @@
     .stat-live .stat-label { color: var(--twitch-light); }
 
 
-    /* Members Grid */
     .rank-group {
       margin-bottom: 28px;
       position: relative;
@@ -1281,7 +1275,6 @@
       content: ' · ';
     }
 
-    /* Seção Membros Ao Vivo */
     .live-members-section {
       background: rgba(255, 255, 255, 0.02);
       backdrop-filter: blur(12px);
@@ -1311,7 +1304,6 @@
       justify-items: center;
     }
 
-    /* Card ao vivo com thumbnail */
     .live-card-thumbnail {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.12);
@@ -1474,14 +1466,12 @@
       line-height: 1;
     }
 
-    /* Cards Grid */
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
       gap: 20px;
     }
     
-    /* Vehicles Card */
     .vehicle-card {
       position: relative;
       min-height: 350px;
@@ -1541,7 +1531,6 @@
       text-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
-    /* Seizures Card */
     .seizure-card {
       position: relative;
       background: rgba(255, 255, 255, 0.02);
@@ -1692,7 +1681,6 @@
       text-decoration: none;
     }
 
-    /* Gallery Card */
     .gallery-card {
       position: relative;
       min-height: 520px;
@@ -1931,7 +1919,6 @@
       transform: scale(1.2);
     }
 
-    /* About - LOGO À ESQUERDA */
     #about { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 32px 0; }
     .about-grid { display: grid; grid-template-columns: 180px 1fr; gap: 24px; align-items: center; }
     @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; text-align: center; } }
@@ -1950,8 +1937,6 @@
       width: 100%;
     }
 
-    /* Admin Panel */
-    /* Password Dialog Modal */
     .password-dialog {
       position: fixed; inset: 0; background: rgba(0,0,0,0.9);
       z-index: 300; backdrop-filter: blur(8px);
@@ -2222,7 +2207,6 @@
     }
     .rank-actions button:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* FOOTER COM BOTÕES */
     footer {
       text-align: center;
       padding: 24px;

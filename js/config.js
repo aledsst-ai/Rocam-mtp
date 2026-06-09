@@ -1,5 +1,4 @@
-﻿// ==================== DATA ====================
-let members = [];
+﻿let members = [];
 let vehicles = [];
 let seizures = [];
 let gallery = [];
@@ -40,13 +39,11 @@ function normalizeArrayData(value) {
   return [];
 }
 
-// Carrossel: índices de paginação
 let galleryPage = 0;
 let seizuresPage = 0;
 let liveMembersPage = 0;
 const LIVE_MEMBERS_PER_PAGE = 2;
 
-// ==================== GLOBAL OBSERVER E ESTADO ====================
 let revealObserver = null;
 let dataListenerRegistered = false;
 let firebaseInitialSyncCompleted = false;
@@ -54,7 +51,6 @@ let scrollListenerActive = false;
 let streamStatusUpdateScheduled = false;
 
 function initRevealObserver() {
-  // Limpar observer anterior se existir
   if (revealObserver) {
     revealObserver.disconnect();
   }
@@ -73,7 +69,6 @@ function observeRevealElements() {
 
   if (!revealObserver) initRevealObserver();
   
-  // Selecionar TODOS os elementos que precisam animar
   const elements = document.querySelectorAll(
     '.member-card.reveal, .vehicle-card, .seizure-card, .gallery-card, .live-card-thumbnail, .reveal, .reveal-left, .reveal-right, .about-title, .section-title, .section-title-wrapper'
   );
@@ -81,7 +76,6 @@ function observeRevealElements() {
   elements.forEach(el => {
     revealObserver.observe(el);
     
-    // Verificar se o elemento já está visível e adicionar classe imediatamente
     const rect = el.getBoundingClientRect();
     const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
     if (isVisible) {
@@ -94,13 +88,11 @@ function loadData() {
   try {
     console.log('🔄 loadData() iniciado');
     
-    // Se já registramos o listener, não registra novamente
     if (dataListenerRegistered) {
       console.log('⏭️ Listener já registrado, ignorando...');
       return;
     }
     
-    // Primeiro, tentar carregar do localStorage (fallback)
     try {
       const localMembers = localStorage.getItem('rocam_members');
       if (localMembers) {
@@ -119,9 +111,7 @@ function loadData() {
       console.warn('⚠️ Erro ao carregar de localStorage:', e);
     }
     
-    // Depois, tentar carregar do Firebase
     try {
-      // Carregar dados compartilhados do Firebase (sem usuário específico)
       const db = firebase.database();
       const dataRef = db.ref('rocam-data');
       
@@ -208,7 +198,6 @@ function saveData() {
       lastUpdated: new Date().toISOString()
     };
     
-    // Sempre salvar em localStorage (fallback, funciona offline)
     try {
       localStorage.setItem('rocam_members', JSON.stringify(members));
       localStorage.setItem('rocam_vehicles', JSON.stringify(vehicles));
@@ -222,7 +211,6 @@ function saveData() {
       console.warn('⚠️ Erro ao salvar em localStorage:', e);
     }
     
-    // Tentar salvar em Firebase
     try {
       const db = firebase.database();
       const dataRef = db.ref('rocam-data');
@@ -244,7 +232,6 @@ function saveData() {
     console.error('❌ Erro em saveData:', e);
   }
 }
-// ==================== FIREBASE INITIALIZATION ====================
 const firebaseConfig = {
   apiKey: "AIzaSyBnwLlzDs363_5KBhH1iHNCHWZJa3aZGIg",
   authDomain: "rocam-55ccd.firebaseapp.com",
@@ -255,6 +242,5 @@ const firebaseConfig = {
   measurementId: "G-8FDS6ML6VK"
 };
 
-// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 console.log('✓ Firebase inicializado');

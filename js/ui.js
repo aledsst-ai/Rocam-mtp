@@ -1,5 +1,4 @@
-﻿// ==================== RENDER HIERARQUIA ====================
-function createHierarchyMemberCard(member, index) {
+﻿function createHierarchyMemberCard(member, index) {
   const memberName = (member.name || 'Sem nome').trim();
   const memberRank = (member.policeRank || 'Soldado').trim();
   const isActive = member.status === 'ativo';
@@ -171,7 +170,6 @@ function renderHierarchy() {
   observeRevealElements();
 }
 
-// ==================== RENDER MEMBROS AO VIVO ====================
 function renderLiveMembers() {
   const container = document.getElementById('live-members-content');
   const liveMembers = members.filter(m => (m.twitchLive === true));
@@ -244,7 +242,6 @@ function renderLiveMemberCard(m, idx) {
   `;
 }
 
-// ==================== CARROSSEL ====================
 function carouselPrevNext(type, direction) {
   if (type === 'gallery') {
     galleryPage = direction === 'prev' ? Math.max(0, galleryPage - 1) : galleryPage + 1;
@@ -271,7 +268,6 @@ function goToCarouselPage(type, page) {
   }
 }
 
-// ==================== RENDER COM CARROSSEL ====================
 function renderVehicles() {
   const sorted = [...vehicles].sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
   const container = document.getElementById('vehicles-content');
@@ -442,10 +438,8 @@ function updateStats() {
   const today = new Date().toDateString();
   const liveCount = members.filter(m => m.twitchLive === true).length;
   
-  // Apreensões de hoje
   const todayCount = seizures.filter(s => new Date(s.date).toDateString() === today).length;
   
-  // Apreensões da última semana (últimos 7 dias)
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
   const weekCount = seizures.filter(s => new Date(s.date) >= weekAgo).length;
@@ -498,8 +492,6 @@ function animateStatValue(id, value) {
   requestAnimationFrame(tick);
 }
 
-// Carrossel: mostrar 4 itens por página com navegação
-
 function renderAll() {
   renderHierarchy();
   renderLiveMembers();
@@ -509,7 +501,6 @@ function renderAll() {
   updateStats();
 }
 
-// ==================== MEMBER PROFILE PANEL ====================
 let currentMemberProfile = null;
 
 function openMemberProfile(memberName) {
@@ -565,27 +556,22 @@ function closeMemberProfile() {
     document.body.style.overflow = '';
     document.removeEventListener('keydown', handleProfileEscape);
     
-    // Re-renderizar apreensões com garantias múltiplas
     console.log(`📊 Seizures array tem ${seizures.length} itens`);
     console.log('📍 Tentando renderizar apreensões após fechar painel...');
     
-    // Primeira tentativa - imediata
     renderSeizures();
     console.log('✓ renderSeizures() chamada (imediata)');
     
-    // Segunda tentativa - após 100ms
     setTimeout(() => {
       renderSeizures();
       console.log('✓ renderSeizures() chamada (100ms)');
     }, 100);
     
-    // Terceira tentativa - após 300ms
     setTimeout(() => {
       renderSeizures();
       console.log('✓ renderSeizures() chamada (300ms)');
     }, 300);
     
-    // Quarta tentativa - após 500ms
     setTimeout(() => {
       const container = document.getElementById('seizures-content');
       if (container && container.innerHTML.trim() === '') {
@@ -598,7 +584,6 @@ function closeMemberProfile() {
     console.log('✓ Painel fechado');
   } catch (error) {
     console.error('❌ Erro ao fechar perfil:', error);
-    // Forçar renderização mesmo em caso de erro
     setTimeout(() => {
       renderSeizures();
       console.log('✓ renderSeizures() chamada (fallback de erro)');
@@ -730,9 +715,6 @@ function openImageModal(imageUrl) {
   }
 }
 
-// ==================== REVEAL ON SCROLL ====================
 function initRevealOnScroll() {
-  // Função substituída por initRevealObserver() e observeRevealElements()
-  // que reutilizam o observer global
   observeRevealElements();
 }
