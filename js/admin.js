@@ -49,30 +49,36 @@ function openMembersPanel() {
 }
 
 function toggleAdminMenu() {
-  const menu = document.getElementById('admin-options');
+  const sidebar = document.getElementById('admin-sidebar');
+  const backdrop = document.getElementById('admin-sidebar-backdrop');
   const toggle = document.getElementById('adminMenuToggle');
-  if (!menu || !toggle) return;
-  const show = !menu.classList.contains('show');
-  menu.classList.toggle('show', show);
+  if (!sidebar || !backdrop || !toggle) return;
+  const show = !sidebar.classList.contains('show');
+  sidebar.classList.toggle('show', show);
+  backdrop.classList.toggle('show', show);
   toggle.setAttribute('aria-expanded', String(show));
-  menu.setAttribute('aria-hidden', String(!show));
+  sidebar.setAttribute('aria-hidden', String(!show));
+  document.body.style.overflow = show ? 'hidden' : '';
 }
 
 function closeAdminMenu() {
-  const menu = document.getElementById('admin-options');
+  const sidebar = document.getElementById('admin-sidebar');
+  const backdrop = document.getElementById('admin-sidebar-backdrop');
   const toggle = document.getElementById('adminMenuToggle');
-  if (!menu || !toggle) return;
-  menu.classList.remove('show');
+  if (!sidebar || !backdrop || !toggle) return;
+  sidebar.classList.remove('show');
+  backdrop.classList.remove('show');
   toggle.setAttribute('aria-expanded', 'false');
-  menu.setAttribute('aria-hidden', 'true');
+  sidebar.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
 }
 
-document.addEventListener('click', function(event) {
-  const menu = document.getElementById('admin-options');
-  const toggle = document.getElementById('adminMenuToggle');
-  if (!menu || !toggle) return;
-  if (!menu.contains(event.target) && !toggle.contains(event.target)) {
-    closeAdminMenu();
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    const sidebar = document.getElementById('admin-sidebar');
+    if (sidebar && sidebar.classList.contains('show')) {
+      closeAdminMenu();
+    }
   }
 });
 
