@@ -246,18 +246,29 @@
       position: absolute;
       top: 30px;
       right: 40px;
-      color: #ffffff;
+      color: var(--text-secondary);
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
-      background: rgba(0,0,0,0.5);
+      background: none;
       padding: 10px 20px;
       border-radius: 5px;
+      transition: color 0.3s ease;
     }
-
-    .modal-close:hover {
-      color: #ccc;
+    .modal-close::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 0;
+      height: 1.5px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+      border-radius: 1px;
     }
+    .modal-close:hover { color: #ffffff; }
+    .modal-close:hover::after { width: 60%; }
 
     @media (max-width: 768px) {
       .gallery-grid {

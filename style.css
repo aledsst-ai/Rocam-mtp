@@ -105,16 +105,27 @@
       position: absolute;
       top: 20px;
       right: 35px;
-      color: #ffffff;
+      color: var(--text-secondary);
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
+      transition: color 0.3s ease;
       z-index: 1001;
     }
-    .modal-close:hover {
-      color: #ffffff;
+    .modal-close::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 0;
+      height: 1.5px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+      border-radius: 1px;
     }
+    .modal-close:hover { color: #ffffff; }
+    .modal-close:hover::after { width: 60%; }
 
     .img-modal {
       display: none;
@@ -143,15 +154,27 @@
       position: absolute;
       top: 20px;
       right: 35px;
-      color: #ffffff;
+      color: var(--text-secondary);
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
       z-index: 1001;
+      transition: color 0.3s ease;
     }
-    .img-modal-close:hover {
-      color: #ffffff;
+    .img-modal-close::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+      width: 0;
+      height: 1.5px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+      border-radius: 1px;
     }
+    .img-modal-close:hover { color: #ffffff; }
+    .img-modal-close:hover::after { width: 60%; }
 
     #intro {
       position: fixed; inset: 0; z-index: 9999;
