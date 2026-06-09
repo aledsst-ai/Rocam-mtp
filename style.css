@@ -1737,22 +1737,34 @@
       color: rgba(255,255,255,0.8);
       font-weight: 500;
     }
-    .seizure-footer a {
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
-      transition: all 0.25s ease;
-      font-size: 13px;
+    .seizure-footer-left {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-width: 0;
     }
-    .seizure-footer a:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: rgba(255, 255, 255, 0.25);
+    .seizure-bo-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-secondary);
       text-decoration: none;
+      position: relative;
+      transition: color 0.3s ease;
     }
+    .seizure-bo-link::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -2px;
+      width: 0;
+      height: 1.5px;
+      background: #ffffff;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+      border-radius: 1px;
+    }
+    .seizure-bo-link:hover { color: #ffffff; }
+    .seizure-bo-link:hover::after { width: 100%; }
 
     .gallery-card {
       position: relative;
