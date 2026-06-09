@@ -1847,14 +1847,14 @@
     }
     .seizures-arrow-left {
       position: absolute;
-      left: -24px;
+      left: -33px;
       top: 50%;
       transform: translateY(-50%) !important;
       z-index: 5;
     }
     .seizures-arrow-right {
       position: absolute;
-      right: -24px;
+      right: -33px;
       top: 50%;
       transform: translateY(-50%) !important;
       z-index: 5;
