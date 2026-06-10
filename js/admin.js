@@ -409,7 +409,7 @@ function renderSeizuresList() {
       thumbnails += '</div>';
     }
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div style="flex:1;min-width:0;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))} <span style="font-weight:400;color:var(--text-muted);text-transform:none;font-size:9px;">${new Date(s.date).toLocaleDateString('pt-BR')}</span>${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)}</div>${thumbnails}</div>
+      <div style="flex:1;min-width:0;"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))} - <span style="font-weight:400;color:var(--text-muted);text-transform:none;font-size:9px;">${new Date(s.date).toLocaleDateString('pt-BR')}</span>${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)}</div>${thumbnails}</div>
       ${actionBtn}
     </div>`;
   });
@@ -612,7 +612,7 @@ function renderSeizuresListMembers() {
       ? '<span style="font-size:8px;color:var(--success);font-weight:700;margin-left:6px;">✓ APROVADO</span>'
       : '<span style="font-size:8px;color:#ffa500;font-weight:700;margin-left:6px;">● PENDENTE</span>';
     html += `<div class="admin-list-item" style="font-size:10px;">
-      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))} <span style="font-weight:400;color:var(--text-muted);text-transform:none;font-size:9px;">${new Date(s.date).toLocaleDateString('pt-BR')}</span>${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(s.description.substring(0, 40))} - <span style="font-weight:400;color:var(--text-muted);text-transform:none;font-size:9px;">${new Date(s.date).toLocaleDateString('pt-BR')}</span>${statusBadge}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(memberText)}</div></div>
     </div>`;
   });
   html += '</div>';
