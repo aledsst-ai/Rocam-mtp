@@ -220,7 +220,7 @@
       white-space: nowrap;
     }
     .nav-brand img { width: 52px; height: 52px; border-radius: 8px; object-fit: contain; transition: transform 0.3s ease; }
-    .nav-brand img:hover { transform: scale(1.05); }
+    .nav-brand img:hover { transform: scale(1.10); }
     .nav-brand span { font-weight: 700; font-family: inherit; font-size: 1.24rem; letter-spacing: 0; color: var(--text); }
     .nav-links {
       display: flex;
