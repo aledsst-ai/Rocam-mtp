@@ -78,14 +78,13 @@
 
     .filter-row {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
       gap: 12px;
       flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .filter-row label {
-      color: #ffffff;
+      color: var(--text-muted);
       font-size: 0.95rem;
       font-weight: 600;
       display: flex;
@@ -102,12 +101,12 @@
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #ffffff;
       border-radius: 10px;
-      padding: 10px 36px 10px 12px;
+      padding: 6px 32px 6px 10px;
       font-size: 11px;
       font-weight: 500;
       font-family: inherit;
       transition: all 0.3s ease;
-      min-width: 220px;
+      min-width: 160px;
       position: relative;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M1.5 1.5l4.5 4.5 4.5-4.5'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
@@ -456,6 +455,21 @@
           </svg>
           <span>Voltar</span>
         </a>
+      </div>
+      <div class="filter-row">
+        <label for="member-filter">Filtrar por membro:
+          <select id="member-filter">
+            <option value="">Todos os membros</option>
+          </select>
+        </label>
+        <label for="date-filter">Período:
+          <select id="date-filter">
+            <option value="">Todos</option>
+            <option value="7">Últimos 7 dias</option>
+            <option value="15">Últimos 15 dias</option>
+            <option value="30">Últimos 30 dias</option>
+          </select>
+        </label>
       </div>
     </div>
   </nav>
