@@ -32,6 +32,7 @@
       background-position: center center;
       background-attachment: fixed;
       background-repeat: no-repeat;
+      padding-top: 100px;
     }
 
     .header {
@@ -51,6 +52,23 @@
       color: var(--text-muted);
       font-size: 1.1rem;
     }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(18,18,18,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      height: 72px; display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center; gap: 24px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; white-space: nowrap; }
+    .nav-brand img { width: 52px; height: 52px; border-radius: 8px; object-fit: contain; transition: transform 0.3s ease; }
+    .nav-brand img:hover { transform: scale(1.10); }
+    .nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
 
     .container {
       max-width: 1400px;
