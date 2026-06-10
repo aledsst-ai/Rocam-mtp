@@ -85,7 +85,7 @@
     }
 
     .filter-row label {
-      color: var(--text-muted);
+      color: #ffffff;
       font-size: 0.95rem;
       font-weight: 600;
       display: flex;
@@ -601,13 +601,13 @@
 
       if (totalPages > 1) {
         html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 0;flex-wrap:wrap;font-family:inherit;font-weight:700;font-size:9px;">';
-        html += '<button onclick="goToSeizurePage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ ANTERIOR</button>';
+        html += '<button onclick="goToSeizurePage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ Anterior</button>';
         html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
         for (var i = 1; i <= totalPages; i++) {
           html += '<button onclick="goToSeizurePage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === page ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:inherit;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
         }
         html += '</div>';
-        html += '<button onclick="goToSeizurePage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>PRÓXIMA ❯</button>';
+        html += '<button onclick="goToSeizurePage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:9px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>Próxima ❯</button>';
         html += '</div>';
       }
 
