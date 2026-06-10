@@ -358,15 +358,15 @@ function renderAdminSeizures() {
   }, {});
   Object.keys(groups).forEach(r => { if (!rankOrder[r]) rankOrder[r] = Object.keys(rankOrder).length + 1; });
   const sortedRanks = Object.keys(groups).sort((a, b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
-  const memberCheckboxes = sortedRanks.map(rank => {
-    const items = groups[rank].map(m => `<label style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--text);cursor:pointer;padding:2px 5px;background:rgba(255,255,255,0.05);border-radius:4px;"><input type="checkbox" class="member-checkbox" value="${escapeHtml(m.name)}" style="margin:0;width:10px;height:10px;">${escapeHtml(m.name)}</label>`).join('');
+  const memberBadges = sortedRanks.map(rank => {
+    const items = groups[rank].map(m => `<span class="member-badge" data-name="${escapeHtml(m.name)}">${escapeHtml(m.name)}</span>`).join('');
     return `<div style="margin-bottom:6px;"><div style="font-size:0.6rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;text-align:center;">${escapeHtml(rank)}</div><div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">${items}</div></div>`;
   }).join('');
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
       <div class="form-group"><label>QRU *</label><select id="new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
-      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
+      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);" onclick="toggleMemberBadge(event)">${memberBadges}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="new-simg" placeholder="https://..." required></div>
       <div class="form-group"><label>BO URL *</label><input id="new-bo" placeholder="https://..." required></div>
@@ -574,15 +574,15 @@ function renderMembersSeizures() {
   }, {});
   Object.keys(groups).forEach(r => { if (!rankOrder[r]) rankOrder[r] = Object.keys(rankOrder).length + 1; });
   const sortedRanks = Object.keys(groups).sort((a, b) => (rankOrder[a] || 99) - (rankOrder[b] || 99));
-  const memberCheckboxes = sortedRanks.map(rank => {
-    const items = groups[rank].map(m => `<label style="display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--text);cursor:pointer;padding:2px 5px;background:rgba(255,255,255,0.05);border-radius:4px;"><input type="checkbox" class="m-member-checkbox" value="${escapeHtml(m.name)}" style="margin:0;width:10px;height:10px;">${escapeHtml(m.name)}</label>`).join('');
+  const memberBadges = sortedRanks.map(rank => {
+    const items = groups[rank].map(m => `<span class="member-badge" data-name="${escapeHtml(m.name)}">${escapeHtml(m.name)}</span>`).join('');
     return `<div style="margin-bottom:6px;"><div style="font-size:0.6rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;text-align:center;">${escapeHtml(rank)}</div><div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;">${items}</div></div>`;
   }).join('');
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
       <div class="form-group"><label>QRU *</label><select id="m-new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="m-new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
-      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);">${memberCheckboxes}</div></div>
+      <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);" onclick="toggleMemberBadge(event)">${memberBadges}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="m-new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="m-new-simg" placeholder="https://..." required></div>
       <div class="form-group"><label>BO URL *</label><input id="m-new-bo" placeholder="https://..." required></div>
@@ -632,8 +632,8 @@ function addSeizureMembers() {
   let desc = document.getElementById('m-new-desc').value.trim();
   const customDesc = document.getElementById('m-new-desc-custom').value.trim();
   if (customDesc) desc = customDesc;
-  const checkboxes = document.querySelectorAll('#m-new-members-container .m-member-checkbox:checked');
-  const members = Array.from(checkboxes).map(cb => cb.value);
+  const badges = document.querySelectorAll('#m-new-members-container .member-badge--selected');
+  const members = Array.from(badges).map(b => b.getAttribute('data-name'));
   const location = document.getElementById('m-new-location').value.trim();
   const imageUrl = document.getElementById('m-new-simg').value.trim();
   const boImageUrl = document.getElementById('m-new-bo').value.trim();
@@ -766,8 +766,8 @@ function addSeizure() {
   let desc = document.getElementById('new-desc').value.trim();
   const customDesc = document.getElementById('new-desc-custom').value.trim();
   if (customDesc) desc = customDesc;
-  const checkboxes = document.querySelectorAll('#new-members-container .member-checkbox:checked');
-  let members = Array.from(checkboxes).map(cb => cb.value);
+  const badges = document.querySelectorAll('#new-members-container .member-badge--selected');
+  let members = Array.from(badges).map(b => b.getAttribute('data-name'));
   const location = document.getElementById('new-location').value.trim();
   const imageUrl = document.getElementById('new-simg').value.trim();
   const boImageUrl = document.getElementById('new-bo').value.trim();
@@ -869,6 +869,12 @@ function notifyPasswordChange(type, newPwd) {
     time: now,
     new_password: newPwd
   }).then(function(r) { console.log('EmailJS ok:', r.status); }, function(e) { console.error('EmailJS error:', e); });
+}
+
+function toggleMemberBadge(e) {
+  const badge = e.target.closest('.member-badge');
+  if (!badge) return;
+  badge.classList.toggle('member-badge--selected');
 }
 
 function escapeHtml(str) {
