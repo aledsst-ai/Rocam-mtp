@@ -407,7 +407,7 @@ function renderSeizures() {
                   <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
                   ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
                 </div>
-                ${item.boImageUrl ? `<span class="seizure-bo-link" onclick="event.stopPropagation();openModal('${escapeHtml(item.boImageUrl)}')" title="Visualizar boletim" aria-label="Visualizar boletim"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;cursor:pointer;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="12" y2="18"/></svg></span>` : ''}
+                ${item.boImageUrl ? `<span class="seizure-bo-link" onclick="event.stopPropagation();openModal('${escapeHtml(item.boImageUrl)}')" title="Visualizar boletim" aria-label="Visualizar boletim"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px;cursor:pointer;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="12" y2="18"/></svg></span>` : ''}
               </div>
             </div>
           </div>
