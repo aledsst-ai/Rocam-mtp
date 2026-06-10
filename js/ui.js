@@ -361,7 +361,7 @@ function renderSeizures() {
     if (!container) { return; }
     
     const approved = seizures.filter(s => s.approved !== false);
-    const sorted = [...approved].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
+    const sorted = [...approved].sort((a,b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime())).slice(0, 9);
     
     if (!sorted.length) {
       container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
@@ -624,7 +624,7 @@ function renderMemberProfile(member) {
       seizuresHtml = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.85rem;">Nenhuma apreensão cadastrada</div>';
     } else {
       const sortedMemberSeizures = [...memberSeizures]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .sort((a, b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime()))
         .slice(0, 10);
       seizuresHtml = sortedMemberSeizures.map((seizure, idx) => {
         try {

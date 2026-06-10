@@ -528,7 +528,7 @@
         return;
       }
 
-      const sorted = [...filteredSeizures].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = [...filteredSeizures].sort((a, b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime()));
       var totalPages = Math.ceil(sorted.length / SEIZURES_PER_PAGE);
       if (page < 1) page = 1;
       if (page > totalPages) page = totalPages;

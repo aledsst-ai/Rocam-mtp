@@ -796,6 +796,7 @@ function approveSeizure(id) {
   const s = seizures.find(s => s.id === id);
   if (!s) return;
   s.approved = true;
+  s.approvedAt = Date.now();
   saveData();
   renderAll();
   renderAdminSeizures();
