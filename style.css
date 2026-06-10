@@ -1442,7 +1442,6 @@
     }
     .live-card-thumbnail:hover .live-card-overlay {
       background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(0,0,0,0.5) 55%, rgba(0,0,0,0.85) 80%, rgba(0,0,0,0.95) 100%);
-      opacity: 0.85;
     }
     
     .live-card-content {
