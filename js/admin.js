@@ -544,7 +544,7 @@ function renderAdminSettings() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DO ADMIN</h3>
-      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Autenticado como: <strong style="color:#fff;">admin@rocam.app</strong></p>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Autenticado como <strong style="color:#fff;">Administrador</strong></p>
       <div class="form-group"><label>SENHA ATUAL</label><input type="password" id="admin-old-pwd" placeholder="Senha atual"></div>
       <div class="form-group"><label>NOVA SENHA</label><input type="password" id="admin-new-pwd" placeholder="Nova senha"></div>
       <div class="form-group"><label>CONFIRMAR NOVA SENHA</label><input type="password" id="admin-conf-pwd" placeholder="Confirmar"></div>
@@ -552,8 +552,8 @@ function renderAdminSettings() {
     </div>
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DOS MEMBROS</h3>
-      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Define a nova senha do painel de membros (<strong style="color:#fff;">membros@rocam.app</strong>)</p>
-      <div class="form-group"><label>SENHA ATUAL DOS MEMBROS *</label><input type="password" id="members-current-pwd" placeholder="Senha atual do membros@rocam.app"></div>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Define a nova senha do painel de membros</p>
+      <div class="form-group"><label>SENHA ATUAL DOS MEMBROS *</label><input type="password" id="members-current-pwd" placeholder="Senha atual do painel"></div>
       <div class="form-group"><label>NOVA SENHA MEMBROS *</label><input type="password" id="members-new-pwd" placeholder="Nova senha"></div>
       <div class="form-group"><label>CONFIRMAR NOVA SENHA *</label><input type="password" id="members-conf-pwd" placeholder="Confirmar"></div>
       <div class="form-group"><label>SUA SENHA ADMIN *</label><input type="password" id="members-admin-pwd" placeholder="Sua senha de admin para reautenticar"></div>
