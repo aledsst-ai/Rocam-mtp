@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "rocam-data": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email.matches(/.*@rocam\\.app$/)",
+      ".indexOn": ["approvedAt", "date"]
+    }
+  }
+}

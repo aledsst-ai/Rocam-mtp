@@ -14,26 +14,32 @@ function openAdminPanel() {
 
 function submitAdminPassword() {
   const pwd = document.getElementById('adminPasswordInput').value;
-  if (adminPassword === null) {
-    alert('A senha de administrador ainda não foi carregada. Aguarde e tente novamente.');
-    return;
-  }
-  if (pwd === adminPassword) {
-    const adminOverlay = document.getElementById('admin-overlay');
-    if (!adminOverlay) {
-      console.error('ERROR: admin-overlay element not found in DOM');
-      alert('Erro: Painel não foi inicializado. Por favor, recarregue a página.');
-      return;
-    }
-    adminOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    switchAdminTab('seizures');
-    closePasswordDialog('admin');
-  } else if (pwd) {
-    alert("Senha incorreta!");
-    document.getElementById('adminPasswordInput').value = '';
-    document.getElementById('adminPasswordInput').focus();
-  }
+  if (!pwd) return;
+  const btn = document.querySelector('#adminPasswordDialog .pwd-btn-confirm');
+  btn.disabled = true;
+  btn.textContent = 'ENTRANDO...';
+  firebase.auth().signInWithEmailAndPassword('admin@rocam.app', pwd)
+    .then(() => {
+      currentAuthUser = 'admin';
+      const adminOverlay = document.getElementById('admin-overlay');
+      if (!adminOverlay) {
+        console.error('ERROR: admin-overlay element not found in DOM');
+        return;
+      }
+      adminOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      switchAdminTab('seizures');
+      closePasswordDialog('admin');
+    })
+    .catch(error => {
+      alert('Erro ao entrar: ' + (error.message || 'Senha incorreta'));
+      document.getElementById('adminPasswordInput').value = '';
+      document.getElementById('adminPasswordInput').focus();
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'ENTRAR';
+    });
 }
 
 function openMembersPanel() {
@@ -78,26 +84,32 @@ document.addEventListener('click', function(event) {
 
 function submitMembersPassword() {
   const pwd = document.getElementById('membersPasswordInput').value;
-  if (membersPassword === null) {
-    alert('A senha de acesso de membros ainda não foi carregada. Aguarde e tente novamente.');
-    return;
-  }
-  if (pwd === membersPassword) {
-    const membersOverlay = document.getElementById('members-overlay');
-    if (!membersOverlay) {
-      console.error('ERROR: members-overlay element not found in DOM');
-      alert('Erro: Painel não foi inicializado. Por favor, recarregue a página.');
-      return;
-    }
-    membersOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    switchMembersTab('seizures');
-    closePasswordDialog('members');
-  } else if (pwd) {
-    alert("Senha incorreta!");
-    document.getElementById('membersPasswordInput').value = '';
-    document.getElementById('membersPasswordInput').focus();
-  }
+  if (!pwd) return;
+  const btn = document.querySelector('#membersPasswordDialog .pwd-btn-confirm');
+  btn.disabled = true;
+  btn.textContent = 'ENTRANDO...';
+  firebase.auth().signInWithEmailAndPassword('membros@rocam.app', pwd)
+    .then(() => {
+      currentAuthUser = 'members';
+      const membersOverlay = document.getElementById('members-overlay');
+      if (!membersOverlay) {
+        console.error('ERROR: members-overlay element not found in DOM');
+        return;
+      }
+      membersOverlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      switchMembersTab('seizures');
+      closePasswordDialog('members');
+    })
+    .catch(error => {
+      alert('Erro ao entrar: ' + (error.message || 'Senha incorreta'));
+      document.getElementById('membersPasswordInput').value = '';
+      document.getElementById('membersPasswordInput').focus();
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'ENTRAR';
+    });
 }
 
 function closePasswordDialog(type) {
@@ -106,12 +118,16 @@ function closePasswordDialog(type) {
     if (adminPasswordDialog) {
       adminPasswordDialog.classList.remove('show');
       document.getElementById('adminPasswordInput').value = '';
+      const err = document.getElementById('adminAuthError');
+      if (err) err.style.display = 'none';
     }
   } else if (type === 'members') {
     const membersPasswordDialog = document.getElementById('membersPasswordDialog');
     if (membersPasswordDialog) {
       membersPasswordDialog.classList.remove('show');
       document.getElementById('membersPasswordInput').value = '';
+      const err = document.getElementById('membersAuthError');
+      if (err) err.style.display = 'none';
     }
   }
 }
@@ -134,6 +150,10 @@ function closeAdminPanel() {
     adminOverlay.classList.remove('open');
     document.body.style.overflow = '';
   }
+  if (currentAuthUser === 'admin') {
+    firebase.auth().signOut();
+    currentAuthUser = null;
+  }
 }
 
 function closeMembersPanel() {
@@ -141,6 +161,10 @@ function closeMembersPanel() {
   if (membersOverlay) {
     membersOverlay.classList.remove('open');
     document.body.style.overflow = '';
+  }
+  if (currentAuthUser === 'members') {
+    firebase.auth().signOut();
+    currentAuthUser = null;
   }
 }
 
@@ -520,6 +544,7 @@ function renderAdminSettings() {
   body.innerHTML = `
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DO ADMIN</h3>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Autenticado como: <strong style="color:#fff;">admin@rocam.app</strong></p>
       <div class="form-group"><label>SENHA ATUAL</label><input type="password" id="admin-old-pwd" placeholder="Senha atual"></div>
       <div class="form-group"><label>NOVA SENHA</label><input type="password" id="admin-new-pwd" placeholder="Nova senha"></div>
       <div class="form-group"><label>CONFIRMAR NOVA SENHA</label><input type="password" id="admin-conf-pwd" placeholder="Confirmar"></div>
@@ -527,10 +552,15 @@ function renderAdminSettings() {
     </div>
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ALTERAR SENHA DOS MEMBROS</h3>
-      <div class="form-group"><label>SENHA ATUAL DO ADMIN</label><input type="password" id="members-old-pwd" placeholder="Senha atual do admin"></div>
-      <div class="form-group"><label>NOVA SENHA MEMBROS</label><input type="password" id="members-new-pwd" placeholder="Nova senha para membros"></div>
-      <div class="form-group"><label>CONFIRMAR NOVA SENHA</label><input type="password" id="members-conf-pwd" placeholder="Confirmar"></div>
-      <button class="btn btn-primary" onclick="changeMembersPassword()">ALTERAR SENHA MEMBROS</button>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Define a nova senha do painel de membros (<strong style="color:#fff;">membros@rocam.app</strong>)</p>
+      <div class="form-group"><label>SENHA ATUAL DOS MEMBROS *</label><input type="password" id="members-current-pwd" placeholder="Senha atual do membros@rocam.app"></div>
+      <div class="form-group"><label>NOVA SENHA MEMBROS *</label><input type="password" id="members-new-pwd" placeholder="Nova senha"></div>
+      <div class="form-group"><label>CONFIRMAR NOVA SENHA *</label><input type="password" id="members-conf-pwd" placeholder="Confirmar"></div>
+      <div class="form-group"><label>SUA SENHA ADMIN *</label><input type="password" id="members-admin-pwd" placeholder="Sua senha de admin para reautenticar"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary" onclick="changeMembersPassword()">ALTERAR SENHA</button>
+        <button class="btn" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;" onclick="notifyMembersPasswordChanged()">NOTIFICAR ALTERAÇÃO</button>
+      </div>
     </div>
   `;
 }
@@ -539,28 +569,69 @@ function changeAdminPassword() {
   const oldPwd = document.getElementById('admin-old-pwd').value;
   const newPwd = document.getElementById('admin-new-pwd').value;
   const confPwd = document.getElementById('admin-conf-pwd').value;
-  if (oldPwd !== adminPassword) { alert("Senha atual incorreta!"); return; }
   if (!newPwd) { alert("Nova senha não pode ser vazia!"); return; }
   if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
-  adminPassword = newPwd;
-  saveData();
-  notifyPasswordChange('ADMIN', newPwd);
-  alert("Senha do ADMIN alterada com sucesso!");
-  renderAdminSettings();
+  const user = firebase.auth().currentUser;
+  if (!user) { alert("Você precisa estar autenticado."); return; }
+  const credential = firebase.auth.EmailAuthProvider.credential('admin@rocam.app', oldPwd);
+  user.reauthenticateWithCredential(credential).then(() => {
+    user.updatePassword(newPwd).then(() => {
+      notifyPasswordChange('ADMIN', newPwd);
+      alert("Senha do ADMIN alterada com sucesso!");
+      renderAdminSettings();
+    }).catch(err => {
+      alert("Erro ao alterar senha: " + err.message);
+    });
+  }).catch(() => {
+    alert("Senha atual incorreta!");
+  });
 }
 
 function changeMembersPassword() {
-  const adminOldPwd = document.getElementById('members-old-pwd').value;
+  const currentPwd = document.getElementById('members-current-pwd').value;
   const newPwd = document.getElementById('members-new-pwd').value;
   const confPwd = document.getElementById('members-conf-pwd').value;
-  if (adminOldPwd !== adminPassword) { alert("Senha do ADMIN incorreta!"); return; }
+  const adminPwd = document.getElementById('members-admin-pwd').value;
+  if (!adminPwd) { alert("Informe sua senha de administrador!"); return; }
+  if (!currentPwd) { alert("Informe a senha ATUAL dos membros!"); return; }
   if (!newPwd) { alert("Nova senha não pode ser vazia!"); return; }
   if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
-  membersPassword = newPwd;
-  saveData();
-  notifyPasswordChange('MEMBROS', newPwd);
-  alert("Senha do painel MEMBROS alterada com sucesso!");
-  renderAdminSettings();
+  if (newPwd.length < 6) { alert("A senha deve ter pelo menos 6 caracteres!"); return; }
+  const btn = document.querySelector('#admin-body .form-card:nth-child(2) .btn-primary');
+  btn.disabled = true;
+  btn.textContent = 'ALTERANDO...';
+  firebase.auth().signInWithEmailAndPassword('membros@rocam.app', currentPwd)
+    .then(membersCred => membersCred.user.updatePassword(newPwd))
+    .then(() => firebase.auth().signOut())
+    .then(() => firebase.auth().signInWithEmailAndPassword('admin@rocam.app', adminPwd))
+    .then(() => {
+      currentAuthUser = 'admin';
+      notifyPasswordChange('MEMBROS', newPwd);
+      alert('Senha dos membros alterada com sucesso!');
+      document.getElementById('members-current-pwd').value = '';
+      document.getElementById('members-new-pwd').value = '';
+      document.getElementById('members-conf-pwd').value = '';
+      document.getElementById('members-admin-pwd').value = '';
+      renderAdminSettings();
+    })
+    .catch(error => {
+      const code = error.code || '';
+      if (code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-credential') {
+        alert('Senha atual dos membros ou senha do admin incorreta.');
+      } else {
+        alert('Erro: ' + (error.message || 'Erro desconhecido'));
+      }
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'ALTERAR SENHA';
+    });
+}
+
+function notifyMembersPasswordChanged() {
+  if (!confirm("Confirmar que a senha do painel de membros foi alterada? Um email de notificação será enviado.")) return;
+  notifyPasswordChange('MEMBROS', 'ALTERADA MANUALMENTE NO FIREBASE CONSOLE');
+  alert("Notificação enviada!");
 }
 
 function renderMembersSeizures() {
@@ -876,17 +947,5 @@ function toggleMemberBadge(e) {
   const badge = e.target.closest('.member-badge');
   if (!badge) return;
   badge.classList.toggle('member-badge--selected');
-}
-
-function escapeHtml(str) {
-  if (str === null || str === undefined) return '';
-  return String(str).replace(/[&<>"']/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    if (m === '"') return '&quot;';
-    if (m === "'") return '&#39;';
-    return m;
-  });
 }
 

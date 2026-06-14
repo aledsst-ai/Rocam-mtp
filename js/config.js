@@ -2,9 +2,8 @@
 let vehicles = [];
 let seizures = [];
 let gallery = [];
-let adminPassword = null;
-let membersPassword = null;
 let rankOrder = {};
+let currentAuthUser = null;
 let adminSeizurePage = 1;
 let membersSeizurePage = 1;
 const ADMIN_SEIZURES_PER_PAGE = 8;
@@ -102,8 +101,6 @@ function loadData() {
         gallery = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
         const savedRankOrder = localStorage.getItem('rocam_rankOrder');
         rankOrder = savedRankOrder ? JSON.parse(savedRankOrder) : {};
-        adminPassword = localStorage.getItem('rocam_admin_password');
-        membersPassword = localStorage.getItem('rocam_members_password');
         localStorage.setItem('rocam_members', JSON.stringify(members));
         console.log('💾 Dados carregados de localStorage e normalizados');
       }
@@ -140,8 +137,6 @@ function loadData() {
           seizures = normalizeArrayData(data.seizures);
           gallery = normalizeArrayData(data.gallery);
           rankOrder = data.rankOrder || {};
-          if (typeof data.adminPassword === 'string') adminPassword = data.adminPassword;
-          if (typeof data.membersPassword === 'string') membersPassword = data.membersPassword;
           console.log('✓ Dados carregados com sucesso do Firebase', { 
             members: members.length,
             vehicles: vehicles.length,
@@ -187,14 +182,13 @@ function saveData() {
     
     const sanitizedMembers = sanitizeMembersData(members);
     members = sanitizedMembers;
+    
     const dataToSave = {
       members: sanitizedMembers,
       vehicles: vehicles,
       seizures: seizures,
       gallery: gallery,
       rankOrder: rankOrder,
-      adminPassword: adminPassword,
-      membersPassword: membersPassword,
       lastUpdated: new Date().toISOString()
     };
     
@@ -204,8 +198,6 @@ function saveData() {
       localStorage.setItem('rocam_seizures', JSON.stringify(seizures));
       localStorage.setItem('rocam_gallery', JSON.stringify(gallery));
       localStorage.setItem('rocam_rankOrder', JSON.stringify(rankOrder));
-      localStorage.setItem('rocam_admin_password', adminPassword);
-      localStorage.setItem('rocam_members_password', membersPassword);
       console.log('✓ Dados salvos em localStorage');
     } catch(e) {
       console.warn('⚠️ Erro ao salvar em localStorage:', e);

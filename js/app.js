@@ -1,4 +1,34 @@
-﻿function initEventListeners() {
+﻿function toggleNavMenu() {
+  const nav = document.getElementById('navLinks');
+  const toggle = document.getElementById('navToggle');
+  if (!nav || !toggle) return;
+  const open = nav.classList.toggle('nav-open');
+  toggle.setAttribute('aria-expanded', String(open));
+}
+
+document.addEventListener('click', function(e) {
+  const nav = document.getElementById('navLinks');
+  const toggle = document.getElementById('navToggle');
+  if (!nav || !toggle) return;
+  if (!nav.contains(e.target) && !toggle.contains(e.target) && nav.classList.contains('nav-open')) {
+    nav.classList.remove('nav-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+});
+
+document.addEventListener('click', function(e) {
+  const link = e.target.closest('.nav-links a');
+  if (link) {
+    const nav = document.getElementById('navLinks');
+    const toggle = document.getElementById('navToggle');
+    if (nav && toggle) {
+      nav.classList.remove('nav-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  }
+});
+
+function initEventListeners() {
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.carousel-btn[data-carousel-type][data-carousel-direction]');
     if (btn && !btn.disabled) {
@@ -162,6 +192,12 @@ window.addEventListener('DOMContentLoaded', () => {
     alert('Erro ao inicializar painéis administrativos. Verifique o console para mais detalhes.');
   }
   
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user && currentAuthUser) {
+      currentAuthUser = null;
+    }
+  });
+
   if (!scrollListenerActive) {
     scrollListenerActive = true;
     const scrollHandler = () => {

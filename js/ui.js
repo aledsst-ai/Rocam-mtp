@@ -214,7 +214,7 @@ function renderLiveMembers() {
 
 function renderLiveMemberCard(m, idx) {
   const avatarHtml = m.avatarUrl
-    ? `<img class="live-card-avatar" src="${escapeHtml(m.avatarUrl)}" onerror="this.src='https://placehold.co/48x48/1a1a1a/555?text=%F0%9F%91%A4'">`
+    ? `      <img class="live-card-avatar" src="${escapeHtml(m.avatarUrl)}" loading="lazy" onerror="this.src='https://placehold.co/48x48/1a1a1a/555?text=%F0%9F%91%A4'">`
     : `<div class="member-avatar-placeholder">👤</div>`;
 
   const streamInfo = getLiveStreamInfo(m) || {};
@@ -278,7 +278,7 @@ function renderVehicles() {
   
   container.innerHTML = '<div class="simple-grid">' + sorted.map((item, idx) => `
     <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
-      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img placeholder">🚗</div>'}
+      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img placeholder">🚗</div>'}
       <div class="vehicle-card-overlay"></div>
       <div class="vehicle-card-content">
         <div class="vehicle-name">${escapeHtml(item.name)}</div>
@@ -322,7 +322,7 @@ function renderGallery() {
     const title = escapeHtml(item.title || 'Sem título');
     const dateText = item.date ? `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : '';
     const imgHtml = imageUrl
-      ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
+      ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
       : '<div class="gallery-img placeholder">📸</div>';
 
     return `
