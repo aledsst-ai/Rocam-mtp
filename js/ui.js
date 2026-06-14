@@ -543,55 +543,20 @@ function openMemberProfile(memberName) {
 
 function closeMemberProfile() {
   try {
-    console.log('🔴 Fechando painel do membro...');
     const panel = document.getElementById('member-profile-panel');
     const backdrop = document.getElementById('member-profile-backdrop');
     
-    if (panel) {
-      panel.classList.remove('active');
-      console.log('✓ Classe active removida do painel');
-    }
-    if (backdrop) {
-      backdrop.classList.remove('active');
-      console.log('✓ Classe active removida do backdrop');
-    }
+    if (panel) panel.classList.remove('active');
+    if (backdrop) backdrop.classList.remove('active');
     
     currentMemberProfile = null;
     document.body.style.overflow = '';
     document.removeEventListener('keydown', handleProfileEscape);
     
-    console.log(`📊 Seizures array tem ${seizures.length} itens`);
-    console.log('📍 Tentando renderizar apreensões após fechar painel...');
-    
-    renderSeizures();
-    console.log('✓ renderSeizures() chamada (imediata)');
-    
-    setTimeout(() => {
-      renderSeizures();
-      console.log('✓ renderSeizures() chamada (100ms)');
-    }, 100);
-    
-    setTimeout(() => {
-      renderSeizures();
-      console.log('✓ renderSeizures() chamada (300ms)');
-    }, 300);
-    
-    setTimeout(() => {
-      const container = document.getElementById('seizures-content');
-      if (container && container.innerHTML.trim() === '') {
-        console.warn('⚠️ Container vazio! Renderizando novamente...');
-        renderSeizures();
-        console.log('✓ renderSeizures() chamada (500ms - fallback)');
-      }
-    }, 500);
-    
-    console.log('✓ Painel fechado');
+    setTimeout(() => renderSeizures(), 300);
   } catch (error) {
     console.error('❌ Erro ao fechar perfil:', error);
-    setTimeout(() => {
-      renderSeizures();
-      console.log('✓ renderSeizures() chamada (fallback de erro)');
-    }, 300);
+    setTimeout(() => renderSeizures(), 300);
   }
 }
 
@@ -699,24 +664,8 @@ function renderMemberProfile(member) {
 }
 
 function openImageModal(imageUrl) {
-  try {
-    if (!imageUrl) {
-      console.warn('⚠️ URL de imagem vazia');
-      return;
-    }
-    const modal = document.getElementById('imgModal');
-    const modalImg = document.getElementById('img01');
-    
-    if (modal && modalImg) {
-      modal.style.display = 'block';
-      modalImg.src = imageUrl;
-      console.log('📸 Abrindo imagem');
-    } else {
-      console.error('❌ Elementos do modal não encontrados');
-    }
-  } catch (error) {
-    console.error('❌ Erro ao abrir imagem:', error);
-  }
+  if (!imageUrl) return;
+  openModal(imageUrl);
 }
 
 function initRevealOnScroll() {

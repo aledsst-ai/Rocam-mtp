@@ -56,9 +56,9 @@
     <div class="gallery-page-grid" id="gallery-complete"></div>
   </div>
 
-  <div id="modal" class="modal">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <img class="modal-content" id="modal-image">
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImage">
   </div>
 
   <script>
@@ -156,30 +156,7 @@
         });
     }
 
-    function openModal(src) {
-      const modal = document.getElementById('modal');
-      const modalImage = document.getElementById('modal-image');
-      modalImage.style.opacity = '0';
-      modalImage.src = src;
-      modal.classList.add('show');
-      modalImage.onload = () => {
-        modalImage.style.opacity = '1';
-      };
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('modal');
-      modal.classList.remove('show');
-    }
-
-    document.getElementById('modal').addEventListener('click', function(event) {
-      if (event.target === this) closeModal();
-    });
-
     window.addEventListener('load', loadGalleryData);
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') closeModal();
-    });
 
     function observeRevealElements() {
       const revealObserver = new IntersectionObserver(entries => {

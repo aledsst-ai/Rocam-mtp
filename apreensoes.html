@@ -71,57 +71,14 @@
     <div class="seizures-page-grid" id="seizures-complete"></div>
   </div>
 
-  <div id="modal" class="modal">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <img class="modal-content" id="modal-image">
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImage">
   </div>
 
   <script>
     var seizurePage = 1;
     var SEIZURES_PER_PAGE = 6;
-
-    function getMembersList(member) {
-      if (!member) return [];
-      if (Array.isArray(member)) return member;
-      return [member];
-    }
-
-    function makeMembersBadge(member) {
-      const list = getMembersList(member);
-      if (!list.length) return '';
-      var text = list.length <= 2 ? list.join(', ') : list.slice(0, 2).join(', ') + ' +' + (list.length - 2);
-      var json = JSON.stringify(list).replace(/"/g, '&quot;');
-      return '<span class="badge" style="cursor:pointer;" onclick="event.stopPropagation(); showMembers(this, event)" data-members=\'' + json + '\'><span class="emoji-icon">👤</span>' + escapeHtml(text) + '</span>';
-    }
-
-    function showMembers(el, e) {
-      var members = JSON.parse(el.dataset.members);
-      closeMembersTooltip();
-      var tooltip = document.createElement('div');
-      tooltip.id = 'members-tooltip';
-      tooltip.style.cssText = 'position:fixed;z-index:9999;background:rgba(10,10,10,0.95);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:8px 12px;font-size:0.78rem;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,0.4);pointer-events:none;white-space:nowrap;';
-      tooltip.textContent = members.join(', ');
-      var x = (e ? e.clientX : window.innerWidth / 2) + 12;
-      var y = (e ? e.clientY : window.innerHeight / 2) + 8;
-      if (x + 200 > window.innerWidth) x = window.innerWidth - 210;
-      if (y + 40 > window.innerHeight) y = window.innerHeight - 50;
-      tooltip.style.left = x + 'px';
-      tooltip.style.top = y + 'px';
-      document.body.appendChild(tooltip);
-      setTimeout(function() { document.addEventListener('click', closeMembersTooltip); }, 0);
-      document.addEventListener('keydown', closeMembersTooltipEsc);
-    }
-
-    function closeMembersTooltipEsc(e) {
-      if (e.key === 'Escape') closeMembersTooltip();
-    }
-
-    function closeMembersTooltip() {
-      var t = document.getElementById('members-tooltip');
-      if (t) { t.remove(); }
-      document.removeEventListener('click', closeMembersTooltip);
-      document.removeEventListener('keydown', closeMembersTooltipEsc);
-    }
 
     function renderSeizuresGrid(seizuresData, selectedMember, selectedDays, page) {
       if (typeof page === 'undefined') page = seizurePage;
@@ -280,30 +237,6 @@
       }).join('');
     }
 
-    function openModal(src) {
-      const modal = document.getElementById('modal');
-      const modalImage = document.getElementById('modal-image');
-      modalImage.style.opacity = '0';
-      modalImage.src = src;
-      modal.classList.add('show');
-      modalImage.onload = () => {
-        modalImage.style.opacity = '1';
-      };
-    }
-
-    function closeModal() {
-      const modal = document.getElementById('modal');
-      modal.classList.remove('show');
-    }
-
-    // Fechar modal ao clicar fora da imagem
-    document.getElementById('modal').addEventListener('click', function(event) {
-      if (event.target === this) {
-        closeModal();
-      }
-    });
-
-    // Carregar dados ao iniciar
     window.addEventListener('load', function() {
       var urlParams = new URLSearchParams(window.location.search);
       var urlMember = urlParams.get('member');
@@ -329,12 +262,7 @@
       });
     }
 
-    // Tecla ESC para fechar modal
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape') {
-        closeModal();
-      }
-    });
+
   </script>
 </body>
 </html>

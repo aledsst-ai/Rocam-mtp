@@ -69,7 +69,7 @@ function observeRevealElements() {
   if (!revealObserver) initRevealObserver();
   
   const elements = document.querySelectorAll(
-    '.member-card.reveal, .vehicle-card, .seizure-card, .gallery-card, .live-card-thumbnail, .reveal, .reveal-left, .reveal-right, .about-title, .section-title, .section-title-wrapper'
+    '.member-card.reveal, .vehicle-card, .seizure-card, .gallery-card, .live-card-thumbnail, .reveal, .reveal-left, .reveal-right, .section-title, .section-title-wrapper'
   );
   
   elements.forEach(el => {

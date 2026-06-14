@@ -29,7 +29,7 @@ $indexPath = Join-Path $root "index.html"
 $index = [System.IO.File]::ReadAllText($indexPath, [System.Text.Encoding]::UTF8)
 
 $startMarker = '<div id="app">'
-$endMarker = '<!-- END APP -->'
+$endMarker = '<div id="app-end"></div>'
 
 $startIdx = $index.IndexOf($startMarker)
 $endIdx = $index.IndexOf($endMarker, $startIdx + $startMarker.Length)
