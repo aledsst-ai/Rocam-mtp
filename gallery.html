@@ -3,36 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ROCAM - Galeria</title>
-  <meta name="description" content="Galeria de registros fotográficos da ROCAM - Polícia Militar."/>
-  <meta property="og:title" content="ROCAM — Galeria"/>
-  <meta property="og:description" content="Registros fotográficos da ROCAM."/>
-  <meta property="og:image" content="https://rocam-mtp.aledsst.workers.dev/assets/img/logo.png"/>
+  <title>Sinaloa - Galeria</title>
+  <meta name="description" content="Galeria de registros da Sinaloa."/>
+  <meta property="og:title" content="Sinaloa — Galeria"/>
+  <meta property="og:description" content="Registros da Sinaloa."/>
+  <meta property="og:image" content="https://sinaloa.aledsst.workers.dev/assets/img/logo.png"/>
   <meta property="og:type" content="website"/>
   <link rel="icon" type="image/png" href="assets/img/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260616-16">
   <style>
     body { padding-top: 100px; }
   </style>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script src="js/helpers.js"></script>
+  <script src="js/firebase-config.js?v=20260616-10"></script>
+  <script src="js/helpers.js?v=20260616-10"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnwLlzDs363_5KBhH1iHNCHWZJa3aZGIg",
-      authDomain: "rocam-55ccd.firebaseapp.com",
-      databaseURL: "https://rocam-55ccd-default-rtdb.firebaseio.com",
-      projectId: "rocam-55ccd",
-      storageBucket: "rocam-55ccd.firebasestorage.app",
-      messagingSenderId: "264193595563",
-      appId: "1:264193595563:web:3d9b60f6b112f183663fee",
-      measurementId: "G-8FDS6ML6VK"
-    };
-    firebase.initializeApp(firebaseConfig);
-    console.log('✓ Firebase inicializado (gallery.html)');
+    firebase.initializeApp(window.SINALOA_FIREBASE_CONFIG);
   </script>
 </head>
 <body>
@@ -40,7 +30,7 @@
     <div class="nav-inner">
       <div style="display:flex;align-items:center;gap:16px;">
         <a class="nav-brand" href="index.html">
-          <img src="assets/img/logo.png" alt="Logo ROCAM" width="52" height="52">
+          <img src="assets/img/logo.png" alt="Logo Sinaloa" width="52" height="52">
         </a>
         <a href="index.html" class="back-btn" aria-label="Voltar ao dashboard">
           <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
@@ -70,7 +60,7 @@
       const container = document.getElementById('gallery-complete');
 
       if (!galleryData.length) {
-        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhuma foto registrada na galeria</p>';
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhum registro na galeria</p>';
         return;
       }
 
@@ -84,26 +74,17 @@
       var end = Math.min(start + GALLERY_PER_PAGE, sorted.length);
       var pageItems = sorted.slice(start, end);
 
-      var html = pageItems.map((photo, idx) => `
-        <div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" ${photo.imageUrl ? `onclick="openModal('${escapeHtml(photo.imageUrl)}')"` : ''}>
-          ${photo.imageUrl ? `<img class="gallery-img" src="${escapeHtml(photo.imageUrl)}" alt="${escapeHtml(photo.title || 'Foto')}" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">` : '<div class="gallery-img placeholder">📸</div>'}
-          <div class="gallery-card-overlay"></div>
-          <div class="gallery-card-content">
-            <div class="gallery-title">${escapeHtml(photo.title || 'Sem título')}</div>
-            <div class="gallery-date badge">${photo.date ? `<span class="emoji-icon">📅</span>${new Date(photo.date).toLocaleDateString('pt-BR')} às ${new Date(photo.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : ''}</div>
-          </div>
-        </div>
-      `).join('');
+      var html = pageItems.map((photo, idx) => renderGalleryCard(photo, idx)).join('');
 
       if (totalPages > 1) {
         html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 0;flex-wrap:wrap;font-family:inherit;font-weight:700;font-size:12px;">';
-        html += '<button onclick="goToGalleryPage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ Anterior</button>';
+        html += '<button onclick="goToGalleryPage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:rgba(0,0,0,0.04);color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ Anterior</button>';
         html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
         for (var i = 1; i <= totalPages; i++) {
-          html += '<button onclick="goToGalleryPage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === page ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
+          html += '<button onclick="goToGalleryPage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#1a1a1a' : 'rgba(0,0,0,0.15)') + ';background:' + (i === page ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)') + ';color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
         }
         html += '</div>';
-        html += '<button onclick="goToGalleryPage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>Próxima ❯</button>';
+        html += '<button onclick="goToGalleryPage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:rgba(0,0,0,0.04);color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>Próxima ❯</button>';
         html += '</div>';
       }
 
@@ -112,12 +93,12 @@
     }
 
     function goToGalleryPage(page) {
-      var localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      var localData = JSON.parse(localStorage.getItem('sinaloa_gallery') || '[]');
       var renderPage = function(data) {
         renderGalleryGrid(data, page);
       };
       var db = firebase.database();
-      db.ref('rocam-data').once('value').then(function(snapshot) {
+      db.ref('sinaloa-data').once('value').then(function(snapshot) {
         var firebaseRoot = snapshot.val();
         var data = [];
         if (firebaseRoot && firebaseRoot.gallery) {
@@ -130,9 +111,9 @@
     }
 
     function loadGalleryData() {
-      const localData = JSON.parse(localStorage.getItem('rocam_gallery') || '[]');
+      const localData = JSON.parse(localStorage.getItem('sinaloa_gallery') || '[]');
       const db = firebase.database();
-      db.ref('rocam-data').once('value')
+      db.ref('sinaloa-data').once('value')
         .then(snapshot => {
           const firebaseRoot = snapshot.val();
           let galleryData = [];
@@ -147,7 +128,7 @@
           if (!galleryData.length) {
             galleryData = localData;
           }
-          localStorage.setItem('rocam_gallery', JSON.stringify(galleryData));
+          localStorage.setItem('sinaloa_gallery', JSON.stringify(galleryData));
           renderGalleryGrid(galleryData);
         })
         .catch(error => {

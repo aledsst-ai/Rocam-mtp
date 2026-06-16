@@ -1,9 +1,8 @@
 {
   "rules": {
-    "rocam-data": {
+    "sinaloa-data": {
       ".read": true,
-      ".write": "auth != null && auth.token.email.matches(/.*@rocam\\.app$/)",
-      ".indexOn": ["approvedAt", "date"]
+      ".write": "auth.token.email.matches(/.*@sinaloa\\.app$/)"
     }
   }
 }

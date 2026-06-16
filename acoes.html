@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sinaloa - Ações</title>
+  <meta name="description" content="Registros de ações da Sinaloa. Filtre por membro, período e visualize detalhes."/>
+  <meta property="og:title" content="Sinaloa — Ações"/>
+  <meta property="og:description" content="Registros de ações da Sinaloa."/>
+  <meta property="og:image" content="https://sinaloa.aledsst.workers.dev/assets/img/logo.png"/>
+  <meta property="og:type" content="website"/>
+  <link rel="icon" type="image/png" href="assets/img/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20260616-16">
+  <style>
+    body { padding-top: 100px; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="js/firebase-config.js?v=20260616-10"></script>
+  <script src="js/helpers.js?v=20260616-10"></script>
+  <script>
+    firebase.initializeApp(window.SINALOA_FIREBASE_CONFIG);
+  </script>
+</head>
+<body>
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <a class="nav-brand" href="index.html">
+          <img src="assets/img/logo.png" alt="Logo Sinaloa" width="52" height="52">
+        </a>
+        <a href="index.html" class="back-btn" aria-label="Voltar ao dashboard">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          <span>Voltar</span>
+        </a>
+      </div>
+      <div class="filter-row">
+        <label for="member-filter">Filtrar por membro:
+          <select id="member-filter">
+            <option value="">Todos os membros</option>
+          </select>
+        </label>
+        <label for="date-filter">Período:
+          <select id="date-filter">
+            <option value="">Todos</option>
+            <option value="7">Últimos 7 dias</option>
+            <option value="15">Últimos 15 dias</option>
+            <option value="30">Últimos 30 dias</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="seizures-page-grid" id="seizures-complete"></div>
+  </div>
+
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <script>
+    var seizurePage = 1;
+    var SEIZURES_PER_PAGE = 6;
+
+    function renderSeizuresGrid(seizuresData, selectedMember, selectedDays, page) {
+      if (typeof page === 'undefined') page = seizurePage;
+      const container = document.getElementById('seizures-complete');
+      const filterSelect = document.getElementById('member-filter');
+      const dateSelect = document.getElementById('date-filter');
+      let filteredSeizures = seizuresData.filter(s => s.approved !== false);
+
+      if (selectedMember) {
+        filteredSeizures = filteredSeizures.filter(s => {
+          const ms = getMembersList(s.member || s.memberName);
+          return ms.includes(selectedMember);
+        });
+      }
+
+      if (selectedDays) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - parseInt(selectedDays, 10));
+        cutoff.setHours(0, 0, 0, 0);
+        filteredSeizures = filteredSeizures.filter(s => new Date(s.date) >= cutoff);
+      }
+
+      populateMemberFilter(seizuresData.filter(s => s.approved !== false), selectedMember);
+
+      if (!filteredSeizures.length) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--text-muted);">Nenhuma ação registrada</p>';
+        return;
+      }
+
+      const sorted = [...filteredSeizures].sort((a, b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime()));
+      var totalPages = Math.ceil(sorted.length / SEIZURES_PER_PAGE);
+      if (page < 1) page = 1;
+      if (page > totalPages) page = totalPages;
+      seizurePage = page;
+
+      var start = (page - 1) * SEIZURES_PER_PAGE;
+      var end = Math.min(start + SEIZURES_PER_PAGE, sorted.length);
+      var pageItems = sorted.slice(start, end);
+
+      var html = '';
+      pageItems.forEach(function(seizure, idx) {
+        html += renderSeizureCard(seizure, idx);
+      });
+
+      var filterInfo = '';
+      if (selectedMember && selectedDays) filterInfo = ' (' + escapeHtml(selectedMember) + ', últimos ' + selectedDays + ' dias)';
+      else if (selectedMember) filterInfo = ' (' + escapeHtml(selectedMember) + ')';
+      else if (selectedDays) filterInfo = ' (últimos ' + selectedDays + ' dias)';
+      html += '<div style="grid-column:1/-1;text-align:center;padding:5px 0;font-family:inherit;font-size:14px;color:var(--text-muted);">Total de ações' + filterInfo + ': <strong>' + filteredSeizures.length + '</strong></div>';
+
+      if (totalPages > 1) {
+        html += '<div style="grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 0;flex-wrap:wrap;font-family:inherit;font-weight:700;font-size:12px;">';
+        html += '<button onclick="goToSeizurePage(' + (page - 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:rgba(0,0,0,0.04);color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page <= 1 ? 'disabled' : '') + '>❮ Anterior</button>';
+        html += '<div style="display:flex;gap:4px;flex-wrap:wrap;">';
+        for (var i = 1; i <= totalPages; i++) {
+          html += '<button onclick="goToSeizurePage(' + i + ')" style="padding:8px 12px;border-radius:6px;border:1px solid ' + (i === page ? '#1a1a1a' : 'rgba(0,0,0,0.15)') + ';background:' + (i === page ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)') + ';color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;min-width:38px;">' + i + '</button>';
+        }
+        html += '</div>';
+        html += '<button onclick="goToSeizurePage(' + (page + 1) + ')" style="padding:8px 16px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:rgba(0,0,0,0.04);color:#1a1a1a;cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all 0.2s ease;' + (page >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (page >= totalPages ? 'disabled' : '') + '>Próxima ❯</button>';
+        html += '</div>';
+      }
+
+      container.innerHTML = html;
+      observeRevealElements();
+    }
+
+    function goToSeizurePage(page) {
+      var filterSelect = document.getElementById('member-filter');
+      var dateSelect = document.getElementById('date-filter');
+      var selectedMember = filterSelect ? filterSelect.value : '';
+      var selectedDays = dateSelect ? dateSelect.value : '';
+      var localData = JSON.parse(localStorage.getItem('sinaloa_seizures') || '[]');
+      var renderPage = function(data) {
+        renderSeizuresGrid(data, selectedMember, selectedDays, page);
+      };
+      var db = firebase.database();
+      db.ref('sinaloa-data').once('value').then(function(snapshot) {
+        var firebaseRoot = snapshot.val();
+        var data = [];
+        if (firebaseRoot && firebaseRoot.seizures) {
+          var fd = firebaseRoot.seizures;
+          data = Array.isArray(fd) ? fd : (fd && typeof fd === 'object' ? Object.values(fd) : []);
+        }
+        if (!data.length) data = localData;
+        renderPage(data);
+      }).catch(function() { renderPage(localData); });
+    }
+
+    function loadSeizuresData(overrideMember, overrideDays) {
+      seizurePage = 1;
+      const localData = JSON.parse(localStorage.getItem('sinaloa_seizures') || '[]');
+      const filterSelect = document.getElementById('member-filter');
+      const dateSelect = document.getElementById('date-filter');
+      const selectedMember = overrideMember || filterSelect?.value || '';
+      const selectedDays = overrideDays || dateSelect?.value || '';
+
+      const renderData = (seizuresData) => {
+        localStorage.setItem('sinaloa_seizures', JSON.stringify(seizuresData));
+        renderSeizuresGrid(seizuresData, selectedMember, selectedDays, 1);
+      };
+
+      const db = firebase.database();
+      db.ref('sinaloa-data').once('value')
+        .then(snapshot => {
+          const firebaseRoot = snapshot.val();
+          let seizuresData = [];
+          if (firebaseRoot && firebaseRoot.seizures) {
+            const firebaseData = firebaseRoot.seizures;
+            if (Array.isArray(firebaseData)) {
+              seizuresData = firebaseData;
+            } else if (firebaseData && typeof firebaseData === 'object') {
+              seizuresData = Object.values(firebaseData);
+            }
+          }
+          if (!seizuresData.length) {
+            seizuresData = localData;
+          }
+          renderData(seizuresData);
+        })
+        .catch(error => {
+          console.warn('⚠️ Erro ao carregar seizures do Firebase:', error);
+          renderData(localData);
+        });
+    }
+
+    function populateMemberFilter(seizuresData, selectedMember) {
+      const filterSelect = document.getElementById('member-filter');
+      if (!filterSelect) return;
+      const allMembers = [];
+      seizuresData.forEach(s => {
+        const ms = getMembersList(s.member || s.memberName);
+        ms.forEach(function(m) { if (m.trim()) allMembers.push(m.trim()); });
+      });
+      const members = [...new Set(allMembers)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+      filterSelect.innerHTML = '<option value="">Todos os membros</option>' + members.map(function(m) {
+        return '\n          <option value="' + escapeHtml(m) + '"' + (m === selectedMember ? ' selected' : '') + '>' + escapeHtml(m) + '</option>';
+      }).join('');
+    }
+
+    window.addEventListener('load', function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var urlMember = urlParams.get('member');
+      var filterSelect = document.getElementById('member-filter');
+      var dateSelect = document.getElementById('date-filter');
+      loadSeizuresData(urlMember || '');
+      if (filterSelect) {
+        filterSelect.addEventListener('change', function() { loadSeizuresData(); });
+      }
+      if (dateSelect) {
+        dateSelect.addEventListener('change', function() { loadSeizuresData(); });
+      }
+    });
+
+    function observeRevealElements() {
+      const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.seizure-card.reveal').forEach(el => {
+        revealObserver.observe(el);
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
+      });
+    }
+
+
+  </script>
+</body>
+</html>

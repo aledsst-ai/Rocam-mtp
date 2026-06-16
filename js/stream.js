@@ -54,7 +54,7 @@ async function updateAllStreamStatus(skipSave) {
     
     if (!skipSave) {
       if (!firebaseInitialSyncCompleted && dataListenerRegistered) {
-        console.log('Ignorando saveData() ate Firebase carregar');
+        debugLog('Ignorando saveData() ate Firebase carregar');
       } else {
         saveData();
       }

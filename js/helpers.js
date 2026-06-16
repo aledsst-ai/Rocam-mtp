@@ -152,6 +152,56 @@ function getStreamThumbnailUrl(member, width = 640, height = 360) {
   return member.avatarUrl || `https://placehold.co/${width}x${height}/1a1a1a/555?text=Offline`;
 }
 
+function renderGalleryCard(item, idx) {
+  const imageUrl = item.imageUrl ? String(item.imageUrl).trim() : '';
+  const safeImageUrl = escapeHtml(imageUrl);
+  const title = escapeHtml(item.title || 'Sem título');
+  const dateText = item.date ? `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : '';
+  const imgHtml = imageUrl
+    ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
+    : '<div class="gallery-img placeholder">📸</div>';
+
+  return `
+    <div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
+      ${imgHtml}
+      <div class="gallery-card-overlay"></div>
+      <div class="gallery-card-content">
+        <div class="gallery-title">${title}</div>
+        <div class="gallery-date badge"><span class="emoji-icon">📅</span>${dateText}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderSeizureCard(item, idx) {
+  const backgroundStyle = item.imageUrl && item.imageUrl.trim()
+    ? `background-image: url('${escapeHtml(item.imageUrl)}');`
+    : '';
+  const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+  const imgUrl = escapeHtml(item.imageUrl || '');
+  const clickAction = item.imageUrl ? ` onclick="openModal('${imgUrl}')"` : '';
+
+  return `
+    <div class="seizure-card reveal" style="transition-delay: ${idx * 0.03}s"${clickAction}>
+      <div class="seizure-card-background ${item.imageUrl ? '' : 'seizure-card-background--empty'}" style="${backgroundStyle}"></div>
+      <div class="seizure-card-overlay"></div>
+      <div class="seizure-card-content">
+        <div class="seizure-card-header">    <span class="qru-badge">${escapeHtml(item.description || 'Ação')}</span></div>
+        <div class="seizure-meta">
+          ${item.member ? makeMembersBadge(item.member) : ''}
+        </div>
+        <div class="seizure-footer">
+          <div class="seizure-footer-left">
+            <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
+            ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
+          </div>
+          ${item.boImageUrl ? `<span class="seizure-bo-link" onclick="event.stopPropagation();openModal('${escapeHtml(item.boImageUrl)}')" title="Visualizar comprovante" aria-label="Visualizar comprovante"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;cursor:pointer;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="12" y2="18"/></svg></span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function escapeHtml(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, function(m) {

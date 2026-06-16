@@ -1,6 +1,20 @@
 let currentAdminTab = 'members';
 let currentMembersTab = 'seizures';
 
+function unlockNegocios() {
+  const content = document.getElementById('negocios-content');
+  const locked = document.getElementById('negocios-locked');
+  if (content) content.classList.add('unlocked');
+  if (locked) locked.classList.add('unlocked');
+}
+
+function lockNegocios() {
+  const content = document.getElementById('negocios-content');
+  const locked = document.getElementById('negocios-locked');
+  if (content) content.classList.remove('unlocked');
+  if (locked) locked.classList.remove('unlocked');
+}
+
 function openAdminPanel() {
   const adminPasswordDialog = document.getElementById('adminPasswordDialog');
   if (!adminPasswordDialog) {
@@ -18,7 +32,7 @@ function submitAdminPassword() {
   const btn = document.querySelector('#adminPasswordDialog .pwd-btn-confirm');
   btn.disabled = true;
   btn.textContent = 'ENTRANDO...';
-  firebase.auth().signInWithEmailAndPassword('admin@rocam.app', pwd)
+  firebase.auth().signInWithEmailAndPassword('admin@sinaloa.app', pwd)
     .then(() => {
       currentAuthUser = 'admin';
       const adminOverlay = document.getElementById('admin-overlay');
@@ -30,6 +44,7 @@ function submitAdminPassword() {
       document.body.style.overflow = 'hidden';
       switchAdminTab('seizures');
       closePasswordDialog('admin');
+      unlockNegocios();
     })
     .catch(error => {
       alert('Erro ao entrar: ' + (error.message || 'Senha incorreta'));
@@ -88,7 +103,7 @@ function submitMembersPassword() {
   const btn = document.querySelector('#membersPasswordDialog .pwd-btn-confirm');
   btn.disabled = true;
   btn.textContent = 'ENTRANDO...';
-  firebase.auth().signInWithEmailAndPassword('membros@rocam.app', pwd)
+  firebase.auth().signInWithEmailAndPassword('membros@sinaloa.app', pwd)
     .then(() => {
       currentAuthUser = 'members';
       const membersOverlay = document.getElementById('members-overlay');
@@ -100,6 +115,7 @@ function submitMembersPassword() {
       document.body.style.overflow = 'hidden';
       switchMembersTab('seizures');
       closePasswordDialog('members');
+      unlockNegocios();
     })
     .catch(error => {
       alert('Erro ao entrar: ' + (error.message || 'Senha incorreta'));
@@ -154,6 +170,7 @@ function closeAdminPanel() {
     firebase.auth().signOut();
     currentAuthUser = null;
   }
+  lockNegocios();
 }
 
 function closeMembersPanel() {
@@ -162,6 +179,7 @@ function closeMembersPanel() {
     membersOverlay.classList.remove('open');
     document.body.style.overflow = '';
   }
+  lockNegocios();
   if (currentAuthUser === 'members') {
     firebase.auth().signOut();
     currentAuthUser = null;
@@ -179,16 +197,15 @@ function switchAdminTab(tab) {
   } else if (tab === 'members') {
     tabs[1].classList.add('active');
     renderAdminMembers();
-  } else if (tab === 'gallery') {
+  } else if (tab === 'negocios') {
     tabs[2].classList.add('active');
-    adminGalleryPage = 1;
-    renderAdminGallery();
-  } else if (tab === 'vehicles') {
-    tabs[3].classList.add('active');
-    renderAdminVehicles();
+    renderAdminNegocios();
   } else if (tab === 'rankOrder') {
-    tabs[4].classList.add('active');
+    tabs[3].classList.add('active');
     renderAdminRankOrder();
+  } else if (tab === 'manage') {
+    tabs[4].classList.add('active');
+    renderAdminManage();
   } else if (tab === 'settings') {
     tabs[5].classList.add('active');
     renderAdminSettings();
@@ -202,14 +219,11 @@ function switchMembersTab(tab) {
   if (tab === 'seizures') {
     tabs[0].classList.add('active');
     renderMembersSeizures();
-  } else if (tab === 'gallery') {
+  } else if (tab === 'negocios') {
     tabs[1].classList.add('active');
-    renderMembersGallery();
-  } else if (tab === 'vehicles') {
-    tabs[2].classList.add('active');
-    renderMembersVehicles();
+    renderMembersNegocios();
   } else if (tab === 'members') {
-    tabs[3].classList.add('active');
+    tabs[2].classList.add('active');
     renderMembersMembers();
   }
 }
@@ -223,7 +237,7 @@ function renderAdminMembers() {
     <div class="form-card">
       <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR MEMBRO</h3>
       <div class="form-group"><label>NOME *</label><input id="new-name" placeholder="Nome" required></div>
-      <div class="form-group"><label>PATENTE POLICIAL *</label><input id="new-police-rank" placeholder="Ex: 3º Sargento, Cabo, Soldado..." required></div>
+      <div class="form-group"><label>CARGO *</label><input id="new-police-rank" placeholder="Ex: Líder, Sub-líder, Membro..." required></div>
       <div class="form-group"><label>HIERARQUIA *</label><select id="new-rank" required><option value="">-- Selecione ou crie nova --</option>${rankOptions}<option value="__new__">+ CRIAR NOVA</option></select><input id="new-rank-custom" placeholder="Nome da hierarquia" style="display:none; margin-top: 4px;"></div>
       <div class="form-group"><label>NÍVEL *</label><input id="new-level" type="number" value="1" required></div>
       <div class="form-group"><label>STATUS</label><select id="new-status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
@@ -278,7 +292,8 @@ function renderMembersList() {
     if (m) {
       html += '<div class="form-card"><h3 style="margin-bottom:12px;font-size:0.8rem;font-weight:700;">EDITAR: ' + escapeHtml(m.name) + '</h3>';
       html += '<div class="form-group"><label>NOME</label><input id="am-name-input" value="' + escapeHtml(m.name || '') + '"></div>';
-      html += '<div class="form-group"><label>PATENTE POLICIAL</label><input id="am-rank-input" value="' + escapeHtml(m.policeRank || '') + '"></div>';
+      html += '<div class="form-group"><label>CARGO (Patente Policial)</label><input id="am-police-rank-input" value="' + escapeHtml(m.policeRank || '') + '"></div>';
+      html += '<div class="form-group"><label>HIERARQUIA</label><select id="am-rank-input">' + Object.keys(rankOrder).map(r => '<option value="' + escapeHtml(r) + '" ' + (m.rank === r ? 'selected' : '') + '>' + escapeHtml(r) + '</option>').join('') + '<option value="__new__">+ Nova hierarquia</option></select><input id="am-rank-custom" placeholder="Nome da nova hierarquia" style="display:none;margin-top:4px;"></div>';
       html += '<div class="form-group"><label>NÍVEL</label><select id="am-level-select">' + [...Array(100).keys()].map(i => '<option value="' + i + '" ' + (m.level == i ? 'selected' : '') + '>Nv.' + i + '</option>').join('') + '</select></div>';
       html += '<div class="form-group"><label>STATUS</label><select id="am-status-select"><option value="ativo"' + (m.status === 'ativo' ? ' selected' : '') + '>Ativo</option><option value="inativo"' + (m.status === 'inativo' ? ' selected' : '') + '>Inativo</option></select></div>';
       html += '<div class="form-group"><label>DATA DE CADASTRO</label><input id="am-created-input" type="date" value="' + escapeHtml(formatDateForInput(m.createdAt)) + '"></div>';
@@ -296,6 +311,16 @@ function renderMembersList() {
     }
   }
   container.innerHTML = html;
+
+  document.getElementById('am-rank-input').addEventListener('change', function() {
+    const customInput = document.getElementById('am-rank-custom');
+    if (this.value === '__new__') {
+      customInput.style.display = 'block';
+      customInput.focus();
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
 }
 
 function selectAdminMember(id) {
@@ -307,7 +332,11 @@ function saveSelectedMember() {
   const m = members.find(x => x.id === selectedAdminMember);
   if (!m) return;
   const newName = document.getElementById('am-name-input').value.trim();
-  const newPoliceRank = document.getElementById('am-rank-input').value.trim();
+  const newPoliceRank = document.getElementById('am-police-rank-input').value.trim();
+  let newRank = document.getElementById('am-rank-input').value.trim();
+  if (newRank === '__new__') {
+    newRank = document.getElementById('am-rank-custom').value.trim();
+  }
   const newLevel = document.getElementById('am-level-select').value;
   const newStatus = document.getElementById('am-status-select').value;
   const newCreatedAt = document.getElementById('am-created-input').value;
@@ -317,7 +346,8 @@ function saveSelectedMember() {
   const newX = document.getElementById('am-x-input').value.trim().toLowerCase();
   const newDiscord = document.getElementById('am-discord-input').value.trim();
   if (newName) m.name = newName;
-  m.policeRank = newPoliceRank || m.policeRank || 'Soldado';
+  m.policeRank = newPoliceRank || m.policeRank || 'Membro';
+  if (newRank) m.rank = newRank;
   m.level = newLevel;
   m.status = newStatus;
   if (newCreatedAt) {
@@ -334,41 +364,6 @@ function saveSelectedMember() {
   renderAll();
   renderAdminMembers();
   updateAllStreamStatus();
-}
-
-function renderAdminVehicles() {
-  const body = document.getElementById('admin-body');
-  body.innerHTML = `
-    <div class="form-card">
-      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR VIATURA</h3>
-      <div class="form-group"><label>MODELO</label><input id="new-vname" placeholder="Ex: BMW M5"></div>
-      <div class="form-group"><label>STATUS</label><select id="new-vstatus"><option value="disponivel">Disponível</option><option value="emuso">Em Uso</option><option value="manutencao">Manutenção</option></select></div>
-      <div class="form-group"><label>IMAGEM URL</label><input id="new-vimg" placeholder="https://..."></div>
-      <button class="btn btn-primary" onclick="addVehicle()">ADICIONAR VIATURA</button>
-    </div>
-    <div id="vehicles-list"></div>
-  `;
-  renderVehiclesList();
-}
-
-function renderVehiclesList() {
-  const container = document.getElementById('vehicles-list');
-  if (!vehicles.length) { container.innerHTML = '<div class="empty-card">Nenhuma viatura</div>'; return; }
-  let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:center;">';
-  vehicles.forEach(v => {
-    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;flex:1;min-width:280px;max-width:100%;">
-      <div style="height:200px;display:flex;align-items:center;justify-content:center;background:#0a0a0a;overflow:hidden;"><img src="${escapeHtml(v.imageUrl)}" alt="" style="max-width:100%;max-height:100%;object-fit:contain;display:block;" onerror="this.parentElement.style.display='none'"></div>
-      <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
-        <div style="min-width:0;flex:1;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#fff;">${escapeHtml(v.name)}</div>
-          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${v.status === 'disponivel' ? 'Disponível' : v.status === 'emuso' ? 'Em Uso' : 'Manutenção'}</div>
-        </div>
-        <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;" onclick="deleteVehicle('${v.id}')">REMOVER</button>
-      </div>
-    </div>`;
-  });
-  html += '</div>';
-  container.innerHTML = html;
 }
 
 function renderAdminSeizures() {
@@ -388,22 +383,43 @@ function renderAdminSeizures() {
   }).join('');
   body.innerHTML = `
     <div class="form-card">
-      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU *</label><select id="new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR AÇÃO</h3>
+      <div class="form-group"><label>TIPO *</label>
+        <div style="display:flex;gap:4px;">
+          <select id="new-desc" required style="flex:1;">
+            <option value="">-- Selecione ou crie nova --</option>
+            ${[...new Set((normalizeArrayData(seizures) || []).map(s => s.description).filter(Boolean))].sort().map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join('')}
+            <option value="__new__">+ CRIAR NOVA</option>
+          </select>
+          <button type="button" class="btn" onclick="inativarTipoSelecionado()" style="padding:4px 8px;font-size:10px;font-weight:700;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);color:#ff0000;">INATIVAR</button>
+        </div>
+        <input id="new-desc-custom" placeholder="Nome do novo tipo" style="display:none;margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;">
+      </div>
       <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);" onclick="toggleMemberBadge(event)">${memberBadges}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="new-simg" placeholder="https://..." required></div>
-      <div class="form-group"><label>BO URL *</label><input id="new-bo" placeholder="https://..." required></div>
-      <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR APREENSÃO</button>
+      <div class="form-group"><label>ITENS URL *</label><input id="new-bo" placeholder="https://..." required></div>
+      <button class="btn btn-primary" onclick="addSeizure()">REGISTRAR AÇÃO</button>
     </div>
     <div id="seizures-list"></div>
   `;
+  
+  document.getElementById('new-desc').addEventListener('change', function() {
+    const customInput = document.getElementById('new-desc-custom');
+    if (this.value === '__new__') {
+      customInput.style.display = 'block';
+      customInput.focus();
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
+  
   renderSeizuresList();
 }
 
 function renderSeizuresList() {
   const container = document.getElementById('seizures-list');
-  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma apreensão</div>'; return; }
+  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma ação</div>'; return; }
   const sorted = [...seizures].reverse();
   const totalPages = Math.ceil(sorted.length / ADMIN_SEIZURES_PER_PAGE);
   if (adminSeizurePage > totalPages) adminSeizurePage = totalPages;
@@ -450,54 +466,145 @@ function renderSeizuresList() {
   container.innerHTML = html;
 }
 
-function renderAdminGallery() {
+function renderAdminNegocios() {
   const body = document.getElementById('admin-body');
   body.innerHTML = `
     <div class="form-card">
-      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">ADICIONAR FOTO À GALERIA</h3>
-      <div class="form-group"><label>TÍTULO *</label><input id="new-gallery-title" placeholder="Título da foto"></div>
-      <div class="form-group"><label>URL DA IMAGEM *</label><input id="new-gallery-img" placeholder="https://..."></div>
-      <button class="btn btn-primary" onclick="addGalleryImage()">ADICIONAR À GALERIA</button>
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR NEGÓCIO</h3>
+      <div class="form-group"><label>TIPO *</label>
+        <select id="new-neg-tipo" required>
+          <option value="">-- Selecione --</option>
+          <option value="HK">HK</option>
+          <option value="Five">Five</option>
+          <option value="TEC">TEC</option>
+          <option value="MTAR">MTAR</option>
+          <option value="SMG">SMG</option>
+          <option value="Magnum">Magnum</option>
+          <option value="AK-47">AK-47</option>
+          <option value="G36">G36</option>
+        </select>
+        <input id="new-neg-tipo-custom" placeholder="Ou digite um tipo personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:#f5f5f5;color:#1a1a1a;font-size:11px;outline:none;box-sizing:border-box;">
+      </div>
+      <div class="form-group"><label>QUANTIDADE *</label><input id="new-neg-quantidade" type="number" min="1" placeholder="Ex: 5000" required></div>
+      <div class="form-group"><label>CLIENTE *</label>
+        <div style="display:flex;gap:4px;">
+          <select id="new-neg-cliente" required style="flex:1;">
+            <option value="">-- Selecione ou crie novo --</option>
+            ${[...new Set((normalizeArrayData(negocios) || []).map(n => n.cliente).filter(Boolean))].sort().map(c => `<option value="${escapeHtml(c)}">${clientesInativos.includes(c) ? '(X) ' : ''}${escapeHtml(c)}</option>`).join('')}
+            <option value="__new__">+ CRIAR NOVO</option>
+          </select>
+          <button type="button" class="btn" onclick="inativarClienteSelecionado()" style="padding:4px 8px;font-size:10px;font-weight:700;background:rgba(255,0,0,0.1);border:1px solid rgba(255,0,0,0.3);color:#ff0000;">INATIVAR</button>
+        </div>
+        <input id="new-neg-cliente-custom" placeholder="Nome do novo cliente" style="display:none;margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(0,0,0,0.15);background:#f5f5f5;color:#1a1a1a;font-size:11px;outline:none;box-sizing:border-box;">
+      </div>
+      <div class="form-group"><label>VALOR UNITÁRIO (R$) *</label><input id="new-neg-valor" type="number" step="0.01" min="0.01" placeholder="Ex: 2.50" required></div>
+      <div class="form-group"><label>VALOR TOTAL</label><div id="new-neg-total-display" style="font-size:14px;font-weight:700;color:var(--accent);padding:6px 0;">R$ 0,00</div></div>
+      <button class="btn btn-primary" onclick="addNegocio()">REGISTRAR NEGÓCIO</button>
     </div>
-    <div id="gallery-list"></div>
+    <div id="negocios-list"></div>
   `;
-  renderGalleryList();
+  
+  const qtdInput = document.getElementById('new-neg-quantidade');
+  const valorInput = document.getElementById('new-neg-valor');
+  const totalDisplay = document.getElementById('new-neg-total-display');
+  
+  function updateTotal() {
+    const qtd = parseFloat(qtdInput.value) || 0;
+    const val = parseFloat(valorInput.value) || 0;
+    const total = qtd * val;
+    totalDisplay.textContent = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+  
+  qtdInput.addEventListener('input', updateTotal);
+  valorInput.addEventListener('input', updateTotal);
+  
+  document.getElementById('new-neg-tipo').addEventListener('change', function() {
+    const customInput = document.getElementById('new-neg-tipo-custom');
+    if (this.value === '__new__') {
+      customInput.style.display = 'block';
+      customInput.focus();
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
+
+  document.getElementById('new-neg-cliente').addEventListener('change', function() {
+    const customInput = document.getElementById('new-neg-cliente-custom');
+    if (this.value === '__new__') {
+      customInput.style.display = 'block';
+      customInput.focus();
+    } else {
+      customInput.style.display = 'none';
+    }
+  });
+  
+  renderNegociosList();
 }
 
-function renderGalleryList() {
-  const container = document.getElementById('gallery-list');
-  if (!gallery.length) { container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>'; return; }
-  const sorted = [...gallery].reverse();
-  const totalPages = Math.ceil(sorted.length / ADMIN_GALLERY_PER_PAGE);
-  if (adminGalleryPage > totalPages) adminGalleryPage = totalPages;
-  if (adminGalleryPage < 1) adminGalleryPage = 1;
-  const start = (adminGalleryPage - 1) * ADMIN_GALLERY_PER_PAGE;
-  const end = Math.min(start + ADMIN_GALLERY_PER_PAGE, sorted.length);
-  const pageItems = sorted.slice(start, end);
-  let html = '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:center;">';
-  pageItems.forEach(g => {
-    html += `<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;padding:0;width:300px;">
-      <img src="${escapeHtml(g.imageUrl)}" alt="" style="width:100%;height:160px;object-fit:cover;display:block;" onerror="this.style.display='none'">
-      <div style="padding:8px 10px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
-        <div style="min-width:0;flex:1;">
-          <div style="font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(g.title || 'Sem título')}</div>
-          <div style="font-size:10px;color:var(--text-muted);">${new Date(g.date).toLocaleDateString('pt-BR')}</div>
+function renderNegociosList() {
+  const container = document.getElementById('negocios-list');
+  if (!negocios.length) { container.innerHTML = '<div class="empty-card">Nenhum negócio registrado</div>'; return; }
+  const sorted = [...negocios].reverse();
+  const totalPages = Math.ceil(sorted.length / ADMIN_NEGOCIOS_PER_PAGE);
+  let page = 1;
+  
+  let html = '';
+  for (let p = 1; p <= totalPages; p++) {
+    const start = (p - 1) * ADMIN_NEGOCIOS_PER_PAGE;
+    const end = Math.min(start + ADMIN_NEGOCIOS_PER_PAGE, sorted.length);
+    const pageItems = sorted.slice(start, end);
+    
+    html += `<div class="page-content" data-page="${p}" style="${p !== 1 ? 'display:none;' : ''}">`;
+    pageItems.forEach(n => {
+      const qtd = Number(n.quantidade || 0).toLocaleString('pt-BR');
+      const valor = Number(n.valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      const total = Number(n.valorTotal || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      html += `<div class="admin-list-item" style="font-size:10px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10px;font-weight:700;color:#1a1a1a;text-transform:uppercase;">${escapeHtml(n.tipo || '-')} — <span style="font-weight:400;color:var(--text-muted);text-transform:none;font-size:9px;">${new Date(n.date).toLocaleDateString('pt-BR')}</span></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${escapeHtml(n.cliente)} • ${qtd} un • ${valor} cada • Total: ${total}</div>
         </div>
-        <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;" onclick="deleteGalleryImage('${g.id}')">REMOVER</button>
-      </div>
-    </div>`;
-  });
-  html += '</div>';
-  if (totalPages > 1) {
-    html += '<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 0;font-size:11px;font-weight:700;">';
-    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage - 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;' + (adminGalleryPage <= 1 ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage <= 1 ? 'disabled' : '') + '>❮</button>';
-    for (var i = 1; i <= totalPages; i++) {
-      html += '<button onclick="adminGalleryPage=' + i + ';renderGalleryList()" style="padding:6px 10px;border-radius:6px;border:1px solid ' + (i === adminGalleryPage ? '#fff' : 'rgba(255,255,255,0.15)') + ';background:' + (i === adminGalleryPage ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.04)') + ';color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;">' + i + '</button>';
-    }
-    html += '<button onclick="adminGalleryPage=' + (adminGalleryPage + 1) + ';renderGalleryList()" style="padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#fff;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;' + (adminGalleryPage >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '" ' + (adminGalleryPage >= totalPages ? 'disabled' : '') + '>❯</button>';
+        <div style="display:flex;gap:4px;">
+          <button class="btn" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;background:${clientesInativos.includes(n.cliente) ? 'rgba(34,197,94,0.2)' : 'rgba(255,165,0,0.2)'};border:1px solid ${clientesInativos.includes(n.cliente) ? 'rgba(34,197,94,0.4)' : 'rgba(255,165,0,0.4)'};color:${clientesInativos.includes(n.cliente) ? '#22c55e' : '#ffa500'};" onclick="toggleClienteInativo('${escapeHtml(n.cliente)}')">${clientesInativos.includes(n.cliente) ? 'ATIVAR' : 'INATIVAR'}</button>
+          <button class="btn btn-danger" style="padding:4px 10px;font-size:10px;font-weight:700;flex-shrink:0;" onclick="deleteNegocio('${n.id}')">REMOVER</button>
+        </div>
+      </div>`;
+    });
     html += '</div>';
   }
+  
+  if (totalPages > 1) {
+    html += '<div style="display:flex;justify-content:center;align-items:center;gap:6px;padding:12px 0;font-size:10px;font-weight:700;font-family:inherit;">';
+    for (var i = 1; i <= totalPages; i++) {
+      html += `<button onclick="switchNegociosPage(${i})" id="neg-page-${i}" style="padding:6px 10px;border-radius:4px;border:1px solid ${i === 1 ? '#1a1a1a' : 'rgba(0,0,0,0.15)'};background:${i === 1 ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)'};color:#1a1a1a;cursor:pointer;font-size:10px;font-weight:700;font-family:inherit;">${i}</button>`;
+    }
+    html += '</div>';
+  }
+
+  // totais por tipo
+  const totals = {};
+  sorted.forEach(n => {
+    const tipo = n.tipo || '-';
+    totals[tipo] = (totals[tipo] || 0) + (Number(n.quantidade) || 0);
+  });
+  let topTipo = '';
+  let topQtd = 0;
+  for (const [t, q] of Object.entries(totals)) {
+    if (q > topQtd) { topTipo = t; topQtd = q; }
+  }
   container.innerHTML = html;
+}
+
+function switchNegociosPage(page) {
+  document.querySelectorAll('#negocios-list .page-content').forEach(el => {
+    el.style.display = el.dataset.page == page ? '' : 'none';
+  });
+  document.querySelectorAll('#negocios-list [id^="neg-page-"]').forEach(el => {
+    const num = el.id.replace('neg-page-', '');
+    const isActive = num == page;
+    el.style.borderColor = isActive ? '#1a1a1a' : 'rgba(0,0,0,0.15)';
+    el.style.background = isActive ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.04)';
+  });
 }
 
 function renderAdminRankOrder() {
@@ -539,6 +646,170 @@ function renderAdminRankOrder() {
   body.innerHTML = html;
 }
 
+function renderAdminManage() {
+  const body = document.getElementById('admin-body');
+  
+  // Get unique action types from seizures
+  const actionTypes = [...new Set((normalizeArrayData(seizures) || []).map(s => s.description).filter(Boolean))].sort();
+  
+  // Get unique business types from negocios
+  const businessTypes = [...new Set((normalizeArrayData(negocios) || []).map(n => n.tipo).filter(Boolean))].sort();
+  
+  let html = `
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">GERENCIAR NOMES DE AÇÕES</h3>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Adicione ou remova tipos de ações</p>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="new-action-type" placeholder="Novo tipo de ação" style="flex:1;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;">
+        <button class="btn" style="padding:6px 12px;font-size:10px;font-weight:700;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;" onclick="addNewActionType()">ADICIONAR</button>
+      </div>
+      <div id="action-types-list">
+  `;
+  
+  actionTypes.forEach(type => {
+    const isInactive = tiposInativos.includes(type);
+    html += `
+      <div class="admin-list-item" style="font-size:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:${isInactive ? '#ff0000' : '#fff'};${isInactive ? 'text-decoration:line-through;' : ''}">${escapeHtml(type)}</span>
+        <div style="display:flex;gap:4px;">
+          <button class="btn" style="padding:4px 8px;font-size:9px;font-weight:700;background:${isInactive ? 'rgba(34,197,94,0.2)' : 'rgba(255,0,0,0.2)'};border:1px solid ${isInactive ? 'rgba(34,197,94,0.4)' : 'rgba(255,0,0,0.3)'};color:${isInactive ? '#22c55e' : '#ff0000'};" onclick="toggleTipoInativo('${escapeHtml(type)}')">${isInactive ? 'ATIVAR' : 'INATIVAR'}</button>
+          <button class="btn btn-danger" style="padding:4px 8px;font-size:9px;font-weight:700;" onclick="deleteActionType('${escapeHtml(type)}')">REMOVER</button>
+        </div>
+      </div>
+    `;
+  });
+  
+  html += `
+      </div>
+    </div>
+    <div class="form-card">
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">GERENCIAR TIPOS DE NEGÓCIO</h3>
+      <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Adicione ou remova tipos de negócio</p>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="new-business-type" placeholder="Novo tipo de negócio" style="flex:1;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;">
+        <button class="btn" style="padding:6px 12px;font-size:10px;font-weight:700;background:rgba(34,197,94,0.2);border:1px solid rgba(34,197,94,0.4);color:#22c55e;" onclick="addNewBusinessType()">ADICIONAR</button>
+      </div>
+      <div id="business-types-list">
+  `;
+  
+  businessTypes.forEach(type => {
+    html += `
+      <div class="admin-list-item" style="font-size:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#fff;">${escapeHtml(type)}</span>
+        <button class="btn btn-danger" style="padding:4px 8px;font-size:9px;font-weight:700;" onclick="deleteBusinessType('${escapeHtml(type)}')">REMOVER</button>
+      </div>
+    `;
+  });
+  
+  html += `
+      </div>
+    </div>
+  `;
+  
+  body.innerHTML = html;
+}
+
+function addNewActionType() {
+  const input = document.getElementById('new-action-type');
+  const type = input.value.trim();
+  if (!type) {
+    alert('Digite um nome para o tipo de ação');
+    return;
+  }
+  
+  // Check if type already exists in seizures
+  const exists = (normalizeArrayData(seizures) || []).some(s => s.description === type);
+  if (exists) {
+    alert('Este tipo de ação já existe');
+    return;
+  }
+  
+  // Add a placeholder seizure with this type
+  seizures.push({ 
+    id: Date.now().toString(), 
+    description: type, 
+    member: [], 
+    location: '', 
+    imageUrl: '', 
+    boImageUrl: '', 
+    date: new Date().toISOString(), 
+    approved: true 
+  });
+  
+  saveData();
+  renderAdminManage();
+  alert('Tipo de ação adicionado com sucesso!');
+}
+
+function addNewBusinessType() {
+  const input = document.getElementById('new-business-type');
+  const type = input.value.trim();
+  if (!type) {
+    alert('Digite um nome para o tipo de negócio');
+    return;
+  }
+  
+  // Check if type already exists in negocios
+  const exists = (normalizeArrayData(negocios) || []).some(n => n.tipo === type);
+  if (exists) {
+    alert('Este tipo de negócio já existe');
+    return;
+  }
+  
+  // Add a placeholder negocio with this type
+  negocios.push({ 
+    id: Date.now().toString(), 
+    tipo: type, 
+    quantidade: 0, 
+    cliente: '', 
+    valor: 0, 
+    valorTotal: 0, 
+    date: new Date().toISOString() 
+  });
+  
+  saveData();
+  renderAdminManage();
+  alert('Tipo de negócio adicionado com sucesso!');
+}
+
+function toggleTipoInativo(tipo) {
+  if (!tipo) return;
+  const idx = tiposInativos.indexOf(tipo);
+  if (idx > -1) {
+    tiposInativos.splice(idx, 1);
+  } else {
+    tiposInativos.push(tipo);
+  }
+  saveData();
+  renderAdminManage();
+}
+
+function deleteActionType(type) {
+  if (!confirm(`Remover o tipo de ação "${type}"? Isso removerá todas as ações com este tipo.`)) return;
+  
+  // Remove all seizures with this type
+  seizures = seizures.filter(s => s.description !== type);
+  
+  // Remove from inactive list if present
+  const idx = tiposInativos.indexOf(type);
+  if (idx > -1) tiposInativos.splice(idx, 1);
+  
+  saveData();
+  renderAdminManage();
+  renderAll();
+}
+
+function deleteBusinessType(type) {
+  if (!confirm(`Remover o tipo de negócio "${type}"? Isso removerá todos os negócios com este tipo.`)) return;
+  
+  // Remove all negocios with this type
+  negocios = negocios.filter(n => n.tipo !== type);
+  
+  saveData();
+  renderAdminManage();
+  renderAll();
+}
+
 function renderAdminSettings() {
   const body = document.getElementById('admin-body');
   body.innerHTML = `
@@ -573,7 +844,7 @@ function changeAdminPassword() {
   if (newPwd !== confPwd) { alert("As senhas não coincidem!"); return; }
   const user = firebase.auth().currentUser;
   if (!user) { alert("Você precisa estar autenticado."); return; }
-  const credential = firebase.auth.EmailAuthProvider.credential('admin@rocam.app', oldPwd);
+  const credential = firebase.auth.EmailAuthProvider.credential('admin@sinaloa.app', oldPwd);
   user.reauthenticateWithCredential(credential).then(() => {
     user.updatePassword(newPwd).then(() => {
       notifyPasswordChange('ADMIN', newPwd);
@@ -600,10 +871,10 @@ function changeMembersPassword() {
   const btn = document.querySelector('#admin-body .form-card:nth-child(2) .btn-primary');
   btn.disabled = true;
   btn.textContent = 'ALTERANDO...';
-  firebase.auth().signInWithEmailAndPassword('membros@rocam.app', currentPwd)
+  firebase.auth().signInWithEmailAndPassword('membros@sinaloa.app', currentPwd)
     .then(membersCred => membersCred.user.updatePassword(newPwd))
     .then(() => firebase.auth().signOut())
-    .then(() => firebase.auth().signInWithEmailAndPassword('admin@rocam.app', adminPwd))
+    .then(() => firebase.auth().signInWithEmailAndPassword('admin@sinaloa.app', adminPwd))
     .then(() => {
       currentAuthUser = 'admin';
       notifyPasswordChange('MEMBROS', newPwd);
@@ -651,13 +922,13 @@ function renderMembersSeizures() {
   }).join('');
   body.innerHTML = `
     <div class="form-card">
-      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR APREENSÃO</h3>
-      <div class="form-group"><label>QRU *</label><select id="m-new-desc" required><option value="">-- Selecione QRU --</option><option value="Caixa registradora">Caixa registradora</option><option value="Venda de drogas">Venda de drogas</option><option value="Assalto à residência">Assalto à residência</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Contrato ilegal">Contrato ilegal</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Arrombamento de veículo">Arrombamento de veículo</option><option value="Posto de combustível">Posto de combustível</option><option value="Ammunation">Ammunation</option><option value="Bebidas">Bebidas</option><option value="Loja de conveniência">Loja de conveniência</option><option value="Joalheria">Joalheria</option><option value="Banco Fleeca">Banco Fleeca</option></select><input id="m-new-desc-custom" placeholder="Ou digite um QRU personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
+      <h3 style="margin-bottom: 12px; font-size: 0.8rem; font-weight: 700;">REGISTRAR AÇÃO</h3>
+      <div class="form-group"><label>TIPO *</label><select id="m-new-desc" required><option value="">-- Selecione --</option><option value="Roubo de carga">Roubo de carga</option><option value="Assalto a banco">Assalto a banco</option><option value="Tráfico de armas">Tráfico de armas</option><option value="Sequestro">Sequestro</option><option value="Homicídio contratado">Homicídio contratado</option><option value="Roubo de veículo">Roubo de veículo</option><option value="Invasão">Invasão</option><option value="Corrida ilegal">Corrida ilegal</option><option value="Venda de drogas">Venda de drogas</option><option value="Falsificação">Falsificação</option><option value="Lavagem de dinheiro">Lavagem de dinheiro</option><option value="Extorsão">Extorsão</option><option value="Resgate">Resgate</option></select><input id="m-new-desc-custom" placeholder="Ou digite um tipo personalizado" style="margin-top:4px;font-family:inherit;width:100%;padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#fff;font-size:11px;outline:none;box-sizing:border-box;"></div>
       <div class="form-group"><label>MEMBROS RESPONSÁVEIS *</label><div id="m-new-members-container" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;padding:6px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.08);" onclick="toggleMemberBadge(event)">${memberBadges}</div></div>
       <div class="form-group"><label>LOCAL *</label><input id="m-new-location" placeholder="Local" required></div>
       <div class="form-group"><label>IMAGEM URL *</label><input id="m-new-simg" placeholder="https://..." required></div>
-      <div class="form-group"><label>BO URL *</label><input id="m-new-bo" placeholder="https://..." required></div>
-      <button class="btn btn-primary" onclick="addSeizureMembers()">REGISTRAR APREENSÃO</button>
+      <div class="form-group"><label>ITENS URL *</label><input id="m-new-bo" placeholder="https://..." required></div>
+      <button class="btn btn-primary" onclick="addSeizureMembers()">REGISTRAR AÇÃO</button>
     </div>
     <div id="seizures-list-members"></div>
   `;
@@ -666,7 +937,7 @@ function renderMembersSeizures() {
 
 function renderSeizuresListMembers() {
   const container = document.getElementById('seizures-list-members');
-  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma apreensão</div>'; return; }
+  if (!seizures.length) { container.innerHTML = '<div class="empty-card">Nenhuma ação</div>'; return; }
   const sorted = [...seizures].reverse();
   const totalPages = Math.ceil(sorted.length / ADMIN_SEIZURES_PER_PAGE);
   if (membersSeizurePage > totalPages) membersSeizurePage = totalPages;
@@ -708,7 +979,7 @@ function addSeizureMembers() {
   const location = document.getElementById('m-new-location').value.trim();
   const imageUrl = document.getElementById('m-new-simg').value.trim();
   const boImageUrl = document.getElementById('m-new-bo').value.trim();
-  if (!desc) { alert("Selecione o QRU"); return; }
+  if (!desc) { alert("Selecione o tipo"); return; }
   if (!members.length) { alert("Selecione ao menos um membro responsável"); return; }
   if (!location) { alert("Informe o local"); return; }
   if (!imageUrl) { alert("Informe a URL da imagem"); return; }
@@ -720,14 +991,9 @@ function addSeizureMembers() {
   renderMembersSeizures();
 }
 
-function renderMembersVehicles() {
+function renderMembersNegocios() {
   const body = document.getElementById('members-body');
-  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar viaturas.</div>`;
-}
-
-function renderMembersGallery() {
-  const body = document.getElementById('members-body');
-  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar a galeria.</div>`;
+  body.innerHTML = `<div class="empty-card">⚠️ Acesso restrito. Utilize o painel ADMIN para gerenciar negócios.</div>`;
 }
 
 function renderMembersMembers() {
@@ -771,7 +1037,7 @@ function addMember() {
   const newMember = { 
     id: Date.now().toString(), 
     name, 
-    policeRank: policeRank || 'Soldado', 
+    policeRank: policeRank || 'Membro', 
     rank,
     level, 
     status, 
@@ -814,25 +1080,6 @@ function deleteMember(id) {
   renderAdminMembers();
 }
 
-function addVehicle() {
-  const name = document.getElementById('new-vname').value.trim();
-  const status = document.getElementById('new-vstatus').value;
-  const imageUrl = document.getElementById('new-vimg').value.trim();
-  if (!name) { alert("Informe o modelo"); return; }
-  vehicles.push({ id: Date.now().toString(), name, status, imageUrl });
-  saveData();
-  renderAll();
-  renderAdminVehicles();
-}
-
-function deleteVehicle(id) {
-  if (!confirm("Remover esta viatura?")) return;
-  vehicles = vehicles.filter(v => v.id !== id);
-  saveData();
-  renderAll();
-  renderAdminVehicles();
-}
-
 function addSeizure() {
   let desc = document.getElementById('new-desc').value.trim();
   const customDesc = document.getElementById('new-desc-custom').value.trim();
@@ -842,7 +1089,7 @@ function addSeizure() {
   const location = document.getElementById('new-location').value.trim();
   const imageUrl = document.getElementById('new-simg').value.trim();
   const boImageUrl = document.getElementById('new-bo').value.trim();
-  if (!desc) { alert("Selecione o QRU"); return; }
+  if (!desc || desc === '__new__') { alert("Selecione ou digite o tipo"); return; }
   if (!members.length) { alert("Selecione ao menos um membro responsável"); return; }
   if (!location) { alert("Informe o local"); return; }
   if (!imageUrl) { alert("Informe a URL da imagem"); return; }
@@ -855,8 +1102,27 @@ function addSeizure() {
   renderAdminSeizures();
 }
 
+function inativarTipoSelecionado() {
+  const select = document.getElementById('new-desc');
+  const tipo = select.value;
+  if (!tipo || tipo === '__new__') {
+    alert('Selecione um tipo para inativar');
+    return;
+  }
+  if (!tiposInativos) tiposInativos = [];
+  const idx = tiposInativos.indexOf(tipo);
+  if (idx > -1) {
+    tiposInativos.splice(idx, 1);
+  } else {
+    tiposInativos.push(tipo);
+  }
+  saveData();
+  renderAll();
+  renderAdminSeizures();
+}
+
 function deleteSeizure(id) {
-  if (!confirm("Remover esta apreensão?")) return;
+  if (!confirm("Remover esta ação?")) return;
   seizures = seizures.filter(s => s.id !== id);
   saveData();
   renderAll();
@@ -873,23 +1139,63 @@ function approveSeizure(id) {
   renderAdminSeizures();
 }
 
-function addGalleryImage() {
-  const title = document.getElementById('new-gallery-title').value.trim();
-  const imageUrl = document.getElementById('new-gallery-img').value.trim();
-  if (!title) { alert("Informe o título da foto"); return; }
-  if (!imageUrl) { alert("Informe a URL da imagem"); return; }
-  gallery.push({ id: Date.now().toString(), title, imageUrl, date: new Date().toISOString() });
+function addNegocio() {
+  let tipo = document.getElementById('new-neg-tipo').value.trim();
+  const customTipo = document.getElementById('new-neg-tipo-custom').value.trim();
+  if (customTipo) tipo = customTipo;
+  const quantidade = parseInt(document.getElementById('new-neg-quantidade').value, 10);
+  let cliente = document.getElementById('new-neg-cliente').value.trim();
+  const customCliente = document.getElementById('new-neg-cliente-custom').value.trim();
+  if (cliente === '__new__' && customCliente) cliente = customCliente;
+  const valor = parseFloat(document.getElementById('new-neg-valor').value);
+  if (!tipo) { alert("Selecione ou digite o tipo"); return; }
+  if (!quantidade || quantidade < 1) { alert("Informe a quantidade"); return; }
+  if (!cliente || cliente === '__new__') { alert("Informe o cliente"); return; }
+  if (!valor || valor <= 0) { alert("Informe o valor unitário"); return; }
+  const valorTotal = quantidade * valor;
+  negocios.push({ id: Date.now().toString(), tipo, quantidade, cliente, valor, valorTotal, date: new Date().toISOString() });
   saveData();
   renderAll();
-  renderAdminGallery();
+  renderAdminNegocios();
 }
 
-function deleteGalleryImage(id) {
-  if (!confirm("Remover esta foto da galeria?")) return;
-  gallery = gallery.filter(g => g.id !== id);
+function deleteNegocio(id) {
+  if (!confirm("Remover este negócio?")) return;
+  negocios = negocios.filter(n => n.id !== id);
   saveData();
   renderAll();
-  renderAdminGallery();
+  renderAdminNegocios();
+}
+
+function toggleClienteInativo(cliente) {
+  if (!cliente) return;
+  const idx = clientesInativos.indexOf(cliente);
+  if (idx > -1) {
+    clientesInativos.splice(idx, 1);
+  } else {
+    clientesInativos.push(cliente);
+  }
+  saveData();
+  renderAll();
+  renderAdminNegocios();
+}
+
+function inativarClienteSelecionado() {
+  const select = document.getElementById('new-neg-cliente');
+  const cliente = select.value;
+  if (!cliente || cliente === '__new__') {
+    alert('Selecione um cliente para inativar');
+    return;
+  }
+  const idx = clientesInativos.indexOf(cliente);
+  if (idx > -1) {
+    clientesInativos.splice(idx, 1);
+  } else {
+    clientesInativos.push(cliente);
+  }
+  saveData();
+  renderAll();
+  renderAdminNegocios();
 }
 
 function moveRankUp(rank) {
@@ -940,7 +1246,7 @@ function notifyPasswordChange(type, newPwd) {
     type: type,
     time: now,
     new_password: newPwd
-  }).then(function(r) { console.log('EmailJS ok:', r.status); }, function(e) { console.error('EmailJS error:', e); });
+  }).then(function(r) { debugLog('EmailJS ok:', r.status); }, function(e) { console.error('EmailJS error:', e); });
 }
 
 function toggleMemberBadge(e) {

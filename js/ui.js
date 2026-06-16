@@ -1,11 +1,11 @@
 ﻿function createHierarchyMemberCard(member, index) {
   const memberName = (member.name || 'Sem nome').trim();
-  const memberRank = (member.policeRank || 'Soldado').trim();
+  const memberRank = (member.policeRank || 'Membro').trim();
   const isActive = member.status === 'ativo';
   const statusClass = isActive ? 'status-ativo' : 'status-inativo';
   const statusText = isActive ? '' : 'Inativo';
   const seizureCount = getMemberSeizureCount(memberName);
-  const seizureText = seizureCount === 1 ? 'APREENSÃO' : 'APREENSÕES';
+  const seizureText = seizureCount === 1 ? 'AÇÃO' : 'AÇÕES';
   const streamInfo = getStreamBadgeInfo(member);
   const registeredAt = parseStoredDate(member.createdAt);
   const registeredText = registeredAt
@@ -231,7 +231,7 @@ function renderLiveMemberCard(m, idx) {
         <div class="live-card-info">
           <div class="live-card-name">${escapeHtml(m.name)}</div>
           <div class="live-card-rank">
-            ${escapeHtml(m.policeRank || 'Soldado')}
+              ${escapeHtml(m.policeRank || 'Membro')}
             ${m.rank ? `· ${escapeHtml(m.rank)}` : ''}
             ${m.level ? `<span class="live-card-level">Nv.${m.level}</span>` : ''}
           </div>
@@ -243,10 +243,7 @@ function renderLiveMemberCard(m, idx) {
 }
 
 function carouselPrevNext(type, direction) {
-  if (type === 'gallery') {
-    galleryPage = direction === 'prev' ? Math.max(0, galleryPage - 1) : galleryPage + 1;
-    renderGallery();
-  } else if (type === 'seizures') {
+  if (type === 'seizures') {
     seizuresPage = direction === 'prev' ? Math.max(0, seizuresPage - 1) : seizuresPage + 1;
     renderSeizures();
   } else if (type === 'live') {
@@ -256,10 +253,7 @@ function carouselPrevNext(type, direction) {
 }
 
 function goToCarouselPage(type, page) {
-  if (type === 'gallery') {
-    galleryPage = page;
-    renderGallery();
-  } else if (type === 'seizures') {
+  if (type === 'seizures') {
     seizuresPage = page;
     renderSeizures();
   } else if (type === 'live') {
@@ -268,88 +262,73 @@ function goToCarouselPage(type, page) {
   }
 }
 
-function renderVehicles() {
-  const sorted = [...vehicles].sort((a,b) => new Date(b.date || 0) - new Date(a.date || 0));
-  const container = document.getElementById('vehicles-content');
-  if (!sorted.length) {
-    container.innerHTML = '<div class="empty-card">Nenhuma viatura cadastrada</div>';
-    return;
-  }
-  
-  container.innerHTML = '<div class="simple-grid">' + sorted.map((item, idx) => `
-    <div class="vehicle-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${escapeHtml(item.imageUrl)}')">
-      ${item.imageUrl ? `<img class="vehicle-img" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Sem+Imagem'">` : '<div class="vehicle-img placeholder">🚗</div>'}
-      <div class="vehicle-card-overlay"></div>
-      <div class="vehicle-card-content">
-        <div class="vehicle-name">${escapeHtml(item.name)}</div>
-      </div>
-    </div>
-  `).join('') + '</div>';
-}
+const NEGOCIOS_PAGE_HOME = 10;
 
-const GALLERY_PAGE_HOME = 3;
-
-function renderGallery() {
-  const container = document.getElementById('gallery-content');
-  if (!container) return;
+function renderNegocios() {
+  const blurredRows = document.getElementById('negocios-blurred-rows');
+  const lockedCard = document.getElementById('negocios-locked-card');
+  const panelLink = document.querySelector('#negocios a[href="negocios.html"]');
   
-  const sorted = normalizeArrayData(gallery).sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 9);
+  const sorted = normalizeArrayData(negocios).sort((a,b) => new Date(b.date) - new Date(a.date));
   
   if (!sorted.length) {
-    container.innerHTML = '<div class="empty-card">Nenhuma foto na galeria</div>';
-    return;
-  }
-  
-  const totalPages = Math.ceil(sorted.length / GALLERY_PAGE_HOME);
-  if (galleryPage < 0) galleryPage = 0;
-  if (galleryPage >= totalPages) galleryPage = Math.max(0, totalPages - 1);
-  
-  const start = galleryPage * GALLERY_PAGE_HOME;
-  const end = Math.min(start + GALLERY_PAGE_HOME, sorted.length);
-  const pageItems = sorted.slice(start, end);
-  
-  let html = '<div class="gallery-carousel-wrapper" style="position:relative;">';
-  let hasNav = totalPages > 1;
-  
-  if (hasNav) {
-    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-left" onclick="galleryPage=${Math.max(0, galleryPage - 1)};renderGallery()" ${galleryPage <= 0 ? 'disabled' : ''}>❮</button>`;
-  }
-  
-  html += '<div class="simple-grid">';
-  html += pageItems.map((item, idx) => {
-    const imageUrl = item.imageUrl ? String(item.imageUrl).trim() : '';
-    const safeImageUrl = escapeHtml(imageUrl);
-    const title = escapeHtml(item.title || 'Sem título');
-    const dateText = item.date ? `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : '';
-    const imgHtml = imageUrl
-      ? `<img class="gallery-img" src="${safeImageUrl}" alt="${title}" loading="lazy" onerror="this.src='https://placehold.co/600x400/1a1a1a/555?text=Erro'">`
-      : '<div class="gallery-img placeholder">📸</div>';
-
-    return `
-      <div class="gallery-card reveal" style="transition-delay: ${idx * 0.03}s" ${imageUrl ? `onclick="openModal('${safeImageUrl}')"` : ''}>
-        ${imgHtml}
-        <div class="gallery-card-overlay"></div>
-        <div class="gallery-card-content">
-          <div class="gallery-title">${title}</div>
-          <div class="gallery-date badge"><span class="emoji-icon">📅</span>${dateText}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-  html += '</div>';
-  
-  if (hasNav) {
-    html += `<button class="carousel-btn seizures-carousel-btn seizures-arrow-right" onclick="galleryPage=${Math.min(totalPages - 1, galleryPage + 1)};renderGallery()" ${galleryPage >= totalPages - 1 ? 'disabled' : ''}>❯</button>`;
-    
-    html += '<div class="gallery-carousel-dots">';
-    for (var i = 0; i < totalPages; i++) {
-      html += `<span class="gallery-dot ${i === galleryPage ? 'active' : ''}" onclick="galleryPage=${i};renderGallery()"></span>`;
+    if (blurredRows) {
+      blurredRows.innerHTML = [
+        ['9mm Premium', '1.240', 'Cliente reservado', 'R$ 000,00', 'R$ 000.000,00'],
+        ['.45 ACP', '780', 'Operação sigilosa', 'R$ 000,00', 'R$ 000.000,00'],
+        ['5.56 NATO', '2.600', 'Canal interno', 'R$ 000,00', 'R$ 000.000,00'],
+        ['12 Gauge', '460', 'Registro protegido', 'R$ 000,00', 'R$ 000.000,00']
+      ].map((row, idx) => `<tr class="negocios-row ${idx % 2 === 0 ? 'negocios-row--even' : ''}">
+        <td data-label="Tipo">${row[0]}</td>
+        <td data-label="Quantidade">${row[1]}</td>
+        <td data-label="Cliente">${row[2]}</td>
+        <td data-label="Valor">${row[3]}</td>
+        <td data-label="Valor Total">${row[4]}</td>
+      </tr>`).join('');
     }
-    html += '</div>';
+    if (lockedCard) lockedCard.style.display = '';
+    observeRevealElements();
+    return;
   }
   
-  html += '</div>';
-  container.innerHTML = html;
+  const pageItems = sorted.slice(0, NEGOCIOS_PAGE_HOME);
+  
+  let html = '';
+  pageItems.forEach((item, idx) => {
+    const tipo = escapeHtml(item.tipo || '-');
+    const qtd = Number(item.quantidade || 0).toLocaleString('pt-BR');
+    const cliente = escapeHtml(item.cliente || '-');
+    const valor = Number(item.valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const valorTotal = Number(item.valorTotal || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    
+    html += `<tr class="negocios-row ${idx % 2 === 0 ? 'negocios-row--even' : ''}">
+      <td data-label="Tipo">${tipo}</td>
+      <td data-label="Quantidade">${qtd}</td>
+      <td data-label="Cliente">${cliente}</td>
+      <td data-label="Valor">${valor}</td>
+      <td data-label="Valor Total">${valorTotal}</td>
+    </tr>`;
+  });
+  
+  const totals = {};
+  sorted.forEach(n => {
+    const tipo = n.tipo || '-';
+    totals[tipo] = (totals[tipo] || 0) + (Number(n.quantidade) || 0);
+  });
+  let topTipo = '';
+  let topQtd = 0;
+  for (const [t, q] of Object.entries(totals)) {
+    if (q > topQtd) { topTipo = t; topQtd = q; }
+  }
+  if (topTipo) {
+    html += `<tr class="negocios-row" style="font-weight:700;">
+      <td colspan="5" data-label="Resumo" style="text-align:center;">${escapeHtml(topTipo)} Total ${topQtd.toLocaleString('pt-BR')}</td>
+    </tr>`;
+  }
+
+  if (blurredRows) blurredRows.innerHTML = html;
+  if (lockedCard) lockedCard.style.display = '';
+  
   observeRevealElements();
 }
 
@@ -364,7 +343,7 @@ function renderSeizures() {
     const sorted = [...approved].sort((a,b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime())).slice(0, 9);
     
     if (!sorted.length) {
-      container.innerHTML = '<div class="empty-card">Nenhuma apreensão registrada</div>';
+      container.innerHTML = '<div class="empty-card">Nenhuma ação registrada</div>';
       return;
     }
     
@@ -387,33 +366,9 @@ function renderSeizures() {
     
     pageItems.forEach((item, idx) => {
       try {
-        const backgroundStyle = item.imageUrl && item.imageUrl.trim()
-          ? `background-image: url('${escapeHtml(item.imageUrl)}');`
-          : '';
-        const dateText = `${new Date(item.date).toLocaleDateString('pt-BR')} às ${new Date(item.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-        const imgUrl = escapeHtml(item.imageUrl || '');
-        
-        html += `
-          <div class="seizure-card reveal" style="transition-delay: ${idx * 0.03}s" onclick="openModal('${imgUrl}')">
-            <div class="seizure-card-background ${item.imageUrl ? '' : 'seizure-card-background--empty'}" style="${backgroundStyle}"></div>
-            <div class="seizure-card-overlay"></div>
-            <div class="seizure-card-content">
-              <div class="seizure-card-header"><span class="qru-badge">${escapeHtml(item.description || 'Apreensão')}</span></div>
-              <div class="seizure-meta">
-                ${item.member ? makeMembersBadge(item.member) : ''}
-              </div>
-              <div class="seizure-footer">
-                <div class="seizure-footer-left">
-                  <span class="badge"><span class="emoji-icon">📅</span>${dateText}</span>
-                  ${item.location ? `<span class="badge"><span class="emoji-icon">📍</span>${escapeHtml(item.location)}</span>` : ''}
-                </div>
-                ${item.boImageUrl ? `<span class="seizure-bo-link" onclick="event.stopPropagation();openModal('${escapeHtml(item.boImageUrl)}')" title="Visualizar boletim" aria-label="Visualizar boletim"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;cursor:pointer;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="12" y2="18"/></svg></span>` : ''}
-              </div>
-            </div>
-          </div>
-        `;
+        html += renderSeizureCard(item, idx);
       } catch (itemError) {
-        console.error('❌ Erro ao renderizar item de apreensão:', itemError, item);
+        console.error('❌ Erro ao renderizar ação:', itemError, item);
       }
     });
     
@@ -433,7 +388,7 @@ function renderSeizures() {
     
     observeRevealElements();
   } catch (error) {
-    console.error('❌ Erro ao renderizar apreensões:', error);
+    console.error('❌ Erro ao renderizar ações:', error);
   }
 }
 
@@ -458,11 +413,10 @@ function updateStats() {
 
   const intro = document.getElementById('intro');
   if (intro && !intro.classList.contains('hidden')) {
-    const onTransitionEnd = () => {
-      intro.removeEventListener('transitionend', onTransitionEnd);
-      setTimeout(run, 200);
-    };
-    intro.addEventListener('transitionend', onTransitionEnd);
+    let done = false;
+    const safe = () => { if (!done) { done = true; setTimeout(run, 200); } };
+    intro.addEventListener('transitionend', safe, { once: true });
+    setTimeout(safe, 4000);
   } else {
     setTimeout(run, 300);
   }
@@ -497,11 +451,10 @@ function animateStatValue(id, value) {
 }
 
 function renderAll() {
-  renderHierarchy();
-  renderLiveMembers();
-  renderVehicles();
-  renderSeizures();
-  renderGallery();
+  try { renderHierarchy(); } catch(e) { console.error('renderHierarchy error:', e); }
+  try { renderLiveMembers(); } catch(e) { console.error('renderLiveMembers error:', e); }
+  try { renderSeizures(); } catch(e) { console.error('renderSeizures error:', e); }
+  try { renderNegocios(); } catch(e) { console.error('renderNegocios error:', e); }
   updateStats();
 }
 
@@ -509,7 +462,7 @@ let currentMemberProfile = null;
 
 function openMemberProfile(memberName) {
   try {
-    console.log('🔍 Abrindo perfil do membro:', memberName);
+    debugLog('🔍 Abrindo perfil do membro:', memberName);
     const member = members.find(m => m.name === memberName);
     
     if (!member) {
@@ -526,7 +479,7 @@ function openMemberProfile(memberName) {
     
     if (panel) {
       panel.classList.add('active');
-      console.log('✓ Painel ativado');
+      debugLog('✓ Painel ativado');
     }
     if (backdrop) {
       backdrop.classList.add('active');
@@ -568,7 +521,7 @@ function handleProfileEscape(e) {
 
 function renderMemberProfile(member) {
   try {
-    console.log('🎨 Renderizando perfil de:', member.name);
+    debugLog('🎨 Renderizando perfil de:', member.name);
     const content = document.getElementById('member-profile-content');
     if (!content) {
       console.error('❌ Elemento member-profile-content não encontrado');
@@ -580,13 +533,13 @@ function renderMemberProfile(member) {
       const ms = getMembersList(s.member || s.memberName);
       return ms.includes(member.name);
     });
-    const avatarUrl = member.avatarUrl || 'https://placehold.co/80x80/1a1a1a/9146ff?text=👤';
+    const avatarUrl = member.avatarUrl || 'https://placehold.co/80x80/1a1a1a/19591d?text=👤';
     
-    console.log(`📊 ${member.name} tem ${seizureCount} apreensões`);
+    debugLog(`📊 ${member.name} tem ${seizureCount} ações`);
     
     let seizuresHtml = '';
     if (memberSeizures.length === 0) {
-      seizuresHtml = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.85rem;">Nenhuma apreensão cadastrada</div>';
+      seizuresHtml = '<div style="text-align: center; padding: 20px; color: var(--text-secondary); font-size: 0.85rem;">Nenhuma ação cadastrada</div>';
     } else {
       const sortedMemberSeizures = [...memberSeizures]
         .sort((a, b) => (b.approvedAt || new Date(b.date).getTime()) - (a.approvedAt || new Date(a.date).getTime()))
@@ -595,7 +548,7 @@ function renderMemberProfile(member) {
         try {
           const seizureDate = new Date(seizure.date);
           const dateStr = seizureDate.toLocaleDateString('pt-BR');
-          const description = seizure.description || seizure.title || 'Apreensão sem descrição';
+          const description = seizure.description || seizure.title || 'Ação sem descrição';
           const imageUrl = seizure.imageUrl || seizure.boImageUrl || '';
           const thumbnail = imageUrl || 'https://placehold.co/120x120/1a1a1a/ffffff?text=%3F';
           return `
@@ -608,7 +561,7 @@ function renderMemberProfile(member) {
             </div>
           `;
         } catch (e) {
-          console.error('Erro ao renderizar apreensão:', e, seizure);
+          console.error('Erro ao renderizar ação:', e, seizure);
           return '';
         }
       }).join('');
@@ -622,11 +575,11 @@ function renderMemberProfile(member) {
         <div class="member-profile-hero">
           <div class="member-profile-avatar-wrapper">
             <div class="member-profile-avatar-inner">
-              <img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(member.name)}" class="member-profile-avatar" onerror="this.src='https://placehold.co/140x140/1a1a1a/9146ff?text=👤'">
+              <img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(member.name)}" class="member-profile-avatar" onerror="this.src='https://placehold.co/140x140/1a1a1a/19591d?text=👤'">
               <div class="member-avatar-overlay">
                 <div class="member-avatar-title">${escapeHtml(member.name)}</div>
                 <div class="member-avatar-badges">
-                  <span class="member-profile-badge">${escapeHtml(member.policeRank || 'Soldado')}</span>
+                  <span class="member-profile-badge">${escapeHtml(member.policeRank || 'Membro')}</span>
                   <span class="badge-sep">-</span>
                   <span class="member-profile-badge">${escapeHtml(member.rank || 'Membro')}</span>
                   <span class="badge-sep">-</span>
@@ -645,15 +598,15 @@ function renderMemberProfile(member) {
       </div>
 
       <div class="seizures-carousel-wrapper">
-        <div class="seizures-carousel-title">📸 Últimas 10 apreensões</div>
+        <div class="seizures-carousel-title">📸 Últimas 10 ações</div>
         <div class="seizures-carousel-container">
           ${seizuresHtml}
         </div>
-        <div style="text-align:center;margin-top:12px;"><a href="apreensoes.html?member=${encodeURIComponent(member.name)}" style="font-size:11px;color:#ffffff;text-decoration:none;font-weight:600;">VER MAIS APREENSÕES →</a></div>
+        <div style="text-align:center;margin-top:12px;"><a href="acoes.html?member=${encodeURIComponent(member.name)}" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600;">VER MAIS AÇÕES →</a></div>
       </div>
     `;
 
-    console.log('✓ Perfil renderizado com sucesso');
+    debugLog('✓ Perfil renderizado com sucesso');
   } catch (error) {
     console.error('❌ Erro ao renderizar perfil:', error);
     const content = document.getElementById('member-profile-content');
@@ -671,3 +624,206 @@ function openImageModal(imageUrl) {
 function initRevealOnScroll() {
   observeRevealElements();
 }
+
+let negAuthType = null;
+
+function openNegociosAuth() {
+  const modal = document.getElementById('negociosAuthModal');
+  if (modal) modal.classList.add('show');
+  document.getElementById('negAuthInput').value = '';
+  document.getElementById('negAuthError').style.display = 'none';
+  setTimeout(() => document.getElementById('negAuthInput').focus(), 100);
+}
+
+function closeNegociosAuth() {
+  const modal = document.getElementById('negociosAuthModal');
+  if (modal) modal.classList.remove('show');
+  negAuthType = null;
+}
+
+function submitNegociosAuth() {
+  const pwd = document.getElementById('negAuthInput').value;
+  if (!pwd) return;
+  const btn = document.querySelector('#negociosAuthModal .pwd-btn-confirm');
+  btn.disabled = true;
+  btn.textContent = 'VERIFICANDO...';
+
+  const tryAdmin = () => firebase.auth().signInWithEmailAndPassword('admin@sinaloa.app', pwd)
+    .then(() => { negAuthType = 'admin'; });
+
+  const tryMembers = () => firebase.auth().signInWithEmailAndPassword('membros@sinaloa.app', pwd)
+    .then(() => { negAuthType = 'members'; });
+
+  tryAdmin()
+    .catch(() => tryMembers())
+    .then(() => {
+      closeNegociosAuth();
+      openNegociosPanel();
+    })
+    .catch(error => {
+      document.getElementById('negAuthError').textContent = 'Senha incorreta para Admin e Membros';
+      document.getElementById('negAuthError').style.display = 'block';
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = 'LIBERAR';
+    });
+}
+
+function closeNegociosPanel() {
+  const panel = document.getElementById('negocios-panel');
+  if (panel) panel.classList.add('hidden');
+  document.body.style.overflow = '';
+  if (negAuthType) {
+    firebase.auth().signOut();
+    negAuthType = null;
+  }
+}
+
+let negPanelPage = 1;
+let negFilterTipo = '';
+let negFilterCliente = '';
+let negFilterData = '';
+const NEG_PANEL_PER_PAGE = 15;
+
+function openNegociosPanel() {
+  const panel = document.getElementById('negocios-panel');
+  if (panel) panel.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  negPanelPage = 1;
+  negFilterTipo = '';
+  negFilterCliente = '';
+  negFilterData = '';
+  populateNegociosFilters();
+  renderNegociosPanel();
+}
+
+function populateNegociosFilters() {
+  const data = normalizeArrayData(negocios);
+  const tipos = [...new Set(data.map(n => n.tipo).filter(Boolean))].sort();
+  const clientes = [...new Set(data.map(n => n.cliente).filter(Boolean))].sort();
+  
+  const tipoSelect = document.getElementById('neg-filter-tipo');
+  const clienteSelect = document.getElementById('neg-filter-cliente');
+  const dataSelect = document.getElementById('neg-filter-data');
+  
+  if (tipoSelect) {
+    tipoSelect.innerHTML = '<option value="">Todos</option>' + 
+      tipos.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+  }
+  if (clienteSelect) {
+    clienteSelect.innerHTML = '<option value="">Todos</option>' + 
+      clientes.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  }
+  if (dataSelect) {
+    dataSelect.value = '';
+  }
+}
+
+function applyNegociosFilters() {
+  negFilterTipo = document.getElementById('neg-filter-tipo')?.value || '';
+  negFilterCliente = document.getElementById('neg-filter-cliente')?.value || '';
+  negFilterData = document.getElementById('neg-filter-data')?.value || '';
+  negPanelPage = 1;
+  renderNegociosPanel();
+}
+
+function getFilteredNegocios() {
+  const data = normalizeArrayData(negocios);
+  let filtered = data.sort((a,b) => new Date(b.date) - new Date(a.date));
+  
+  if (negFilterTipo) {
+    filtered = filtered.filter(n => n.tipo === negFilterTipo);
+  }
+  if (negFilterCliente) {
+    filtered = filtered.filter(n => n.cliente === negFilterCliente);
+  }
+  if (negFilterData) {
+    const days = parseInt(negFilterData);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    filtered = filtered.filter(n => n.date && new Date(n.date) >= cutoff);
+  }
+  return filtered;
+}
+
+function renderNegociosPanel() {
+  const container = document.getElementById('negocios-panel-body');
+  if (!container) return;
+
+  const filtered = getFilteredNegocios();
+
+  if (!filtered.length) {
+    container.innerHTML = '<div class="empty-card" style="text-align:center;padding:40px;">Nenhum negócio encontrado com os filtros atuais</div>';
+    return;
+  }
+
+  const totalPages = Math.ceil(filtered.length / NEG_PANEL_PER_PAGE);
+  if (negPanelPage < 1) negPanelPage = 1;
+  if (negPanelPage > totalPages) negPanelPage = totalPages;
+
+  const start = (negPanelPage - 1) * NEG_PANEL_PER_PAGE;
+  const end = Math.min(start + NEG_PANEL_PER_PAGE, filtered.length);
+  const pageItems = filtered.slice(start, end);
+
+  let html = '<table class="negocios-panel-table">';
+  html += '<thead><tr><th>Tipo</th><th>Quantidade</th><th>Cliente</th><th>Valor Unit.</th><th>Valor Total</th><th>Data</th></tr></thead>';
+  html += '<tbody>';
+
+  pageItems.forEach((n, idx) => {
+    const qtd = Number(n.quantidade || 0).toLocaleString('pt-BR');
+    const valor = Number(n.valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const total = Number(n.valorTotal || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const dateStr = n.date ? new Date(n.date).toLocaleDateString('pt-BR') : '';
+    const clienteDisplay = clientesInativos.includes(n.cliente) ? `<span style="color:red;">(X)</span> ${escapeHtml(n.cliente || '-')}` : escapeHtml(n.cliente || '-');
+    html += `<tr>
+      <td data-label="Tipo">${escapeHtml(n.tipo || '-')}</td>
+      <td data-label="Quantidade">${qtd}</td>
+      <td data-label="Cliente">${clienteDisplay}</td>
+      <td data-label="Valor Unit.">${valor}</td>
+      <td data-label="Valor Total">${total}</td>
+      <td data-label="Data">${dateStr}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+
+  const periodLabel = negFilterData ? `Últimos ${negFilterData} dias` : 'Todos os períodos';
+  const tipoLabel = negFilterTipo ? ` | Tipo: ${negFilterTipo}` : '';
+  const clienteLabel = negFilterCliente ? ` | Cliente: ${negFilterCliente}` : '';
+  const totalQtd = filtered.reduce((sum, n) => sum + Number(n.quantidade || 0), 0).toLocaleString('pt-BR');
+  html += `<div class="negocios-result-info">${periodLabel}${tipoLabel}${clienteLabel} — ${filtered.length} Venda${filtered.length !== 1 ? 's' : ''} | Qtd Total: ${totalQtd}</div>`;
+
+  container.innerHTML = html;
+
+  if (totalPages > 1) {
+    const paginationHtml = `
+      <div class="negocios-pagination-fixed">
+        <button onclick="negPanelPage=${negPanelPage - 1};renderNegociosPanel()" ${negPanelPage <= 1 ? 'disabled' : ''} aria-label="Página anterior">❮</button>
+        ${Array.from({length: totalPages}, (_, i) => i + 1).map(i =>
+          `<button onclick="negPanelPage=${i};renderNegociosPanel()" class="${i === negPanelPage ? 'active' : ''}" aria-label="Página ${i}">${i}</button>`
+        ).join('')}
+        <button onclick="negPanelPage=${negPanelPage + 1};renderNegociosPanel()" ${negPanelPage >= totalPages ? 'disabled' : ''} aria-label="Próxima página">❯</button>
+        <span class="page-info">${start + 1}–${end} de ${filtered.length}</span>
+      </div>
+    `;
+    const existingFixed = document.querySelector('.negocios-pagination-fixed');
+    if (existingFixed) existingFixed.remove();
+    document.querySelector('.negocios-panel-inner').insertAdjacentHTML('beforeend', paginationHtml);
+  } else {
+    const existingFixed = document.querySelector('.negocios-pagination-fixed');
+    if (existingFixed) existingFixed.remove();
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const authModal = document.getElementById('negociosAuthModal');
+    const panel = document.getElementById('negocios-panel');
+    if (authModal && authModal.classList.contains('show')) {
+      closeNegociosAuth();
+    } else if (panel && !panel.classList.contains('hidden')) {
+      closeNegociosPanel();
+    }
+  }
+});

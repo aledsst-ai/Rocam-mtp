@@ -83,44 +83,44 @@ function initEventListeners() {
 
 window.addEventListener('DOMContentLoaded', () => {
   const intro = document.getElementById('intro');
-  const splashShown = sessionStorage.getItem('rocamSplashShown') === 'true';
+  const splashShown = sessionStorage.getItem('sinaloaSplashShown') === 'true';
   
-  console.log('🔄 DOMContentLoaded iniciado');
-  console.log('intro elemento:', intro ? '✓ encontrado' : '✗ não encontrado');
-  console.log('splashShown:', splashShown);
+  debugLog('🔄 DOMContentLoaded iniciado');
+  debugLog('intro elemento:', intro ? '✓ encontrado' : '✗ não encontrado');
+  debugLog('splashShown:', splashShown);
   
   const hideIntro = () => {
     if (intro && !intro.classList.contains('hidden')) {
-      console.log('🎬 Removendo intro...');
+      debugLog('🎬 Removendo intro...');
       intro.classList.add('hidden');
       const onTransitionEnd = () => {
         intro.removeEventListener('transitionend', onTransitionEnd);
         setTimeout(initRevealOnScroll, 300);
       };
       intro.addEventListener('transitionend', onTransitionEnd);
-      sessionStorage.setItem('rocamSplashShown', 'true');
+      sessionStorage.setItem('sinaloaSplashShown', 'true');
     }
   };
   
   if (intro) {
     if (splashShown) {
-      console.log('✓ Visita anterior - pulando splash');
+      debugLog('✓ Visita anterior - pulando splash');
       intro.classList.add('hidden');
       initRevealOnScroll();
     } else {
-      console.log('⏳ Primeira visita - exibindo splash por 3s');
+      debugLog('⏳ Primeira visita - exibindo splash por 3s');
       setTimeout(hideIntro, 3000);
 
       setTimeout(() => {
         if (intro && !intro.classList.contains('hidden')) {
-          console.log('⚠️ FALLBACK: Forçando remoção do intro após 6s');
+          debugLog('⚠️ FALLBACK: Forçando remoção do intro após 6s');
           hideIntro();
         }
       }, 6000);
     }
   }
   
-  console.log('📡 Iniciando carregamento do Firebase...');
+  debugLog('📡 Iniciando carregamento do Firebase...');
   loadData();
   initRevealObserver();
   initEventListeners();
@@ -134,13 +134,13 @@ window.addEventListener('DOMContentLoaded', () => {
         <div class="admin-header"><h2>PAINEL ADMINISTRATIVO</h2><button class="btn btn-secondary" onclick="closeAdminPanel()">FECHAR</button></div>
         <div class="admin-tabs">
           <div style="display:flex;gap:2px;">
-            <div class="admin-tab active">APREENSÕES</div>
+            <div class="admin-tab active">AÇÕES</div>
             <div class="admin-tab">MEMBROS</div>
-            <div class="admin-tab">GALERIA</div>
-            <div class="admin-tab">VIATURAS</div>
+            <div class="admin-tab">NEGÓCIOS</div>
           </div>
           <div style="display:flex;gap:2px;margin-left:auto;">
             <div class="admin-tab">ORDEM</div>
+            <div class="admin-tab">GERENCIAR</div>
             <div class="admin-tab">CONFIG</div>
           </div>
         </div>
@@ -148,7 +148,7 @@ window.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
     document.body.appendChild(adminOverlay);
-    console.log('✓ Admin overlay created successfully');
+    debugLog('✓ Admin overlay created successfully');
     
     const membersOverlay = document.createElement('div');
     membersOverlay.className = 'overlay';
@@ -157,35 +157,33 @@ window.addEventListener('DOMContentLoaded', () => {
       <div class="admin-panel">
         <div class="admin-header"><h2>PAINEL MEMBROS</h2><button class="btn btn-secondary" onclick="closeMembersPanel()">FECHAR</button></div>
         <div class="admin-tabs">
-          <div class="admin-tab active">APREENSÕES</div>
-          <div class="admin-tab">GALERIA</div>
-          <div class="admin-tab">VIATURAS</div>
+          <div class="admin-tab active">AÇÕES</div>
+          <div class="admin-tab">NEGÓCIOS</div>
           <div class="admin-tab">MEMBROS</div>
         </div>
         <div class="admin-body" id="members-body"></div>
       </div>
     `;
     document.body.appendChild(membersOverlay);
-    console.log('✓ Members overlay created successfully');
+    debugLog('✓ Members overlay created successfully');
     
     const adminTabs = document.querySelectorAll('#admin-overlay .admin-tab');
     if (adminTabs.length >= 6) {
       adminTabs[0].onclick = () => switchAdminTab('seizures');
       adminTabs[1].onclick = () => switchAdminTab('members');
-      adminTabs[2].onclick = () => switchAdminTab('gallery');
-      adminTabs[3].onclick = () => switchAdminTab('vehicles');
-      adminTabs[4].onclick = () => switchAdminTab('rankOrder');
+      adminTabs[2].onclick = () => switchAdminTab('negocios');
+      adminTabs[3].onclick = () => switchAdminTab('rankOrder');
+      adminTabs[4].onclick = () => switchAdminTab('manage');
       adminTabs[5].onclick = () => switchAdminTab('settings');
-      console.log('✓ Admin tabs event listeners attached');
+      debugLog('✓ Admin tabs event listeners attached');
     }
     
     const membersTabs = document.querySelectorAll('#members-overlay .admin-tab');
-    if (membersTabs.length >= 4) {
+    if (membersTabs.length >= 3) {
       membersTabs[0].onclick = () => switchMembersTab('seizures');
-      membersTabs[1].onclick = () => switchMembersTab('gallery');
-      membersTabs[2].onclick = () => switchMembersTab('vehicles');
-      membersTabs[3].onclick = () => switchMembersTab('members');
-      console.log('✓ Members tabs event listeners attached');
+      membersTabs[1].onclick = () => switchMembersTab('negocios');
+      membersTabs[2].onclick = () => switchMembersTab('members');
+      debugLog('✓ Members tabs event listeners attached');
     }
   } catch (error) {
     console.error('ERROR creating admin/members overlays:', error);
